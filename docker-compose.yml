@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  notification:
+    image: notification
+    build:
+      context: ./notification
+      dockerfile: Dockerfile
+    network_mode: "host"
+
+  user:
+    image: user
+    build:
+      context: ./user
+      dockerfile: Dockerfile
+    network_mode: "host"

@@ -1,0 +1,5 @@
+package forgotpassword
+
+func forgotpassword() {
+
+}
