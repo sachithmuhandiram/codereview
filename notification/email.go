@@ -19,12 +19,14 @@ type emailDetails struct {
 func main() {
 
 	log.Println("Email service started")
+
+	http.HandleFunc("/sendemail", sendEmail)
 	http.ListenAndServe("0.0.0.0:7072", nil)
 }
 
 // This function reads the json file and pass values to SendNotification
 func getCredintials() (string, string) {
-	jsonFile, err := os.Open("notification_service/packages/notification/emailData.json")
+	jsonFile, err := os.Open("emailData.json")
 
 	if err != nil {
 		fmt.Println(err)

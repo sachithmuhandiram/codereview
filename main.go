@@ -33,8 +33,16 @@ func validatemail(res http.ResponseWriter, req *http.Request) {
 
 	if validEmail.MatchString(email) {
 		log.Println("Valid email address format received")
-		//return true
-		// Go to registration form
+		// Send email with token
+
+		send, err := http.Get("http://notification:7072")
+
+		if err != nil {
+			log.Println("Couldnt send email, notification service sends an error : ", err)
+		}
+
+		log.Println("Send an email ", send)
+
 	} else {
 		log.Println("Wrong email address format")
 		// Return to register window
