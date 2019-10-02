@@ -1,6 +1,13 @@
 version: '3'
 
 services:
+  apigateway:
+    image: apigateway
+    build:
+      context: .
+      dockerfile: Dockerfile
+    network_mode: "host"
+    
   notification:
     image: notification
     build:

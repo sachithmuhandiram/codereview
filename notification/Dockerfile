@@ -8,7 +8,7 @@ WORKDIR /go/src
 
 RUN go build -o email .
 
-EXPOSE 7071
+EXPOSE 7072
 
 RUN chmod 755 email
 

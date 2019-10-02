@@ -19,6 +19,7 @@ type emailDetails struct {
 func main() {
 
 	log.Println("Email service started")
+	http.ListenAndServe("0.0.0.0:7072", nil)
 }
 
 // This function reads the json file and pass values to SendNotification

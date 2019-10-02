@@ -1,0 +1,47 @@
+package main
+
+import (
+	"log"
+	"net/http"
+	"regexp"
+)
+
+// This is the main module, this should update into an API gateway.
+// Initial step, just routing functionality will be used.
+// Running on localhost 7070
+
+func main() {
+
+	log.Println("API gateway started at port : 7070")
+	http.HandleFunc("/getemail", validatemail)
+
+	http.ListenAndServe(":7070", nil)
+}
+
+func validatemail(res http.ResponseWriter, req *http.Request) {
+
+	// This will validate email address has valid syntax
+
+	email := "sachithnalaka@gmail.com" // parse form and get email
+
+	validEmail := regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`) // regex to validate email address
+
+	if validEmail.MatchString(email) {
+		log.Println("Valid email address format received")
+		//return true
+		// Go to registration form
+	} else {
+		log.Println("Wrong email address format")
+		// Return to register window
+		//return false
+	}
+}
+func checkEmail(res http.ResponseWriter, req *http.Request) {
+	validate, err := http.Get("http://notification:7072")
+
+	if err != nil {
+		log.Println("Couldnt send request to add module", err)
+	}
+
+	log.Println(validate) // Just to verify we gets a response
+}

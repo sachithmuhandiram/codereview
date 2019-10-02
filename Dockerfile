@@ -8,7 +8,7 @@ WORKDIR /go/src
 
 RUN go build -o main .
 
-EXPOSE 7071
+EXPOSE 7070
 
 RUN chmod 755 main
 
