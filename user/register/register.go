@@ -2,6 +2,7 @@ package register
 
 import (
 	"log"
+	"net/http"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -26,6 +27,16 @@ func getemail() {
 
 		log.Println("Token", token) // for error preventing, remove after token being used
 		// send register form
+
+		// Send email with token
+
+		send, err := http.Get("http://notification:7072/sendemail")
+
+		if err != nil {
+			log.Println("Couldnt send email, notification service sends an error : ", err)
+		}
+
+		log.Println("Send an email ", send)
 
 	}
 

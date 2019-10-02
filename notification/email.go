@@ -37,7 +37,7 @@ func getCredintials() (string, string) {
 
 	var email emailDetails
 	json.Unmarshal(byteValue, &email)
-	log.Println("User Type: " + email.From)
+	log.Println("Received email : " + email.From)
 
 	return email.From, email.Parse
 

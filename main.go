@@ -33,15 +33,14 @@ func validatemail(res http.ResponseWriter, req *http.Request) {
 
 	if validEmail.MatchString(email) {
 		log.Println("Valid email address format received")
-		// Send email with token
 
-		send, err := http.Get("http://notification:7072/sendemail")
+		usermodule, err := http.Get("http://user:7071/sendmail")
 
 		if err != nil {
 			log.Println("Couldnt send email, notification service sends an error : ", err)
 		}
 
-		log.Println("Send an email ", send)
+		log.Println("Send an email ", usermodule)
 
 	} else {
 		log.Println("Wrong email address format")
@@ -49,12 +48,13 @@ func validatemail(res http.ResponseWriter, req *http.Request) {
 		//return false
 	}
 }
-func checkEmail(res http.ResponseWriter, req *http.Request) {
-	validate, err := http.Get("http://notification:7072")
 
-	if err != nil {
-		log.Println("Couldnt send request to add module", err)
-	}
+// func checkEmail(res http.ResponseWriter, req *http.Request) {
+// 	validate, err := http.Get("http://notification:7072")
 
-	log.Println(validate) // Just to verify we gets a response
-}
+// 	if err != nil {
+// 		log.Println("Couldnt send request to add module", err)
+// 	}
+
+// 	log.Println(validate) // Just to verify we gets a response
+// }
