@@ -18,11 +18,16 @@ func main() {
 	http.ListenAndServe(":7070", nil)
 }
 
+// This will validate email address has valid syntax
 func validatemail(res http.ResponseWriter, req *http.Request) {
 
-	// This will validate email address has valid syntax
+	// Check method
+	if req.Method != "POST" {
+		log.Panic("Email form data is not Post")
+		//http.Redirect(res, req, "/", http.StatusSeeOther) // redirect back to register
+	}
 
-	email := "sachithnalaka@gmail.com" // parse form and get email
+	email := req.FormValue("email") //"sachithnalaka@gmail.com" // parse form and get email
 
 	validEmail := regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`) // regex to validate email address
 
