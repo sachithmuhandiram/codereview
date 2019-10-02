@@ -64,5 +64,8 @@ func sendEmail(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	log.Print("")
+	log.Print("Email has been sent to : ", email)
+
+	// This should send true false, to calling function.
+	// Eg : function may call for register page or may be for login
 }

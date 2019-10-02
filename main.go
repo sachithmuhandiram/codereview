@@ -35,7 +35,7 @@ func validatemail(res http.ResponseWriter, req *http.Request) {
 		log.Println("Valid email address format received")
 		// Send email with token
 
-		send, err := http.Get("http://notification:7072")
+		send, err := http.Get("http://notification:7072/sendemail")
 
 		if err != nil {
 			log.Println("Couldnt send email, notification service sends an error : ", err)
