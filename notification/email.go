@@ -20,7 +20,8 @@ func main() {
 
 	log.Println("Email service started")
 
-	http.HandleFunc("/sendemail", sendEmail)
+	http.HandleFunc("/sendregisteremail", sendRegisterEmail)
+	http.HandleFunc("/sendloginemail", sendLoginEmail)
 	http.ListenAndServe("0.0.0.0:7072", nil)
 }
 
@@ -43,16 +44,16 @@ func getCredintials() (string, string) {
 
 }
 
-func sendEmail(res http.ResponseWriter, req *http.Request) {
+func sendRegisterEmail(res http.ResponseWriter, req *http.Request) {
 
 	email := "sachithnalaka@gmail.com" // this is taken from request
 	// This body value should have a token and it should be inserted to a db
-	body := "hi hi"
+	body := "This is register email"
 	from, pass := getCredintials()
 
 	msg := "From: " + from + "\n" +
 		"To: " + email + "\n" +
-		"Subject: Hello there\n\n" +
+		"Subject: Register to the system\n\n" +
 		body
 
 	err := smtp.SendMail("smtp.gmail.com:587",
@@ -64,8 +65,33 @@ func sendEmail(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	log.Print("Email has been sent to : ", email)
+	log.Print("Register Email has been sent to : ", email)
 
 	// This should send true false, to calling function.
 	// Eg : function may call for register page or may be for login
+}
+
+func sendLoginEmail(res http.ResponseWriter, req *http.Request) {
+
+	email := "sachithnalaka@gmail.com" // this is taken from request
+	// This body value should have a token and it should be inserted to a db
+	body := "This is login email"
+	from, pass := getCredintials()
+
+	msg := "From: " + from + "\n" +
+		"To: " + email + "\n" +
+		"Subject: You have an account\n\n" +
+		body
+
+	err := smtp.SendMail("smtp.gmail.com:587",
+		smtp.PlainAuth("", from, pass, "smtp.gmail.com"),
+		from, []string{email}, []byte(msg))
+
+	if err != nil {
+		log.Printf("smtp error: %s", err)
+		return
+	}
+
+	log.Print("Login Email has been sent to : ", email)
+
 }

@@ -4,7 +4,7 @@ services:
   apigateway:
     image: apigateway
     build:
-      context: .
+      context: ./gateway
       dockerfile: Dockerfile
     network_mode: "host"
     
@@ -14,6 +14,8 @@ services:
       context: ./notification
       dockerfile: Dockerfile
     network_mode: "host"
+    depends_on:
+      - apigateway
 
   user:
     image: user
@@ -21,3 +23,5 @@ services:
       context: ./user
       dockerfile: Dockerfile
     network_mode: "host"
+    depends_on:
+      - apigateway

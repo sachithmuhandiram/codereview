@@ -18,6 +18,13 @@ func getemail() {
 	if hasAcct {
 		log.Printf("User has an account for email %s,send login view", email)
 		// send an email with login page url and you have account
+		sendLogin, err := http.Get("http://notification:7072/sendloginemail")
+
+		if err != nil {
+			log.Println("Couldnt send email, notification service sends an error : ", err)
+		}
+
+		log.Println("Sent login email ", sendLogin)
 	} else {
 		// send a link with token to register
 
@@ -26,17 +33,16 @@ func getemail() {
 		token := generateToken(email)
 
 		log.Println("Token", token) // for error preventing, remove after token being used
-		// send register form
 
 		// Send email with token
 
-		send, err := http.Get("http://notification:7072/sendemail")
+		send, err := http.Get("http://notification:7072/sendregisteremail")
 
 		if err != nil {
 			log.Println("Couldnt send email, notification service sends an error : ", err)
 		}
 
-		log.Println("Send an email ", send)
+		log.Println("Sent register email ", send)
 
 	}
 

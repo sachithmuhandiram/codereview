@@ -34,13 +34,13 @@ func validatemail(res http.ResponseWriter, req *http.Request) {
 	if validEmail.MatchString(email) {
 		log.Println("Valid email address format received")
 
-		usermodule, err := http.Get("http://user:7071/sendmail")
+		_, err := http.Get("http://user:7071/checkmail")
 
 		if err != nil {
 			log.Println("Couldnt send email, notification service sends an error : ", err)
 		}
 
-		log.Println("Send an email ", usermodule)
+		log.Println("Email is passed to user module to validate ")
 
 	} else {
 		log.Println("Wrong email address format")
