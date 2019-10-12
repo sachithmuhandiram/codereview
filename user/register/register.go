@@ -48,15 +48,6 @@ func getemail() {
 
 }
 
-func checkemail(email string) bool {
-	// check DB whether we alreayd have a user for this email
-
-	// true
-	// false (no account)
-
-	return false
-}
-
 func register() {
 	// get user form from user register form
 	// insert data to DB

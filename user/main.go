@@ -22,6 +22,22 @@ func main() {
 // Else send register form sendRegisterEmail()
 func checkEmail(res http.ResponseWriter, req *http.Request) {
 
+	email := req.FormValue("email")
+
+	log.Println("User module received email address : ", email)
+
+	hasAcct := checkemail(email)
+
+	// Account associates with email
+	if hasAcct {
+		log.Println("User has an account for ", email)
+		sendLoginEmail()
+
+	} else {
+		log.Println("Email is not accociate with an account")
+		sendRegisterEmail()
+	}
+
 }
 
 // User doesnt have an account, send register form with token
@@ -47,4 +63,13 @@ func sendLoginEmail() {
 
 	log.Println("Sending login mail success ", email)
 
+}
+
+func checkemail(email string) bool {
+	// check DB whether we alreayd have a user for this email
+
+	// true
+	// false (no account)
+
+	return false
 }
