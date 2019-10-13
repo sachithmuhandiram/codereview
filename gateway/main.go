@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"net/url"
 	"regexp"
 )
 
@@ -35,7 +36,7 @@ func validatemail(res http.ResponseWriter, req *http.Request) {
 		log.Println("Valid email address format received")
 		log.Println("Email is passed to user module to validate ")
 
-		_, err := http.Get("http://user:7071/checkemail")
+		_, err := http.PostForm("http://user:7071/checkemail", url.Values{"email": {email}})
 
 		if err != nil {
 			log.Println("Couldnt send email, notification service sends an error : ", err)

@@ -38,7 +38,7 @@ func getCredintials() (string, string) {
 
 	var email emailDetails
 	json.Unmarshal(byteValue, &email)
-	log.Println("Received email : " + email.From)
+	//log.Println("Received email : " + email.From)
 
 	return email.From, email.Parse
 
@@ -46,7 +46,7 @@ func getCredintials() (string, string) {
 
 func sendRegisterEmail(res http.ResponseWriter, req *http.Request) {
 
-	email := "sachithnalaka@gmail.com" // this is taken from request
+	email := req.FormValue("email")
 	// This body value should have a token and it should be inserted to a db
 	body := "This is register email"
 	from, pass := getCredintials()
@@ -73,7 +73,7 @@ func sendRegisterEmail(res http.ResponseWriter, req *http.Request) {
 
 func sendLoginEmail(res http.ResponseWriter, req *http.Request) {
 
-	email := "sachithnalaka@gmail.com" // this is taken from request
+	email := req.FormValue("email")
 	// This body value should have a token and it should be inserted to a db
 	body := "This is login email"
 	from, pass := getCredintials()

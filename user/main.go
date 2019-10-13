@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"net/url"
 )
 
 func main() {
@@ -31,37 +32,38 @@ func checkEmail(res http.ResponseWriter, req *http.Request) {
 	// Account associates with email
 	if hasAcct {
 		log.Println("User has an account for ", email)
-		sendLoginEmail()
+		sendLoginEmail(email)
 
 	} else {
 		log.Println("Email is not accociate with an account")
-		sendRegisterEmail()
+		sendRegisterEmail(email)
 	}
 
 }
 
 // User doesnt have an account, send register form with token
-func sendRegisterEmail() {
+func sendRegisterEmail(email string) {
 
-	email, err := http.Get("http://notification:7072/sendregisteremail")
+	_, err := http.PostForm("http://notification:7072/sendregisteremail", url.Values{"email": {email}})
 
 	if err != nil {
 		log.Println("Couldnt send register email, notification service sends an error : ", err)
 	}
 
-	log.Println("Sending register mail success ", email)
+	log.Println("Sent register mail to ", email)
 }
 
 // User has an account, send login form
-func sendLoginEmail() {
+func sendLoginEmail(email string) {
 
-	email, err := http.Get("http://notification:7072/sendloginemail")
+	//_, err := http.Get("http://notification:7072/sendloginemail")
+	_, err := http.PostForm("http://notification:7072/sendloginemail", url.Values{"email": {email}})
 
 	if err != nil {
 		log.Println("Couldnt send login email, notification service sends an error : ", err)
 	}
 
-	log.Println("Sending login mail success ", email)
+	log.Println("Sent mail to ", email)
 
 }
 
