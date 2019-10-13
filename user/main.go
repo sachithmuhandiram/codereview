@@ -71,5 +71,5 @@ func checkemail(email string) bool {
 	// true
 	// false (no account)
 
-	return false
+	return true
 }
