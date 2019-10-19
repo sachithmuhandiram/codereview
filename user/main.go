@@ -2,9 +2,11 @@ package main
 
 import (
 	"database/sql"
+	"io"
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -21,6 +23,13 @@ func dbConn() (db *sql.DB) {
 
 func main() {
 
+	f, err := os.OpenFile("logs/usermodule.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 755)
+	if err != nil {
+		log.Fatalf("error opening file: %v", err)
+	}
+	defer f.Close()
+	wrt := io.MultiWriter(os.Stdout, f)
+	log.SetOutput(wrt)
 	log.Println("User Service started")
 
 	// web server
@@ -76,7 +85,7 @@ func sendLoginEmail(email string) {
 		log.Println("Couldnt send login email, notification service sends an error : ", err)
 	}
 
-	log.Println("Sent mail to ", email)
+	log.Println("Sent Login mail to ", email)
 
 }
 

@@ -15,4 +15,4 @@ EXPOSE 7071
 
 RUN chmod 755 main
 
-CMD [ "./main" ]
+CMD [ "./main"]
