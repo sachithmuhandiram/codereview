@@ -39,7 +39,7 @@ func validatemail(res http.ResponseWriter, req *http.Request) {
 		_, err := http.PostForm("http://user:7071/checkemail", url.Values{"email": {email}})
 
 		if err != nil {
-			log.Println("Couldnt send email, notification service sends an error : ", err)
+			log.Println("Couldnt verify email address user service sends an error : ", err)
 		}
 
 	} else {

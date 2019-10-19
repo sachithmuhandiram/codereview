@@ -1,10 +1,23 @@
 package main
 
 import (
+	"database/sql"
 	"log"
 	"net/http"
 	"net/url"
+
+	_ "github.com/go-sql-driver/mysql"
 )
+
+// database connection
+func dbConn() (db *sql.DB) {
+	db, err := sql.Open("mysql", "root:7890@tcp(127.0.0.1:3306)/codereview_users")
+
+	if err != nil {
+		log.Println("Can not open database connection - User Module")
+	}
+	return db
+}
 
 func main() {
 
@@ -69,9 +82,23 @@ func sendLoginEmail(email string) {
 
 func checkemail(email string) bool {
 	// check DB whether we alreayd have a user for this email
+	db := dbConn()
 
-	// true
-	// false (no account)
+	var registeredEmail bool
 
-	return true
+	// This will return a true or false
+	row := db.QueryRow("select exists(select id from emails where email=?)", email)
+
+	err := row.Scan(&registeredEmail)
+	if err != nil {
+		log.Println("Error fetching data from emails table")
+	}
+
+	if registeredEmail {
+		return true
+	}
+
+	defer db.Close()
+	return false
+
 }
