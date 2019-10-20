@@ -6,6 +6,8 @@ services:
     build:
       context: ./gateway
       dockerfile: Dockerfile
+    volumes:
+      - ./gateway/logs:/go/src/logs
     network_mode: "host"
     
   notification:
@@ -13,6 +15,8 @@ services:
     build:
       context: ./notification
       dockerfile: Dockerfile
+    volumes:
+      - ./notification/logs:/go/src/logs
     network_mode: "host"
     depends_on:
       - apigateway
@@ -22,6 +26,8 @@ services:
     build:
       context: ./user
       dockerfile: Dockerfile
+    volumes:
+      - ./user/logs:/go/src/logs
     network_mode: "host"
     depends_on:
       - apigateway
