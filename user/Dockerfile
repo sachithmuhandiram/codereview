@@ -4,6 +4,7 @@ RUN apk update
 RUN apk add git
 
 RUN  go get github.com/go-sql-driver/mysql
+RUN go get -u golang.org/x/crypto/...
 
 COPY . /go/src
 
