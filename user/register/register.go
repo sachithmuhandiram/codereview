@@ -2,11 +2,11 @@ package register
 
 import (
 	"database/sql"
-	"log"
 	"net/http"
 	"net/url"
 
 	_ "github.com/go-sql-driver/mysql"
+	logs "github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -15,7 +15,11 @@ func dbConn() (db *sql.DB) {
 	db, err := sql.Open("mysql", "root:7890@tcp(127.0.0.1:3306)/codereview_users")
 
 	if err != nil {
-		log.Println("Can not open database connection - User Module")
+		logs.WithFields(logs.Fields{
+			"package":  "User Service",
+			"function": "dbConn",
+			"error":    err,
+		}).Error("Failed to connect to database")
 	}
 	return db
 }
@@ -27,17 +31,31 @@ func CheckEmail(res http.ResponseWriter, req *http.Request) {
 
 	email := req.FormValue("email")
 
-	log.Println("User module received email address : ", email)
+	logs.WithFields(logs.Fields{
+		"package":  "Notification Service",
+		"function": "CheckEmail",
+		"email":    email,
+	}).Info("User Service received email address")
 
 	hasAcct := checkemail(email)
 
 	// Account associates with email
 	if hasAcct {
-		log.Println("User has an account for ", email)
+		logs.WithFields(logs.Fields{
+			"package":  "Notification Service",
+			"function": "CheckEmail",
+			"email":    email,
+		}).Info("This user has an account. send login email")
+
 		sendLoginEmail(email)
 
 	} else {
-		log.Println("Email is not accociate with an account")
+		logs.WithFields(logs.Fields{
+			"package":  "Notification Service",
+			"function": "CheckEmail",
+			"email":    email,
+		}).Info("This user doent have an account. send register email")
+
 		sendRegisterEmail(email)
 	}
 
@@ -49,10 +67,18 @@ func sendRegisterEmail(email string) {
 	_, err := http.PostForm("http://notification:7072/sendregisteremail", url.Values{"email": {email}})
 
 	if err != nil {
-		log.Println("Couldnt send register email, notification service sends an error : ", err)
+		logs.WithFields(logs.Fields{
+			"package":  "User Service",
+			"function": "sendRegisterEmail",
+			"error":    err,
+		}).Error("Failed to connect to Notification Service")
 	}
 
-	log.Println("Sent register mail to ", email)
+	logs.WithFields(logs.Fields{
+		"package":  "Notification Service",
+		"function": "sendRegisterEmail",
+		"email":    email,
+	}).Info("Sent registering email to user")
 }
 
 // User has an account, send login form
@@ -62,10 +88,18 @@ func sendLoginEmail(email string) {
 	_, err := http.PostForm("http://notification:7072/sendloginemail", url.Values{"email": {email}})
 
 	if err != nil {
-		log.Println("Couldnt send login email, notification service sends an error : ", err)
+		logs.WithFields(logs.Fields{
+			"package":  "User Service",
+			"function": "sendLoginEmail",
+			"error":    err,
+		}).Error("Failed to connect to Notification Service")
 	}
 
-	log.Println("Sent Login mail to ", email)
+	logs.WithFields(logs.Fields{
+		"package":  "User Service",
+		"function": "sendLoginEmail",
+		"email":    email,
+	}).Info("Sent login email to user")
 
 }
 
@@ -80,7 +114,11 @@ func checkemail(email string) bool {
 
 	err := row.Scan(&registeredEmail)
 	if err != nil {
-		log.Println("Error fetching data from emails table")
+		logs.WithFields(logs.Fields{
+			"package":  "User Service",
+			"function": "checkemail",
+			"error":    err,
+		}).Error("Failed to fetch data from user table")
 	}
 
 	if registeredEmail {
@@ -148,7 +186,11 @@ func generateToken(email string) string {
 	hashedPass, err := bcrypt.GenerateFromPassword(bs, 8)
 
 	if err != nil {
-		log.Println(err)
+		logs.WithFields(logs.Fields{
+			"package":  "User Service",
+			"function": "generateToken",
+			"error":    err,
+		}).Error("Failed to generate a token")
 	}
 	return string(hashedPass)
 }

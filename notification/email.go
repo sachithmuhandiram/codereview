@@ -4,10 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/smtp"
 	"os"
+
+	logs "github.com/sirupsen/logrus"
 )
 
 type emailDetails struct {
@@ -18,7 +19,10 @@ type emailDetails struct {
 
 func main() {
 
-	log.Println("Email service started")
+	logs.WithFields(logs.Fields{
+		"package":  "Notification Service",
+		"function": "main",
+	}).Info("Notification Service started at 7072")
 
 	http.HandleFunc("/sendregisteremail", sendRegisterEmail)
 	http.HandleFunc("/sendloginemail", sendLoginEmail)
@@ -61,11 +65,19 @@ func sendRegisterEmail(res http.ResponseWriter, req *http.Request) {
 		from, []string{email}, []byte(msg))
 
 	if err != nil {
-		log.Printf("smtp error: %s", err)
+		logs.WithFields(logs.Fields{
+			"package":  "Notification Service",
+			"function": "sendRegisterEmail",
+			"error":    err,
+		}).Error("SMTP server failure")
 		return
 	}
 
-	log.Print("Register Email has been sent to : ", email)
+	logs.WithFields(logs.Fields{
+		"package":  "Notification Service",
+		"function": "sendRegisterEmail",
+		"email":    email,
+	}).Info("Register email sent")
 
 	// This should send true false, to calling function.
 	// Eg : function may call for register page or may be for login
@@ -88,10 +100,18 @@ func sendLoginEmail(res http.ResponseWriter, req *http.Request) {
 		from, []string{email}, []byte(msg))
 
 	if err != nil {
-		log.Printf("smtp error: %s", err)
+		logs.WithFields(logs.Fields{
+			"package":  "Notification Service",
+			"function": "sendRegisterEmail",
+			"error":    err,
+		}).Error("SMTP server failure")
 		return
 	}
 
-	log.Print("Login Email has been sent to : ", email)
+	logs.WithFields(logs.Fields{
+		"package":  "Notification Service",
+		"function": "sendLoginEmail",
+		"email":    email,
+	}).Info("Login email sent")
 
 }
