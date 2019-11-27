@@ -1,10 +1,11 @@
 package main
 
 import (
-	"log"
 	"net/http"
 	"net/url"
 	"regexp"
+
+	logs "github.com/sirupsen/logrus"
 )
 
 // This is the main module, this should update into an API gateway.
@@ -13,7 +14,11 @@ import (
 
 func main() {
 
-	log.Println("API gateway started at port : 7070")
+	logs.WithFields(logs.Fields{
+		"package":  "API-Gateway",
+		"function": "main",
+	}).Info("API - Gateway started at 7070")
+
 	http.HandleFunc("/getemail", validatemail)
 
 	http.ListenAndServe(":7070", nil)
@@ -24,7 +29,10 @@ func validatemail(res http.ResponseWriter, req *http.Request) {
 
 	// Check method
 	if req.Method != "POST" {
-		log.Panic("Email form data is not Post")
+		logs.WithFields(logs.Fields{
+			"package":  "API - Gateway",
+			"function": "validatemail",
+		}).Error("Request method is not POST")
 		//http.Redirect(res, req, "/", http.StatusSeeOther) // redirect back to register
 	}
 
@@ -33,17 +41,34 @@ func validatemail(res http.ResponseWriter, req *http.Request) {
 	validEmail := regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`) // regex to validate email address
 
 	if validEmail.MatchString(email) {
-		log.Println("Valid email address format received")
-		log.Println("Email is passed to user module to validate ")
+		logs.WithFields(logs.Fields{
+			"package":  "API-Gateway",
+			"function": "validatemail",
+		}).Info("Valida email format received")
+
+		logs.WithFields(logs.Fields{
+			"package":  "API-Gateway",
+			"function": "validatemail",
+			"email":    email,
+		}).Info("Email will pass to User - Service")
 
 		_, err := http.PostForm("http://user:7071/checkemail", url.Values{"email": {email}})
 
 		if err != nil {
-			log.Println("Couldnt verify email address user service sends an error : ", err)
+			logs.WithFields(logs.Fields{
+				"package":  "API-Gateway",
+				"function": "validatemail",
+				"email":    email,
+				"error":    err,
+			}).Error("Error posting data to User - Service")
 		}
 
 	} else {
-		log.Println("Wrong email address format")
+		logs.WithFields(logs.Fields{
+			"package":  "API-Gateway",
+			"function": "validatemail",
+			"email":    email,
+		}).Error("Wrong email format received")
 		// Return to register window
 		//return false
 	}

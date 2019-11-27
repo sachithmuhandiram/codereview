@@ -3,8 +3,10 @@ FROM golang:alpine
 RUN apk update
 RUN apk add git
 
-RUN  go get github.com/go-sql-driver/mysql
-RUN go get -u golang.org/x/crypto/...
+RUN go get github.com/go-sql-driver/mysql
+
+RUN  go get -u golang.org/x/crypto/...
+RUN  go get github.com/sirupsen/logrus
 
 COPY . /go/src
 

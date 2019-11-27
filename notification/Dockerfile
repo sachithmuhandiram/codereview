@@ -1,6 +1,10 @@
 FROM golang:alpine
 
 RUN apk update
+RUN apk add git
+
+RUN set -e \
+    go get github.com/sirupsen/logrus
 
 COPY . /go/src
 
