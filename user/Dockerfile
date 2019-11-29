@@ -7,9 +7,9 @@ RUN apk add git
 WORKDIR /go/src
 
 RUN set -e \
-go get github.com/go-sql-driver/mysql \
-&& go get -u golang.org/x/crypto/... \
-&& go get github.com/sirupsen/logrus
+    go get -u golang.org/x/crypto/... \ 
+    && go get github.com/go-sql-driver/mysql \
+    && go get github.com/sirupsen/logrus
 
 COPY . /go/src
 
