@@ -73,13 +73,3 @@ func validatemail(res http.ResponseWriter, req *http.Request) {
 		//return false
 	}
 }
-
-// func checkEmail(res http.ResponseWriter, req *http.Request) {
-// 	validate, err := http.Get("http://notification:7072")
-
-// 	if err != nil {
-// 		log.Println("Couldnt send request to add module", err)
-// 	}
-
-// 	log.Println(validate) // Just to verify we gets a response
-// }
