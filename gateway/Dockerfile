@@ -4,7 +4,9 @@ RUN apk update
 
 RUN apk add git
 
-RUN go get github.com/sirupsen/logrus
+RUN set -e \
+    && go get github.com/sirupsen/logrus \
+    && go get github.com/google/uuid 
 
 COPY . /go/src
 
