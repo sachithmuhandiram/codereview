@@ -14,24 +14,29 @@ import (
 // Initial step, just routing functionality will be used.
 // Running on localhost 7070
 
+// Struct to hold UUID which is attached and passed to all API-Gateway calls
+type UUID struct {
+	apiUuid uuid.UUID
+}
+
 func main() {
+
+	apiID := &UUID{apiUuid: generateUUID()}
 
 	logs.WithFields(logs.Fields{
 		"package":  "API-Gateway",
 		"function": "main",
 	}).Info("API - Gateway started at 7070")
 
-	apiUuid := generateUUID()
+	log.Println("UUID generated : ", apiID)
 
-	log.Println("UUID generated : ", apiUuid)
-
-	http.HandleFunc("/getemail", validatemail)
+	http.HandleFunc("/getemail", apiID.validatemail)
 
 	http.ListenAndServe(":7070", nil)
 }
 
 // This will validate email address has valid syntax
-func validatemail(res http.ResponseWriter, req *http.Request) {
+func (apiID *UUID) validatemail(res http.ResponseWriter, req *http.Request) {
 
 	// Check method
 	if req.Method != "POST" {
@@ -80,7 +85,7 @@ func validatemail(res http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func generateUUID() string {
+func generateUUID() uuid.UUID {
 	// Generating UUID
 	uuid, err := uuid.NewUUID()
 
@@ -96,5 +101,5 @@ func generateUUID() string {
 		// Return to error page
 		//http.Redirect(loginResponse, loginRequest, "/", http.StatusSeeOther)
 	}
-	return uuid.String()
+	return uuid //.String()
 }
