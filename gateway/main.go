@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -29,6 +30,7 @@ func main() {
 	}).Info("API - Gateway started at 7070")
 
 	http.HandleFunc("/getemail", apiID.validatemail)
+	http.HandleFunc("/response", reportResponse)
 
 	http.ListenAndServe(":7070", nil)
 }
@@ -106,4 +108,11 @@ func generateUUID() uuid.UUID {
 		//http.Redirect(loginResponse, loginRequest, "/", http.StatusSeeOther)
 	}
 	return uuid //.String()
+}
+
+// Response for a request is recorded.
+func reportResponse(res http.ResponseWriter, req *http.Request) {
+
+	responseID := req.FormValue("uid")
+	log.Println("Response received : ", responseID)
 }

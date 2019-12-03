@@ -2,6 +2,7 @@ package register
 
 import (
 	"database/sql"
+	"log"
 	"net/http"
 	"net/url"
 
@@ -85,6 +86,12 @@ func sendRegisterEmail(email string, apiUuid string) {
 		"email":    email,
 		"uuid":     apiUuid,
 	}).Info("Sent registering email to user")
+
+	_, err = http.PostForm("http://localhost:7070/response", url.Values{"uid": {apiUuid}})
+
+	if err != nil {
+		log.Println("Error response sending")
+	}
 }
 
 // User has an account, send login form
