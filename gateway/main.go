@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -26,9 +25,8 @@ func main() {
 	logs.WithFields(logs.Fields{
 		"package":  "API-Gateway",
 		"function": "main",
+		"uuid":     apiID,
 	}).Info("API - Gateway started at 7070")
-
-	log.Println("UUID generated : ", apiID)
 
 	http.HandleFunc("/getemail", apiID.validatemail)
 
@@ -38,11 +36,13 @@ func main() {
 // This will validate email address has valid syntax
 func (apiID *UUID) validatemail(res http.ResponseWriter, req *http.Request) {
 
+	validatemailID := apiID.apiUuid
 	// Check method
 	if req.Method != "POST" {
 		logs.WithFields(logs.Fields{
 			"package":  "API - Gateway",
 			"function": "validatemail",
+			"uuid":     validatemailID,
 		}).Error("Request method is not POST")
 		//http.Redirect(res, req, "/", http.StatusSeeOther) // redirect back to register
 	}
@@ -55,15 +55,17 @@ func (apiID *UUID) validatemail(res http.ResponseWriter, req *http.Request) {
 		logs.WithFields(logs.Fields{
 			"package":  "API-Gateway",
 			"function": "validatemail",
-		}).Info("Valida email format received")
+			"uuid":     validatemailID,
+		}).Info("Valid email format received")
 
 		logs.WithFields(logs.Fields{
 			"package":  "API-Gateway",
 			"function": "validatemail",
 			"email":    email,
+			"uuid":     validatemailID, // Later this should change for function-wise uuid
 		}).Info("Email will pass to User - Service")
 
-		_, err := http.PostForm("http://user:7071/checkemail", url.Values{"email": {email}})
+		_, err := http.PostForm("http://user:7071/checkemail", url.Values{"email": {email}, "uid": {validatemailID.String()}})
 
 		if err != nil {
 			logs.WithFields(logs.Fields{
@@ -71,6 +73,7 @@ func (apiID *UUID) validatemail(res http.ResponseWriter, req *http.Request) {
 				"function": "validatemail",
 				"email":    email,
 				"error":    err,
+				"uuid":     validatemailID,
 			}).Error("Error posting data to User - Service")
 		}
 
@@ -79,6 +82,7 @@ func (apiID *UUID) validatemail(res http.ResponseWriter, req *http.Request) {
 			"package":  "API-Gateway",
 			"function": "validatemail",
 			"email":    email,
+			"uuid":     validatemailID,
 		}).Error("Wrong email format received")
 		// Return to register window
 		//return false
