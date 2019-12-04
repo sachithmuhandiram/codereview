@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -114,5 +113,14 @@ func generateUUID() uuid.UUID {
 func reportResponse(res http.ResponseWriter, req *http.Request) {
 
 	responseID := req.FormValue("uid")
-	log.Println("Response received : ", responseID)
+	service := req.FormValue("service")
+	function := req.FormValue("function")
+	pack := req.FormValue("package")
+
+	logs.WithFields(logs.Fields{
+		"ResponseService": service,
+		"ResponsePackage": pack,
+		"ResponseFunc":    function,
+		"responseID":      responseID,
+	}).Info("Response received for the request")
 }

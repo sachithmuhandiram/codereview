@@ -116,6 +116,13 @@ func sendLoginEmail(email string, apiUuid string) {
 		"uuid":     apiUuid,
 	}).Info("Sent login email to user")
 
+	_, err = http.PostForm("http://localhost:7070/response", url.Values{"uid": {apiUuid}, "service": {"User Service"},
+		"function": {"sendLoginEmail"}, "package": {"Register"}})
+
+	if err != nil {
+		log.Println("Error response sending")
+	}
+
 }
 
 func checkemail(email string, uuid string) bool {
@@ -169,3 +176,5 @@ func generateToken(email string) string {
 	}
 	return string(hashedPass)
 }
+
+// This is a comment for testing
