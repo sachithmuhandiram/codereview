@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -45,49 +46,72 @@ func (apiID *UUID) validatemail(res http.ResponseWriter, req *http.Request) {
 			"function": "validatemail",
 			"uuid":     validatemailID,
 		}).Error("Request method is not POST")
-		//http.Redirect(res, req, "/", http.StatusSeeOther) // redirect back to register
-	}
 
-	email := req.FormValue("email") //"sachithnalaka@gmail.com" // parse form and get email
-
-	validEmail := regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`) // regex to validate email address
-
-	if validEmail.MatchString(email) {
-		logs.WithFields(logs.Fields{
-			"package":  "API-Gateway",
-			"function": "validatemail",
-			"uuid":     validatemailID,
-		}).Info("Valid email format received")
-
-		logs.WithFields(logs.Fields{
-			"package":  "API-Gateway",
-			"function": "validatemail",
-			"email":    email,
-			"uuid":     validatemailID, // Later this should change for function-wise uuid
-		}).Info("Email will pass to User - Service")
-
-		_, err := http.PostForm("http://user:7071/checkemail", url.Values{"email": {email}, "uid": {validatemailID.String()}})
+		_, err := http.PostForm("http://localhost:7070/response", url.Values{"uid": {validatemailID.String()}, "service": {"API Gateway"},
+			"function": {"validatemail"}, "package": {"main"}, "status": {"0"}})
 
 		if err != nil {
+			log.Println("Error response sending")
+		}
+		//http.Redirect(res, req, "/", http.StatusSeeOther) // redirect back to register
+	} else {
+		// Method is POST
+
+		email := req.FormValue("email") //"sachithnalaka@gmail.com" // parse form and get email
+
+		validEmail := regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`) // regex to validate email address
+
+		if validEmail.MatchString(email) {
+			logs.WithFields(logs.Fields{
+				"package":  "API-Gateway",
+				"function": "validatemail",
+				"uuid":     validatemailID,
+			}).Info("Valid email format received")
+
 			logs.WithFields(logs.Fields{
 				"package":  "API-Gateway",
 				"function": "validatemail",
 				"email":    email,
-				"error":    err,
-				"uuid":     validatemailID,
-			}).Error("Error posting data to User - Service")
-		}
+				"uuid":     validatemailID, // Later this should change for function-wise uuid
+			}).Info("Email will pass to User - Service")
 
-	} else {
-		logs.WithFields(logs.Fields{
-			"package":  "API-Gateway",
-			"function": "validatemail",
-			"email":    email,
-			"uuid":     validatemailID,
-		}).Error("Wrong email format received")
-		// Return to register window
-		//return false
-	}
+			_, err := http.PostForm("http://user:7071/checkemail", url.Values{"email": {email}, "uid": {validatemailID.String()}})
+
+			if err != nil {
+				logs.WithFields(logs.Fields{
+					"package":  "API-Gateway",
+					"function": "validatemail",
+					"email":    email,
+					"error":    err,
+					"uuid":     validatemailID,
+				}).Error("Error posting data to User - Service")
+
+				_, err := http.PostForm("http://localhost:7070/response", url.Values{"uid": {validatemailID.String()}, "service": {"API Gateway"},
+					"function": {"validatemail"}, "package": {"main"}, "status": {"0"}})
+
+				if err != nil {
+					log.Println("Error response sending")
+				}
+			}
+
+		} else {
+			logs.WithFields(logs.Fields{
+				"package":  "API-Gateway",
+				"function": "validatemail",
+				"email":    email,
+				"uuid":     validatemailID,
+			}).Error("Wrong email format received")
+
+			_, err := http.PostForm("http://localhost:7070/response", url.Values{"uid": {validatemailID.String()}, "service": {"API Gateway"},
+				"function": {"validatemail"}, "package": {"main"}, "status": {"0"}})
+
+			if err != nil {
+				log.Println("Error response sending")
+			}
+			// Return to register window
+			//return false
+		}
+	} // Method checking if loop
 }
 
 func generateUUID() uuid.UUID {
@@ -116,11 +140,13 @@ func reportResponse(res http.ResponseWriter, req *http.Request) {
 	service := req.FormValue("service")
 	function := req.FormValue("function")
 	pack := req.FormValue("package")
+	status := req.FormValue("status")
 
 	logs.WithFields(logs.Fields{
 		"ResponseService": service,
 		"ResponsePackage": pack,
 		"ResponseFunc":    function,
 		"responseID":      responseID,
+		"status":          status,
 	}).Info("Response received for the request")
 }

@@ -51,6 +51,7 @@ func getCredintials() (string, string) {
 func sendRegisterEmail(res http.ResponseWriter, req *http.Request) {
 
 	email := req.FormValue("email")
+	apiUuid := req.FormValue("uid")
 	// This body value should have a token and it should be inserted to a db
 	body := "This is register email"
 	from, pass := getCredintials()
@@ -69,7 +70,16 @@ func sendRegisterEmail(res http.ResponseWriter, req *http.Request) {
 			"package":  "Notification Service",
 			"function": "sendRegisterEmail",
 			"error":    err,
+			"uid":      apiUuid,
 		}).Error("SMTP server failure")
+
+		// _, err = http.PostForm("http://localhost:7070/response", url.Values{"uid": {apiUuid}, "service": {"Notification Service"},
+		// 	"function": {"sendRegisterEmail"}, "package": {"main"}, "status": {"0"}})
+
+		// if err != nil {
+		// 	log.Println("Error response sending")
+		// }
+
 		return
 	}
 
@@ -77,7 +87,15 @@ func sendRegisterEmail(res http.ResponseWriter, req *http.Request) {
 		"package":  "Notification Service",
 		"function": "sendRegisterEmail",
 		"email":    email,
+		"uid":      apiUuid,
 	}).Info("Register email sent")
+
+	// _, err = http.PostForm("http://localhost:7070/response", url.Values{"uid": {apiUuid}, "service": {"Notification Service"},
+	// 	"function": {"sendRegisterEmail"}, "package": {"main"}, "status": {"1"}})
+
+	// if err != nil {
+	// 	log.Println("Error response sending")
+	// }
 
 	// This should send true false, to calling function.
 	// Eg : function may call for register page or may be for login
@@ -86,6 +104,7 @@ func sendRegisterEmail(res http.ResponseWriter, req *http.Request) {
 func sendLoginEmail(res http.ResponseWriter, req *http.Request) {
 
 	email := req.FormValue("email")
+	apiUuid := req.FormValue("uid")
 	// This body value should have a token and it should be inserted to a db
 	body := "This is login email"
 	from, pass := getCredintials()
@@ -104,7 +123,16 @@ func sendLoginEmail(res http.ResponseWriter, req *http.Request) {
 			"package":  "Notification Service",
 			"function": "sendRegisterEmail",
 			"error":    err,
+			"uid":      apiUuid,
 		}).Error("SMTP server failure")
+
+		// _, err = http.PostForm("http://localhost:7070/response", url.Values{"uid": {apiUuid}, "service": {"Notification Service"},
+		// 	"function": {"sendLoginEmail"}, "package": {"main"}, "status": {"0"}})
+
+		// if err != nil {
+		// 	log.Println("Error response sending")
+		// }
+
 		return
 	}
 
@@ -112,6 +140,14 @@ func sendLoginEmail(res http.ResponseWriter, req *http.Request) {
 		"package":  "Notification Service",
 		"function": "sendLoginEmail",
 		"email":    email,
+		"uid":      apiUuid,
 	}).Info("Login email sent")
+
+	// _, err = http.PostForm("http://localhost:7070/response", url.Values{"uid": {apiUuid}, "service": {"Notification Service"},
+	// 	"function": {"sendLoginEmail"}, "package": {"main"}, "status": {"1"}})
+
+	// if err != nil {
+	// 	log.Println("Error response sending")
+	// }
 
 }
