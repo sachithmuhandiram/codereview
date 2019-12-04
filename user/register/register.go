@@ -87,7 +87,8 @@ func sendRegisterEmail(email string, apiUuid string) {
 		"uuid":     apiUuid,
 	}).Info("Sent registering email to user")
 
-	_, err = http.PostForm("http://localhost:7070/response", url.Values{"uid": {apiUuid}})
+	_, err = http.PostForm("http://localhost:7070/response", url.Values{"uid": {apiUuid}, "service": {"User Service"},
+		"function": {"sendRegisterEmail"}, "package": {"Register"}})
 
 	if err != nil {
 		log.Println("Error response sending")
