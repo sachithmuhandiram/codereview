@@ -52,8 +52,9 @@ func sendRegisterEmail(res http.ResponseWriter, req *http.Request) {
 
 	email := req.FormValue("email")
 	apiUuid := req.FormValue("uid")
+	token := req.FormValue("token")
 	// This body value should have a token and it should be inserted to a db
-	body := "This is register email"
+	body := "This is register email" + token
 	from, pass := getCredintials()
 
 	msg := "From: " + from + "\n" +
@@ -105,8 +106,10 @@ func sendLoginEmail(res http.ResponseWriter, req *http.Request) {
 
 	email := req.FormValue("email")
 	apiUuid := req.FormValue("uid")
+	token := req.FormValue("token")
+	loginURL := "http://localhost:7070/login?token=" + token
 	// This body value should have a token and it should be inserted to a db
-	body := "This is login email"
+	body := "This is login email please click on following link \n" + loginURL
 	from, pass := getCredintials()
 
 	msg := "From: " + from + "\n" +

@@ -69,7 +69,9 @@ func CheckEmail(res http.ResponseWriter, req *http.Request) {
 // User doesnt have an account, send register form with token
 func sendRegisterEmail(email string, apiUuid string) {
 
-	_, err := http.PostForm("http://notification:7072/sendregisteremail", url.Values{"email": {email}, "uuid": {apiUuid}})
+	token := generateToken(apiUuid)
+
+	_, err := http.PostForm("http://notification:7072/sendregisteremail", url.Values{"email": {email}, "uuid": {apiUuid}, "token": {token}})
 
 	if err != nil {
 		logs.WithFields(logs.Fields{
@@ -98,8 +100,10 @@ func sendRegisterEmail(email string, apiUuid string) {
 // User has an account, send login form
 func sendLoginEmail(email string, apiUuid string) {
 
+	token := generateToken(apiUuid)
+
 	//_, err := http.Get("http://notification:7072/sendloginemail")
-	_, err := http.PostForm("http://notification:7072/sendloginemail", url.Values{"email": {email}, "uuid": {apiUuid}})
+	_, err := http.PostForm("http://notification:7072/sendloginemail", url.Values{"email": {email}, "uuid": {apiUuid}, "token": {token}})
 
 	if err != nil {
 		logs.WithFields(logs.Fields{
@@ -161,10 +165,10 @@ func register() {
 }
 
 // This is a custom token generation. This will use only for initial step
-func generateToken(email string) string {
+func generateToken(uuid string) string {
 	// This will generate a token to
 
-	bs := []byte(email) // convert email address into a bytestream
+	bs := []byte(uuid) // convert UUID into a bytestream
 
 	hashedPass, err := bcrypt.GenerateFromPassword(bs, 8)
 

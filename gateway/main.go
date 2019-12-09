@@ -31,6 +31,7 @@ func main() {
 
 	http.HandleFunc("/getemail", apiID.validatemail)
 	http.HandleFunc("/response", reportResponse)
+	http.HandleFunc("/login", apiID.userLogin)
 
 	http.ListenAndServe(":7070", nil)
 }
@@ -112,6 +113,15 @@ func (apiID *UUID) validatemail(res http.ResponseWriter, req *http.Request) {
 			//return false
 		}
 	} // Method checking if loop
+}
+
+// User login
+func (apiID *UUID) userLogin(res http.ResponseWriter, req *http.Request) {
+
+	token := req.URL.Query()["token"]
+
+	log.Println("token is : ", token)
+
 }
 
 func generateUUID() uuid.UUID {
