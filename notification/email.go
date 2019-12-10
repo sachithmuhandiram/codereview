@@ -109,7 +109,7 @@ func sendLoginEmail(res http.ResponseWriter, req *http.Request) {
 	token := req.FormValue("token")
 	loginURL := "http://localhost:7070/login?token=" + token
 	// This body value should have a token and it should be inserted to a db
-	body := "This is login email please click on following link \n" + loginURL
+	body := "You have an account please click on following link \n" + loginURL + "\n This link valid only for 10 minutes"
 	from, pass := getCredintials()
 
 	msg := "From: " + from + "\n" +
