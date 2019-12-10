@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 	logs "github.com/sirupsen/logrus"
@@ -68,10 +69,23 @@ func CheckEmail(res http.ResponseWriter, req *http.Request) {
 
 // User doesnt have an account, send register form with token
 func sendRegisterEmail(email string, apiUuid string) {
-
+	db := dbConn()
 	token := generateToken(apiUuid)
 
-	_, err := http.PostForm("http://notification:7072/sendregisteremail", url.Values{"email": {email}, "uuid": {apiUuid}, "token": {token}})
+	// insert token to registering_token table
+	insToken, err := db.Prepare("INSERT INTO registering_token (reg_token, created_at) VALUES(?,?)")
+	if err != nil {
+		logs.WithFields(logs.Fields{
+			"package":  "Notification Service",
+			"function": "sendRegisterEmail",
+			"uuid":     apiUuid,
+			"Error":    err,
+		}).Error("Couldnt prepare insert statement for registering_token table")
+	}
+	insToken.Exec(token, time.Now())
+
+	// posting form to notification service
+	_, err = http.PostForm("http://notification:7072/sendregisteremail", url.Values{"email": {email}, "uuid": {apiUuid}, "token": {token}})
 
 	if err != nil {
 		logs.WithFields(logs.Fields{
@@ -99,11 +113,22 @@ func sendRegisterEmail(email string, apiUuid string) {
 
 // User has an account, send login form
 func sendLoginEmail(email string, apiUuid string) {
-
+	db := dbConn()
 	token := generateToken(apiUuid)
 
-	//_, err := http.Get("http://notification:7072/sendloginemail")
-	_, err := http.PostForm("http://notification:7072/sendloginemail", url.Values{"email": {email}, "uuid": {apiUuid}, "token": {token}})
+	// Inserting token to login_token table
+	insToken, err := db.Prepare("INSERT INTO login_token (login_token, created_at) VALUES(?,?)")
+	if err != nil {
+		logs.WithFields(logs.Fields{
+			"package":  "Notification Service",
+			"function": "sendLoginEmail",
+			"uuid":     apiUuid,
+			"Error":    err,
+		}).Error("Couldnt prepare insert statement for registering_token table")
+	}
+	insToken.Exec(token, time.Now())
+	// Sending login form to notification service
+	_, err = http.PostForm("http://notification:7072/sendloginemail", url.Values{"email": {email}, "uuid": {apiUuid}, "token": {token}})
 
 	if err != nil {
 		logs.WithFields(logs.Fields{
