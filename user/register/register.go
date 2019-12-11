@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 	logs "github.com/sirupsen/logrus"
@@ -82,7 +81,7 @@ func sendRegisterEmail(email string, apiUuid string) {
 			"Error":    err,
 		}).Error("Couldnt prepare insert statement for registering_token table")
 	}
-	insToken.Exec(token, time.Now())
+	insToken.Exec(token) //time.Now()
 
 	// posting form to notification service
 	_, err = http.PostForm("http://notification:7072/sendregisteremail", url.Values{"email": {email}, "uuid": {apiUuid}, "token": {token}})
@@ -126,7 +125,7 @@ func sendLoginEmail(email string, apiUuid string) {
 			"Error":    err,
 		}).Error("Couldnt prepare insert statement for registering_token table")
 	}
-	insToken.Exec(token, time.Now())
+	insToken.Exec(token) //, time.Now()
 	// Sending login form to notification service
 	_, err = http.PostForm("http://notification:7072/sendloginemail", url.Values{"email": {email}, "uuid": {apiUuid}, "token": {token}})
 
