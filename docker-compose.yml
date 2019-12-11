@@ -9,8 +9,6 @@ services:
     volumes:
       - ./gateway/logs:/go/src/logs
     network_mode: "host"
-    environment:
-      - "TZ=Asia/Colombo" 
     
   notification:
     image: notification
@@ -20,8 +18,6 @@ services:
     volumes:
       - ./notification/logs:/go/src/logs
     network_mode: "host"
-    environment:
-      - "TZ=Asia/Colombo" 
     depends_on:
       - apigateway
 
@@ -33,7 +29,5 @@ services:
     volumes:
       - ./user/logs:/go/src/logs
     network_mode: "host"
-    environment:
-      - "TZ=Asia/Colombo" 
     depends_on:
       - apigateway

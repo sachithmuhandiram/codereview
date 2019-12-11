@@ -10,6 +10,13 @@ RUN set -e \
     && go get github.com/go-sql-driver/mysql \
     && go get github.com/sirupsen/logrus
 
+# setting container time zone
+# RUN set -e \
+#   && apk add tzdata \
+#   && cp /usr/share/zoneinfo/Asia/Colombo /etc/localtime \
+#   && echo "Asia/Colombo" >  /etc/timezone \
+#   && apk del tzdata
+
 COPY . /go/src
 
 RUN go build -o main .
