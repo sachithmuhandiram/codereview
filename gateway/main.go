@@ -1,14 +1,31 @@
 package main
 
 import (
+	"database/sql"
 	"log"
 	"net/http"
 	"net/url"
 	"regexp"
+	"strconv"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
 	logs "github.com/sirupsen/logrus"
 )
+
+// database connection
+func dbConn() (db *sql.DB) {
+	db, err := sql.Open("mysql", "root:7890@tcp(127.0.0.1:3306)/codereview_users")
+
+	if err != nil {
+		logs.WithFields(logs.Fields{
+			"package":  "User Service",
+			"function": "dbConn",
+			"error":    err,
+		}).Error("Failed to connect to database")
+	}
+	return db
+}
 
 // This is the main module, this should update into an API gateway.
 // Initial step, just routing functionality will be used.
@@ -159,4 +176,49 @@ func reportResponse(res http.ResponseWriter, req *http.Request) {
 		"responseID":      responseID,
 		"status":          status,
 	}).Info("Response received for the request")
+
+	stat, _ := strconv.Atoi(status)
+
+	// stat 1 = success, 0 = failed
+	if stat == 1 {
+		storeData := storeDetails(responseID, true, true)
+
+		if storeData != nil {
+			logs.WithFields(logs.Fields{
+				"package":  "API Gateway",
+				"function": "reportResponse",
+				"Error":    storeData,
+			}).Error("Response data insert to DB failed")
+		}
+	} else {
+		storeData := storeDetails(responseID, true, false)
+
+		if storeData != nil {
+			logs.WithFields(logs.Fields{
+				"package":  "API Gateway",
+				"function": "reportResponse",
+				"Error":    storeData,
+			}).Error("Response data insert to DB failed")
+		}
+	}
+
+}
+
+// Insert Req/Res to table
+func storeDetails(uuid string, reqType, status bool) error {
+	db := dbConn()
+
+	// insert token to gateway_req_res table
+	insData, err := db.Prepare("INSERT INTO gateway_req_res (uuid,type,status) VALUES(?,?,?)")
+	if err != nil {
+		logs.WithFields(logs.Fields{
+			"package":  "API Gateway",
+			"function": "storeDetails",
+			"Error":    err,
+		}).Error("Couldnt prepare insert statement for gateway_req_res table")
+
+		return err
+	}
+	insData.Exec(uuid, reqType, status)
+	return nil
 }
