@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"regexp"
 	"strconv"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
@@ -177,7 +178,7 @@ func reportResponse(res http.ResponseWriter, req *http.Request) {
 		"status":          status,
 	}).Info("Response received for the request")
 
-	stat, _ := strconv.Atoi(status)
+	stat, _ := strconv.Atoi(status) // convert string to int
 
 	// stat 1 = success, 0 = failed
 	if stat == 1 {
@@ -208,8 +209,10 @@ func reportResponse(res http.ResponseWriter, req *http.Request) {
 func storeDetails(uuid string, reqType, status bool) error {
 	db := dbConn()
 
+	t := time.Now()
+	log.Println("Hm time is now : ", t)
 	// insert token to gateway_req_res table
-	insData, err := db.Prepare("INSERT INTO gateway_req_res (uuid,type,status) VALUES(?,?,?)")
+	insData, err := db.Prepare("INSERT INTO gateway_req_res (uuid,type,status,time) VALUES(?,?,?,?)")
 	if err != nil {
 		logs.WithFields(logs.Fields{
 			"package":  "API Gateway",
@@ -219,6 +222,6 @@ func storeDetails(uuid string, reqType, status bool) error {
 
 		return err
 	}
-	insData.Exec(uuid, reqType, status)
+	insData.Exec(uuid, reqType, status, t)
 	return nil
 }

@@ -72,7 +72,7 @@ func sendRegisterEmail(email string, apiUuid string) {
 	token := generateToken(apiUuid)
 
 	// insert token to registering_token table
-	insToken, err := db.Prepare("INSERT INTO registering_token (reg_token, created_at) VALUES(?,?)")
+	insToken, err := db.Prepare("INSERT INTO registering_token (reg_token) VALUES(?)")
 	if err != nil {
 		logs.WithFields(logs.Fields{
 			"package":  "Notification Service",
@@ -116,14 +116,14 @@ func sendLoginEmail(email string, apiUuid string) {
 	token := generateToken(apiUuid)
 
 	// Inserting token to login_token table
-	insToken, err := db.Prepare("INSERT INTO login_token (login_token, created_at) VALUES(?,?)")
+	insToken, err := db.Prepare("INSERT INTO login_token (login_token) VALUES(?)")
 	if err != nil {
 		logs.WithFields(logs.Fields{
 			"package":  "Notification Service",
 			"function": "sendLoginEmail",
 			"uuid":     apiUuid,
 			"Error":    err,
-		}).Error("Couldnt prepare insert statement for registering_token table")
+		}).Error("Couldnt prepare insert statement for login token table")
 	}
 	insToken.Exec(token) //, time.Now()
 	// Sending login form to notification service
