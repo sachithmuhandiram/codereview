@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	checkemail "./checkemail"
 	register "./register"
 )
 
@@ -21,7 +22,8 @@ func main() {
 	log.Println("User Service started")
 
 	// web server
-	http.HandleFunc("/checkemail", register.CheckEmail)
+	http.HandleFunc("/checkemail", checkemail.CheckEmail)
+	http.HandleFunc("/register", register.UserRegister)
 	http.ListenAndServe("0.0.0.0:7071", nil)
 
 	// register email is sent to email sytax check, if its true,

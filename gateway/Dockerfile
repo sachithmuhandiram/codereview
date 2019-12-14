@@ -7,7 +7,8 @@ RUN apk add git
 RUN set -e \
     && go get github.com/sirupsen/logrus \
     && go get github.com/google/uuid \
-    && go get github.com/go-sql-driver/mysql
+    && go get github.com/go-sql-driver/mysql \
+    && go get -u golang.org/x/crypto/...
 
 # # setting container time zone
 # RUN set -e \

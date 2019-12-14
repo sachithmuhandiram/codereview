@@ -12,6 +12,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
 	logs "github.com/sirupsen/logrus"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // database connection
@@ -50,6 +51,7 @@ func main() {
 	http.HandleFunc("/getemail", apiID.validatemail)
 	http.HandleFunc("/response", reportResponse)
 	http.HandleFunc("/login", apiID.userLogin)
+	http.HandleFunc("/register", apiID.registerUser)
 
 	http.ListenAndServe(":7070", nil)
 }
@@ -161,6 +163,40 @@ func generateUUID() uuid.UUID {
 	return uuid //.String()
 }
 
+// Register a User
+func (apiID *UUID) registerUser(res http.ResponseWriter, req *http.Request) {
+	responseID := apiID.apiUuid //req.FormValue("uid")
+	firstName := req.FormValue("first_name")
+	lastName := req.FormValue("last_name")
+	email := req.FormValue("email")
+	password := req.FormValue("password")
+	conformPass := req.FormValue("conformPass")
+
+	if password != conformPass {
+		logs.WithFields(logs.Fields{
+			"package":  "API-Gateway",
+			"function": "registerUser",
+			"uuid":     responseID,
+		}).Error("Passwords mismatch")
+		return
+	}
+
+	password = hashPassword(password)
+
+	_, err := http.PostForm("http://user:7071/register", url.Values{"email": {email}, "uid": {responseID.String()},
+		"first_name": {firstName}, "last_name": {lastName}, "password": {password}})
+
+	if err != nil {
+		logs.WithFields(logs.Fields{
+			"package":  "API-Gateway",
+			"function": "registerUser",
+			"email":    email,
+			"error":    err,
+			"uuid":     responseID,
+		}).Error("Error posting data to User - Service")
+	}
+}
+
 // Response for a request is recorded.
 func reportResponse(res http.ResponseWriter, req *http.Request) {
 
@@ -224,4 +260,22 @@ func storeDetails(uuid string, reqType, status bool) error {
 	}
 	insData.Exec(uuid, reqType, status, t)
 	return nil
+}
+
+// hashing password
+func hashPassword(password string) string {
+	// This will generate a token to
+
+	bs := []byte(password) // convert UUID into a bytestream
+
+	hashedPass, err := bcrypt.GenerateFromPassword(bs, 8)
+
+	if err != nil {
+		logs.WithFields(logs.Fields{
+			"package":  "User Service",
+			"function": "generateToken",
+			"error":    err,
+		}).Error("Failed to generate a token")
+	}
+	return string(hashedPass)
 }
