@@ -42,7 +42,13 @@ func UserRegister(res http.ResponseWriter, req *http.Request) {
 	email := req.FormValue("email")
 	password := req.FormValue("password")
 
-	log.Println("Received data : ", email+"request : ", requestID+"Password :", password+"first name", firstName+"lastname", lastName)
+	logs.WithFields(logs.Fields{
+		"Service":  "User Service",
+		"package":  "register",
+		"function": "UserRegister",
+		"uuid":     requestID,
+		"email":    email,
+	}).Info("Received data to insert to users table")
 
 	db := dbConn()
 
@@ -79,4 +85,6 @@ func UserRegister(res http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		log.Println("Error response sending")
 	}
+
+	defer db.Close()
 }

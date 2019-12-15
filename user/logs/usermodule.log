@@ -159,3 +159,6 @@ created by net/http.(*Server).Serve
 2019/12/15 03:30:08 User Service started
 2019/12/15 03:30:37 Received data :  sachithnalaka@gmail.comrequest :  30b4147a-1eeb-11ea-8add-0071c233a12fPassword : $2a$08$JFhexhAf1o35VVhY/V/Ml.vfzwpAbHLbHN2v1zoeCTWpLK6Sb.4Rafirst name sachithlastname muhandiram
 2019/12/15 03:31:13 Received data :  sachithnalaka@gmail.comrequest :  30b4147a-1eeb-11ea-8add-0071c233a12fPassword : $2a$08$rR4b6SeCksGlk6F5Ay8jROmndcy87SViVO/4XL6vc.ZvWlmOdadtWfirst name sachithlastname muhandiram
+2019/12/15 10:35:06 User Service started
+2019/12/15 10:38:12 User Service started
+2019/12/15 10:39:27 User Service started

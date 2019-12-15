@@ -165,6 +165,7 @@ func generateUUID() uuid.UUID {
 
 // Register a User
 func (apiID *UUID) registerUser(res http.ResponseWriter, req *http.Request) {
+
 	responseID := apiID.apiUuid //req.FormValue("uid")
 	firstName := req.FormValue("first_name")
 	lastName := req.FormValue("last_name")
@@ -172,28 +173,60 @@ func (apiID *UUID) registerUser(res http.ResponseWriter, req *http.Request) {
 	password := req.FormValue("password")
 	conformPass := req.FormValue("conformPass")
 
-	if password != conformPass {
+	// checking email with emails table
+	// Here this is wrong... neeed tpo find a way to solve this
+	db := dbConn()
+
+	var registeredEmail bool
+
+	// This will return a true or false
+	row := db.QueryRow("select exists(select id from emails where email=?)", email)
+
+	err := row.Scan(&registeredEmail)
+	if err != nil {
 		logs.WithFields(logs.Fields{
-			"package":  "API-Gateway",
-			"function": "registerUser",
+			"package":  "User Service",
+			"function": "checkemail",
+			"error":    err,
 			"uuid":     responseID,
-		}).Error("Passwords mismatch")
-		return
+		}).Error("Failed to fetch data from user table")
 	}
 
-	password = hashPassword(password)
+	defer db.Close()
+	// end checking email
 
-	_, err := http.PostForm("http://user:7071/register", url.Values{"email": {email}, "uid": {responseID.String()},
-		"first_name": {firstName}, "last_name": {lastName}, "password": {password}})
+	if registeredEmail != true {
+		if password != conformPass {
+			logs.WithFields(logs.Fields{
+				"package":  "API-Gateway",
+				"function": "registerUser",
+				"uuid":     responseID,
+			}).Error("Passwords mismatch")
+			return
+		}
 
-	if err != nil {
+		password = hashPassword(password)
+
+		_, err = http.PostForm("http://user:7071/register", url.Values{"email": {email}, "uid": {responseID.String()},
+			"first_name": {firstName}, "last_name": {lastName}, "password": {password}})
+
+		if err != nil {
+			logs.WithFields(logs.Fields{
+				"package":  "API-Gateway",
+				"function": "registerUser",
+				"email":    email,
+				"error":    err,
+				"uuid":     responseID,
+			}).Error("Error posting data to User - Service")
+		}
+	} else {
 		logs.WithFields(logs.Fields{
 			"package":  "API-Gateway",
 			"function": "registerUser",
 			"email":    email,
-			"error":    err,
 			"uuid":     responseID,
-		}).Error("Error posting data to User - Service")
+		}).Error("User email alrady registered")
+
 	}
 }
 
@@ -246,7 +279,7 @@ func storeDetails(uuid string, reqType, status bool) error {
 	db := dbConn()
 
 	t := time.Now()
-	log.Println("Hm time is now : ", t)
+
 	// insert token to gateway_req_res table
 	insData, err := db.Prepare("INSERT INTO gateway_req_res (uuid,type,status,time) VALUES(?,?,?,?)")
 	if err != nil {
@@ -259,6 +292,7 @@ func storeDetails(uuid string, reqType, status bool) error {
 		return err
 	}
 	insData.Exec(uuid, reqType, status, t)
+	defer db.Close()
 	return nil
 }
 
