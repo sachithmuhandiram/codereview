@@ -55,9 +55,23 @@ func UserRegister(res http.ResponseWriter, req *http.Request) {
 			"function": "UserRegister",
 			"uuid":     requestID,
 			"Error":    err,
-		}).Error("Couldnt prepare insert statement for login token table")
+		}).Error("Couldnt prepare insert statement for users table")
 	}
 	insertUser.Exec(email, firstName, lastName, password)
+
+	// Inserting email to emails table
+
+	insertEmail, err := db.Prepare("INSERT INTO emails (email,isActive) VALUES(?,?)")
+	if err != nil {
+		logs.WithFields(logs.Fields{
+			"Service":  "User Service",
+			"package":  "register",
+			"function": "UserRegister",
+			"uuid":     requestID,
+			"Error":    err,
+		}).Error("Couldnt prepare insert statement for emails table")
+	}
+	insertEmail.Exec(email, 1)
 
 	_, err = http.PostForm("http://localhost:7070/response", url.Values{"uid": {requestID}, "service": {"User Service"},
 		"function": {"UserRegister"}, "package": {"Register"}, "status": {"1"}})

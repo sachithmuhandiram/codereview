@@ -1,0 +1,2 @@
+When user email is checked with emails table, check whether its active or not.. If it's inactive, handle that case separately.
+
