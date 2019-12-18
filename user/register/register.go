@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/url"
 
+	checkemail "../checkemail"
 	logs "github.com/sirupsen/logrus"
 )
 
@@ -50,41 +51,49 @@ func UserRegister(res http.ResponseWriter, req *http.Request) {
 		"email":    email,
 	}).Info("Received data to insert to users table")
 
-	db := dbConn()
+	// check user entered same email address
+	hasAccount := checkemail.Checkmail(email, requestID)
 
-	// Inserting token to login_token table
-	insertUser, err := db.Prepare("INSERT INTO users (email,first_name,last_name,password) VALUES(?,?,?,?)")
-	if err != nil {
-		logs.WithFields(logs.Fields{
-			"Service":  "User Service",
-			"package":  "register",
-			"function": "UserRegister",
-			"uuid":     requestID,
-			"Error":    err,
-		}).Error("Couldnt prepare insert statement for users table")
-	}
-	insertUser.Exec(email, firstName, lastName, password)
+	if hasAccount == false {
 
-	// Inserting email to emails table
+		db := dbConn()
 
-	insertEmail, err := db.Prepare("INSERT INTO emails (email,isActive) VALUES(?,?)")
-	if err != nil {
-		logs.WithFields(logs.Fields{
-			"Service":  "User Service",
-			"package":  "register",
-			"function": "UserRegister",
-			"uuid":     requestID,
-			"Error":    err,
-		}).Error("Couldnt prepare insert statement for emails table")
-	}
-	insertEmail.Exec(email, 1)
+		// Inserting token to login_token table
+		insertUser, err := db.Prepare("INSERT INTO users (email,first_name,last_name,password) VALUES(?,?,?,?)")
+		if err != nil {
+			logs.WithFields(logs.Fields{
+				"Service":  "User Service",
+				"package":  "register",
+				"function": "UserRegister",
+				"uuid":     requestID,
+				"Error":    err,
+			}).Error("Couldnt prepare insert statement for users table")
+		}
+		insertUser.Exec(email, firstName, lastName, password)
 
-	_, err = http.PostForm("http://localhost:7070/response", url.Values{"uid": {requestID}, "service": {"User Service"},
-		"function": {"UserRegister"}, "package": {"Register"}, "status": {"1"}})
+		// Inserting email to emails table
 
-	if err != nil {
-		log.Println("Error response sending")
-	}
+		insertEmail, err := db.Prepare("INSERT INTO emails (email,isActive) VALUES(?,?)")
+		if err != nil {
+			logs.WithFields(logs.Fields{
+				"Service":  "User Service",
+				"package":  "register",
+				"function": "UserRegister",
+				"uuid":     requestID,
+				"Error":    err,
+			}).Error("Couldnt prepare insert statement for emails table")
+		}
+		insertEmail.Exec(email, 1)
 
-	defer db.Close()
+		_, err = http.PostForm("http://localhost:7070/response", url.Values{"uid": {requestID}, "service": {"User Service"},
+			"function": {"UserRegister"}, "package": {"Register"}, "status": {"1"}})
+
+		if err != nil {
+			log.Println("Error response sending")
+		}
+
+		defer db.Close()
+	} // user has an account
+
+	log.Println("User has an account, from register function")
 }

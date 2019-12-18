@@ -25,6 +25,20 @@ func dbConn() (db *sql.DB) {
 	return db
 }
 
+// Function to modify as generic function
+func ValidateEmail(res http.ResponseWriter, req *http.Request) {
+	email := req.FormValue("email")
+	apiUuid := req.FormValue("uid")
+
+	logs.WithFields(logs.Fields{
+		"package":  " User Service ",
+		"function": " ValidateEmail ",
+		"email":    email,
+		"uuid":     apiUuid,
+	}).Info("Validate email function received email address")
+
+}
+
 // Check available user accounts from DB
 // If user has an account, send login form sendLoginEmail()
 // Else send register form sendRegisterEmail()
@@ -34,13 +48,13 @@ func CheckEmail(res http.ResponseWriter, req *http.Request) {
 	apiUuid := req.FormValue("uid")
 
 	logs.WithFields(logs.Fields{
-		"package":  " Notification Service ",
+		"package":  " User Service ",
 		"function": " CheckEmail ",
 		"email":    email,
 		"uuid":     apiUuid,
 	}).Info("User Service received email address")
 
-	hasAcct := checkemail(email, apiUuid)
+	hasAcct := Checkmail(email, apiUuid)
 
 	// Account associates with email
 	if hasAcct {
@@ -154,7 +168,7 @@ func sendLoginEmail(email string, apiUuid string) {
 
 }
 
-func checkemail(email string, uuid string) bool {
+func Checkmail(email string, uuid string) bool {
 	// check DB whether we alreayd have a user for this email
 	db := dbConn()
 
@@ -167,7 +181,7 @@ func checkemail(email string, uuid string) bool {
 	if err != nil {
 		logs.WithFields(logs.Fields{
 			"package":  "User Service",
-			"function": "checkemail",
+			"function": "CheckEmail",
 			"error":    err,
 			"uuid":     uuid,
 		}).Error("Failed to fetch data from user table")

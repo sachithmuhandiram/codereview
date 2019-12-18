@@ -22,7 +22,7 @@ func main() {
 	log.Println("User Service started")
 
 	// web server
-	http.HandleFunc("/checkemail", checkemail.CheckEmail)
+	http.HandleFunc("/checkemail", checkemail.ValidateEmail)
 	http.HandleFunc("/register", register.UserRegister)
 	http.ListenAndServe("0.0.0.0:7071", nil)
 
