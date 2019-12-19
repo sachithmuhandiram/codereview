@@ -54,7 +54,7 @@ func UserRegister(res http.ResponseWriter, req *http.Request) {
 	// check user entered same email address
 	hasAccount := checkemail.Checkmail(email, requestID)
 
-	if hasAccount == false {
+	if hasAccount != true {
 
 		db := dbConn()
 
@@ -93,7 +93,21 @@ func UserRegister(res http.ResponseWriter, req *http.Request) {
 		}
 
 		defer db.Close()
+		return
 	} // user has an account
 
-	log.Println("User has an account, from register function")
+	logs.WithFields(logs.Fields{
+		"Service":  "User Service",
+		"package":  "register",
+		"function": "UserRegister",
+		"uuid":     requestID,
+		"email":    email,
+	}).Error("User has an account for this email")
+
+	_, err := http.PostForm("http://localhost:7070/response", url.Values{"uid": {requestID}, "service": {"User Service"},
+		"function": {"sendLoginEmail"}, "package": {"Check Email"}, "status": {"0"}})
+
+	if err != nil {
+		log.Println("Error response sending")
+	}
 }

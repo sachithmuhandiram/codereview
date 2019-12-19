@@ -163,3 +163,14 @@ created by net/http.(*Server).Serve
 2019/12/15 10:38:12 User Service started
 2019/12/15 10:39:27 User Service started
 2019/12/18 16:10:47 User Service started
+2019/12/19 23:22:30 User Service started
+2019/12/19 23:23:00 User has an account, from register function
+2019/12/19 23:24:04 User Service started
+2019/12/19 23:24:56 User has an account, from register function
+2019/12/19 23:26:28 User Service started
+2019/12/19 23:31:32 User has an account, from register function
+2019/12/19 23:34:07 User Service started
+2019/12/19 23:35:28 User has an account, from register function
+2019/12/19 23:46:32 User Service started
+2019/12/19 23:47:03 User has an account, from register function
+2019/12/19 23:49:03 User Service started

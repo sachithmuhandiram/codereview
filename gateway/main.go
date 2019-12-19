@@ -173,61 +173,40 @@ func (apiID *UUID) registerUser(res http.ResponseWriter, req *http.Request) {
 	password := req.FormValue("password")
 	conformPass := req.FormValue("conformPass")
 
-	// checking email with emails table
-	// Here this is wrong... neeed tpo find a way to solve this
-	db := dbConn()
+	logs.WithFields(logs.Fields{
+		"package":  "API-Gateway",
+		"function": "registerUser",
+		"email":    email,
+		"uuid":     responseID,
+	}).Info("API gateway received data to register a user account")
 
-	var registeredEmail bool
-
-	// This will return a true or false
-	row := db.QueryRow("select exists(select id from emails where email=?)", email)
-
-	err := row.Scan(&registeredEmail)
-	if err != nil {
+	if password != conformPass {
 		logs.WithFields(logs.Fields{
-			"package":  "User Service",
-			"function": "checkemail",
-			"error":    err,
-			"uuid":     responseID,
-		}).Error("Failed to fetch data from user table")
+			"package":         "API-Gateway",
+			"function":        "registerUser",
+			"email":           email,
+			"uuid":            responseID,
+			"password":        password,
+			"conformPassword": conformPass,
+		}).Error("Password and conform password mismatch")
+		return
 	}
 
-	defer db.Close()
-	// end checking email
+	password = hashPassword(password)
 
-	if registeredEmail != true {
-		if password != conformPass {
-			logs.WithFields(logs.Fields{
-				"package":  "API-Gateway",
-				"function": "registerUser",
-				"uuid":     responseID,
-			}).Error("Passwords mismatch")
-			return
-		}
+	_, err := http.PostForm("http://user:7071/register", url.Values{"email": {email}, "uid": {responseID.String()},
+		"first_name": {firstName}, "last_name": {lastName}, "password": {password}})
 
-		password = hashPassword(password)
-
-		_, err = http.PostForm("http://user:7071/register", url.Values{"email": {email}, "uid": {responseID.String()},
-			"first_name": {firstName}, "last_name": {lastName}, "password": {password}})
-
-		if err != nil {
-			logs.WithFields(logs.Fields{
-				"package":  "API-Gateway",
-				"function": "registerUser",
-				"email":    email,
-				"error":    err,
-				"uuid":     responseID,
-			}).Error("Error posting data to User - Service")
-		}
-	} else {
+	if err != nil {
 		logs.WithFields(logs.Fields{
 			"package":  "API-Gateway",
 			"function": "registerUser",
 			"email":    email,
+			"error":    err,
 			"uuid":     responseID,
-		}).Error("User email alrady registered")
-
+		}).Error("Error posting data to User - Service")
 	}
+
 }
 
 // Response for a request is recorded.
