@@ -7,6 +7,7 @@ import (
 	"os"
 
 	checkemail "./checkemail"
+	login "./login"
 	register "./register"
 )
 
@@ -24,6 +25,8 @@ func main() {
 	// web server
 	http.HandleFunc("/checkemail", checkemail.CheckEmail)
 	http.HandleFunc("/register", register.UserRegister)
+	http.HandleFunc("/login", login.UserLogin)
+	http.HandleFunc("/loginWithJWT", login.CheckUserLogin)
 	http.ListenAndServe("0.0.0.0:7071", nil)
 
 	// register email is sent to email sytax check, if its true,

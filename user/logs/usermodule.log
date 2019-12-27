@@ -174,3 +174,47 @@ created by net/http.(*Server).Serve
 2019/12/19 23:46:32 User Service started
 2019/12/19 23:47:03 User has an account, from register function
 2019/12/19 23:49:03 User Service started
+2019/12/26 23:58:28 User Service started
+2019/12/27 00:00:05 password received $2a$08$Yj9sHyPeliIcfHf1BDwQfebU7Oqz9i9eMeYBMqVLYyugRtSj1hOAC
+2019/12/27 00:00:05 passwowrd from database:  
+2019/12/27 00:01:18 User Service started
+2019/12/27 00:01:24 password received $2a$08$7P.Y0NIkVPw63AgQDC0kqujXgSl7dV9VV4Fud4USmCtW5EHJ9lsiK
+2019/12/27 00:01:24 passwowrd from database:  
+2019/12/27 00:04:01 User Service started
+2019/12/27 00:09:58 User Service started
+2019/12/27 00:10:04 Row return from select :  &{<nil> 0xc000124280}
+2019/12/27 00:10:04 password received $2a$08$cjG8iT9ZZnxyspeFnZROeOdVQ1erEdIJ6QMyQ39WXS1J5JYjrGICK
+2019/12/27 00:10:04 passwowrd from database:  &{<nil> 0xc000124280}
+2019/12/27 00:11:35 User Service started
+2019/12/27 00:14:18 Row return from select :  &{<nil> 0xc000124280}
+2019/12/27 00:14:18 password received $2a$08$5Q.KoikOpWpArduqvKcC6.W/vkqrNXgD1r0JrYrG0.tbmOdY62Lbi
+2019/12/27 00:14:18 passwowrd from database:  &{<nil> 0xc000124280}
+2019/12/27 00:19:50 User Service started
+2019/12/27 00:20:22 Row return from select :  &{<nil> 0xc000148080}
+2019/12/27 00:20:22 User ID :  sachithnalaka@gmail.com,password=test@123
+2019/12/27 00:20:22 password received $2a$08$B21NBRifbLRau6Ag8fSNsummioB.gaK1tFS5pPZ8cC6GdWK9Rhlom
+2019/12/27 00:20:22 passwowrd from database:  &{<nil> 0xc000148080}
+2019/12/27 00:24:04 User Service started
+2019/12/27 00:28:03 Row return from select :  &{<nil> 0xc00010a280}
+2019/12/27 00:28:03 User ID :  sachithnalaka@gmail.com
+2019/12/27 00:28:03 password received $2a$08$3eCkHxcPIeKgHW23DchjzOLaRNJSTPr3WI0Zz01q1ohyXaO0UZeuu
+2019/12/27 00:28:03 passwowrd from database:  &{<nil> 0xc00010a280}
+2019/12/27 00:31:13 User Service started
+2019/12/27 00:33:29 User Service started
+2019/12/27 00:33:41 Row return from select :  &{<nil> 0xc00012c080}
+2019/12/27 00:33:41 User ID :  msachithnalaka@yahoo.com
+2019/12/27 00:33:41 password received $2a$08$GbxiLyunr/fKFVcODWicKe2IxjnMkG23krBfMwpgnUibRzTO46Vgi
+2019/12/27 00:33:41 passwowrd from database:  &{<nil> 0xc00012c080}
+2019/12/27 00:34:09 Row return from select :  &{<nil> 0xc0000e2380}
+2019/12/27 00:34:09 User ID :  msachithnalaka@yahoo.com
+2019/12/27 00:34:09 password received $2a$08$neharYWrcgj06BloX09dFOWFNsfHV.U0zxDY.2DW96k0gxq8T6/ai
+2019/12/27 00:34:09 passwowrd from database:  &{<nil> 0xc0000e2380}
+2019/12/27 00:37:06 User Service started
+2019/12/27 00:37:14 DB password :  $2a$08$Im5czzOpCHxiuimghQ6JQ.BwC9j/634kC6TW0Qwr.CQgRY1.CAl52
+2019/12/27 00:39:35 User Service started
+2019/12/27 00:44:17 User Service started
+2019/12/27 00:44:20 compare password return :  crypto/bcrypt: hashedPassword is not the hash of the given password
+2019/12/27 00:46:04 User Service started
+2019/12/27 00:46:39 compare password return :  <nil>
+2019/12/27 00:46:39 Hurray, password match
+2019/12/27 00:48:55 User Service started

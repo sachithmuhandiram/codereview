@@ -138,9 +138,41 @@ func (apiID *UUID) validatemail(res http.ResponseWriter, req *http.Request) {
 // User login
 func (apiID *UUID) userLogin(res http.ResponseWriter, req *http.Request) {
 
-	token := req.URL.Query()["token"]
+	//jwt := req.FormValue("jwt") //req.URL.Query()["jwt"]
+	requestID := apiID.apiUuid
+	userid := req.FormValue("email")
+	password := req.FormValue("password")
 
-	log.Println("token is : ", token)
+	if password == "" {
+		logs.WithFields(logs.Fields{
+			"package":  "API-Gateway",
+			"function": "userLogin",
+			"uuid":     apiID,
+		}).Error("User Login request received,without password")
+		return
+
+	}
+
+	//hashedPassword := hashPassword(password)
+
+	logs.WithFields(logs.Fields{
+		"package":  "API-Gateway",
+		"function": "validuserLoginatemail",
+		"uuid":     apiID,
+	}).Info("User Login request received")
+
+	_, err := http.PostForm("http://user:7071/login", url.Values{"userid": {userid}, "uid": {requestID.String()},
+		"password": {password}})
+
+	if err != nil {
+		logs.WithFields(logs.Fields{
+			"package":  "API-Gateway",
+			"function": "userLogin",
+			"userid":   userid,
+			"error":    err,
+			"uuid":     requestID,
+		}).Error("Error posting data to User - Service")
+	}
 
 }
 
