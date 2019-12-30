@@ -81,6 +81,13 @@ func UserLogin(res http.ResponseWriter, req *http.Request) {
 		}).Error("Passwords do not match")
 		defer db.Close()
 
+		_, err = http.PostForm("http://localhost:7070/response", url.Values{"uid": {requestID}, "service": {"User Service"},
+			"function": {"UserLogin"}, "package": {"Login"}, "status": {"0"}})
+
+		if err != nil {
+			log.Println("Error response sending")
+		}
+
 		return
 
 	}

@@ -218,3 +218,5 @@ created by net/http.(*Server).Serve
 2019/12/27 00:46:39 compare password return :  <nil>
 2019/12/27 00:46:39 Hurray, password match
 2019/12/27 00:48:55 User Service started
+2019/12/30 15:10:57 User Service started
+2019/12/30 15:12:23 User Service started
