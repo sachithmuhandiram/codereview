@@ -98,7 +98,7 @@ func sendRegisterEmail(email string, apiUuid string) {
 	insToken.Exec(token) //time.Now()
 
 	// posting form to notification service
-	_, err = http.PostForm("http://notification:7072/sendregisteremail", url.Values{"email": {email}, "uuid": {apiUuid}, "token": {token}})
+	_, err = http.PostForm("http://notification:7072/sendemail", url.Values{"email": {email}, "uuid": {apiUuid}, "token": {token}, "nofitication": {"register"}})
 
 	if err != nil {
 		logs.WithFields(logs.Fields{
@@ -109,6 +109,7 @@ func sendRegisterEmail(email string, apiUuid string) {
 		}).Error("Failed to connect to Notification Service")
 	}
 
+	// This is mistake, I should take response from notification service and then send the response to API gateway
 	logs.WithFields(logs.Fields{
 		"package":  "Notification Service",
 		"function": "sendRegisterEmail",
@@ -141,7 +142,7 @@ func sendLoginEmail(email string, apiUuid string) {
 	}
 	insToken.Exec(token) //, time.Now()
 	// Sending login form to notification service
-	_, err = http.PostForm("http://notification:7072/sendloginemail", url.Values{"email": {email}, "uuid": {apiUuid}, "token": {token}})
+	_, err = http.PostForm("http://notification:7072/sendemail", url.Values{"email": {email}, "uuid": {apiUuid}, "token": {token}, "nofitication": {"login"}})
 
 	if err != nil {
 		logs.WithFields(logs.Fields{

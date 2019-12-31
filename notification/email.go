@@ -11,10 +11,35 @@ import (
 	logs "github.com/sirupsen/logrus"
 )
 
+// Notifier interface just uses SendEmail function.
+type Notifier interface {
+	SendEmail(user *userEmailNotification, msg string)
+}
+
+type userEmailNotification struct {
+	email             string
+	requestID         string
+	token             string
+	emailNotification Notifier
+}
+
+type registerEmail struct {
+}
+
+type loginEmail struct {
+}
+
+type passwordResetEmail struct {
+}
+
 type emailDetails struct {
 	From    string `json:"from"`
 	Parse   string `json:"parse"`
 	Toemail string `json:"toemail"`
+}
+
+func (user *userEmailNotification) notify(msg string) {
+	user.emailNotification.SendEmail(user, msg)
 }
 
 func main() {
@@ -24,8 +49,7 @@ func main() {
 		"function": "main",
 	}).Info("Notification Service started at 7072")
 
-	http.HandleFunc("/sendregisteremail", sendRegisterEmail)
-	http.HandleFunc("/sendloginemail", sendLoginEmail)
+	http.HandleFunc("/sendemail", sendUserEmail)
 	http.ListenAndServe("0.0.0.0:7072", nil)
 }
 
@@ -48,30 +72,56 @@ func getCredintials() (string, string) {
 
 }
 
-func sendRegisterEmail(res http.ResponseWriter, req *http.Request) {
+func sendUserEmail(res http.ResponseWriter, req *http.Request) {
 
 	email := req.FormValue("email")
-	apiUuid := req.FormValue("uid")
+	apiUUID := req.FormValue("uid")
 	token := req.FormValue("token")
+	notification := req.FormValue("nofitication")
 	// This body value should have a token and it should be inserted to a db
-	body := "This is register email" + token
+
+	switch notification {
+	case "register":
+		notification1 := userEmailNotification{
+			email:             email,
+			requestID:         apiUUID,
+			token:             token,
+			emailNotification: registerEmail{},
+		}
+
+		notification1.notify("This is registering email")
+	case "login":
+		notification1 := userEmailNotification{
+			email:             email,
+			requestID:         apiUUID,
+			token:             token,
+			emailNotification: loginEmail{},
+		}
+
+		notification1.notify("This is login email")
+
+	}
+}
+
+func (regiEmail registerEmail) SendEmail(user *userEmailNotification, msg string) {
+	body := msg + user.token
 	from, pass := getCredintials()
 
-	msg := "From: " + from + "\n" +
-		"To: " + email + "\n" +
+	emailMsg := "From: " + from + "\n" +
+		"To: " + user.email + "\n" +
 		"Subject: Register to the system\n\n" +
 		body
 
 	err := smtp.SendMail("smtp.gmail.com:587",
 		smtp.PlainAuth("", from, pass, "smtp.gmail.com"),
-		from, []string{email}, []byte(msg))
+		from, []string{user.email}, []byte(emailMsg))
 
 	if err != nil {
 		logs.WithFields(logs.Fields{
 			"package":  "Notification Service",
 			"function": "sendRegisterEmail",
 			"error":    err,
-			"uid":      apiUuid,
+			"uid":      user.requestID,
 		}).Error("SMTP server failure")
 
 		// _, err = http.PostForm("http://localhost:7070/response", url.Values{"uid": {apiUuid}, "service": {"Notification Service"},
@@ -87,46 +137,32 @@ func sendRegisterEmail(res http.ResponseWriter, req *http.Request) {
 	logs.WithFields(logs.Fields{
 		"package":  "Notification Service",
 		"function": "sendRegisterEmail",
-		"email":    email,
-		"uid":      apiUuid,
+		"email":    user.email,
+		"uid":      user.requestID,
 	}).Info("Register email sent")
-
-	// _, err = http.PostForm("http://localhost:7070/response", url.Values{"uid": {apiUuid}, "service": {"Notification Service"},
-	// 	"function": {"sendRegisterEmail"}, "package": {"main"}, "status": {"1"}})
-
-	// if err != nil {
-	// 	log.Println("Error response sending")
-	// }
-
-	// This should send true false, to calling function.
-	// Eg : function may call for register page or may be for login
 }
 
-func sendLoginEmail(res http.ResponseWriter, req *http.Request) {
-
-	email := req.FormValue("email")
-	apiUuid := req.FormValue("uid")
-	token := req.FormValue("token")
-	loginURL := "http://localhost:7070/login?token=" + token
-	// This body value should have a token and it should be inserted to a db
-	body := "You have an account please click on following link \n" + loginURL + "\n This link valid only for 10 minutes"
+// sending login email
+func (loginEmail loginEmail) SendEmail(user *userEmailNotification, msg string) {
+	loginURL := "http://localhost:7070/login?token=" + user.token
+	body := msg + "\n" + loginURL + "\n This link valid only for 10 minutes"
 	from, pass := getCredintials()
 
-	msg := "From: " + from + "\n" +
-		"To: " + email + "\n" +
+	emailMsg := "From: " + from + "\n" +
+		"To: " + user.email + "\n" +
 		"Subject: You have an account\n\n" +
 		body
 
 	err := smtp.SendMail("smtp.gmail.com:587",
 		smtp.PlainAuth("", from, pass, "smtp.gmail.com"),
-		from, []string{email}, []byte(msg))
+		from, []string{user.email}, []byte(emailMsg))
 
 	if err != nil {
 		logs.WithFields(logs.Fields{
 			"package":  "Notification Service",
 			"function": "sendRegisterEmail",
 			"error":    err,
-			"uid":      apiUuid,
+			"uid":      user.requestID,
 		}).Error("SMTP server failure")
 
 		// _, err = http.PostForm("http://localhost:7070/response", url.Values{"uid": {apiUuid}, "service": {"Notification Service"},
@@ -142,15 +178,11 @@ func sendLoginEmail(res http.ResponseWriter, req *http.Request) {
 	logs.WithFields(logs.Fields{
 		"package":  "Notification Service",
 		"function": "sendLoginEmail",
-		"email":    email,
-		"uid":      apiUuid,
+		"email":    user.email,
+		"uid":      user.requestID,
 	}).Info("Login email sent")
+}
 
-	// _, err = http.PostForm("http://localhost:7070/response", url.Values{"uid": {apiUuid}, "service": {"Notification Service"},
-	// 	"function": {"sendLoginEmail"}, "package": {"main"}, "status": {"1"}})
-
-	// if err != nil {
-	// 	log.Println("Error response sending")
-	// }
+func (passRestEmail passwordResetEmail) SendEmail(user *userEmailNotification, msg string) {
 
 }
