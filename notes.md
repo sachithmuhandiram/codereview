@@ -15,3 +15,5 @@ Used sample :
 Here it uses `key:value` combination.
 
 [PostForm Example](https://github.com/solderjs/http-examples/blob/master/go/post-form.go)
+
+[Golang Interfaces](https://medium.com/better-programming/a-real-world-example-of-go-interfaces-98e89b2ddb67)

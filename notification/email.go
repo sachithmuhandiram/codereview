@@ -100,6 +100,16 @@ func sendUserEmail(res http.ResponseWriter, req *http.Request) {
 
 		notification1.notify("This is login email")
 
+	case "passwordreset":
+		notification1 := userEmailNotification{
+			email:             email,
+			requestID:         apiUUID,
+			token:             token,
+			emailNotification: passwordResetEmail{},
+		}
+
+		notification1.notify("This is Password reset email")
+
 	}
 }
 
@@ -123,13 +133,6 @@ func (regiEmail registerEmail) SendEmail(user *userEmailNotification, msg string
 			"error":    err,
 			"uid":      user.requestID,
 		}).Error("SMTP server failure")
-
-		// _, err = http.PostForm("http://localhost:7070/response", url.Values{"uid": {apiUuid}, "service": {"Notification Service"},
-		// 	"function": {"sendRegisterEmail"}, "package": {"main"}, "status": {"0"}})
-
-		// if err != nil {
-		// 	log.Println("Error response sending")
-		// }
 
 		return
 	}
@@ -164,14 +167,6 @@ func (loginEmail loginEmail) SendEmail(user *userEmailNotification, msg string) 
 			"error":    err,
 			"uid":      user.requestID,
 		}).Error("SMTP server failure")
-
-		// _, err = http.PostForm("http://localhost:7070/response", url.Values{"uid": {apiUuid}, "service": {"Notification Service"},
-		// 	"function": {"sendLoginEmail"}, "package": {"main"}, "status": {"0"}})
-
-		// if err != nil {
-		// 	log.Println("Error response sending")
-		// }
-
 		return
 	}
 
@@ -185,4 +180,32 @@ func (loginEmail loginEmail) SendEmail(user *userEmailNotification, msg string) 
 
 func (passRestEmail passwordResetEmail) SendEmail(user *userEmailNotification, msg string) {
 
+	body := msg + user.token
+	from, pass := getCredintials()
+
+	emailMsg := "From: " + from + "\n" +
+		"To: " + user.email + "\n" +
+		"Subject: Password reset\n\n" +
+		body
+
+	err := smtp.SendMail("smtp.gmail.com:587",
+		smtp.PlainAuth("", from, pass, "smtp.gmail.com"),
+		from, []string{user.email}, []byte(emailMsg))
+
+	if err != nil {
+		logs.WithFields(logs.Fields{
+			"package":  "Notification Service",
+			"function": "SendEmail - Password reset",
+			"error":    err,
+			"uid":      user.requestID,
+		}).Error("SMTP server failure")
+		return
+	}
+
+	logs.WithFields(logs.Fields{
+		"package":  "Notification Service",
+		"function": "SendEmail - Password reset",
+		"email":    user.email,
+		"uid":      user.requestID,
+	}).Info("Password reset email sent")
 }

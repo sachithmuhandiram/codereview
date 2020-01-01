@@ -52,6 +52,7 @@ func main() {
 	http.HandleFunc("/response", reportResponse)
 	http.HandleFunc("/login", apiID.userLogin)
 	http.HandleFunc("/register", apiID.registerUser)
+	http.HandleFunc("/passwordreset", apiID.passwordReset)
 
 	http.ListenAndServe(":7070", nil)
 }
@@ -280,6 +281,38 @@ func reportResponse(res http.ResponseWriter, req *http.Request) {
 				"function": "reportResponse",
 				"Error":    storeData,
 			}).Error("Response data insert to DB failed")
+		}
+	}
+
+}
+func (apiID *UUID) passwordReset(res http.ResponseWriter, req *http.Request) {
+
+	requestID := apiID.apiUuid
+	email := req.FormValue("email")
+
+	logs.WithFields(logs.Fields{
+		"package":  "API Gateway",
+		"function": "passwordReset",
+		"ApiUUID":  requestID,
+		"email":    email,
+	}).Info("Password Reset received email address")
+
+	_, err := http.PostForm("http://user:7071/checkemail", url.Values{"email": {email}, "uid": {requestID.String()}, "request": {"passwordreset"}})
+
+	if err != nil {
+		logs.WithFields(logs.Fields{
+			"package":  "API-Gateway",
+			"function": "passwordReset",
+			"email":    email,
+			"error":    err,
+			"uuid":     requestID,
+		}).Error("Error posting data to User - Service")
+
+		_, err := http.PostForm("http://localhost:7070/response", url.Values{"uid": {requestID.String()}, "service": {"API Gateway"},
+			"function": {"passwordReset"}, "package": {"main"}, "status": {"0"}})
+
+		if err != nil {
+			log.Println("Error response sending")
 		}
 	}
 

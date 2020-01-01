@@ -1,4 +1,4 @@
-package forgotpassword
+package passwordreset
 
 import "testing"
 
