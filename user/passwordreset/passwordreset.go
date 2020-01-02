@@ -6,3 +6,12 @@ import "net/http"
 func CheckEmail(res http.ResponseWriter, req *http.Request) {
 
 }
+
+func CheckUpdatePasswordToken(requestID, token string) bool {
+
+	return false
+}
+
+func UpdatePassword(requestID, token, password string) bool {
+	return false
+}

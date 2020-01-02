@@ -52,7 +52,8 @@ func main() {
 	http.HandleFunc("/response", reportResponse)
 	http.HandleFunc("/login", apiID.userLogin)
 	http.HandleFunc("/register", apiID.registerUser)
-	http.HandleFunc("/passwordreset", apiID.passwordReset)
+	http.HandleFunc("/passwordreset", apiID.sendPasswordResetEmail)
+	http.HandleFunc("/updatepassword", apiID.updatePassword)
 
 	http.ListenAndServe(":7070", nil)
 }
@@ -204,7 +205,7 @@ func (apiID *UUID) registerUser(res http.ResponseWriter, req *http.Request) {
 	lastName := req.FormValue("last_name")
 	email := req.FormValue("email")
 	password := req.FormValue("password")
-	conformPass := req.FormValue("conformPass")
+	conformPassword := req.FormValue("conformpassword")
 
 	logs.WithFields(logs.Fields{
 		"package":  "API-Gateway",
@@ -213,14 +214,14 @@ func (apiID *UUID) registerUser(res http.ResponseWriter, req *http.Request) {
 		"uuid":     responseID,
 	}).Info("API gateway received data to register a user account")
 
-	if password != conformPass {
+	if password != conformPassword {
 		logs.WithFields(logs.Fields{
 			"package":         "API-Gateway",
 			"function":        "registerUser",
 			"email":           email,
 			"uuid":            responseID,
 			"password":        password,
-			"conformPassword": conformPass,
+			"conformPassword": conformPassword,
 		}).Error("Password and conform password mismatch")
 		return
 	}
@@ -240,6 +241,119 @@ func (apiID *UUID) registerUser(res http.ResponseWriter, req *http.Request) {
 		}).Error("Error posting data to User - Service")
 	}
 
+}
+
+func (apiID *UUID) sendPasswordResetEmail(res http.ResponseWriter, req *http.Request) {
+
+	requestID := apiID.apiUuid
+	email := req.FormValue("email")
+
+	logs.WithFields(logs.Fields{
+		"package":  "API Gateway",
+		"function": "passwordReset",
+		"ApiUUID":  requestID,
+		"email":    email,
+	}).Info("Password Reset received email address")
+
+	_, err := http.PostForm("http://user:7071/checkemail", url.Values{"email": {email}, "uid": {requestID.String()}, "request": {"passwordreset"}})
+
+	if err != nil {
+		logs.WithFields(logs.Fields{
+			"package":  "API-Gateway",
+			"function": "passwordReset",
+			"email":    email,
+			"error":    err,
+			"uuid":     requestID,
+		}).Error("Error posting data to User - Service")
+
+		_, err := http.PostForm("http://localhost:7070/response", url.Values{"uid": {requestID.String()}, "service": {"API Gateway"},
+			"function": {"passwordReset"}, "package": {"main"}, "status": {"0"}})
+
+		if err != nil {
+			log.Println("Error response sending")
+		}
+	}
+
+}
+
+func (apiID *UUID) updatePassword(res http.ResponseWriter, req *http.Request) {
+
+	requestID := apiID.apiUuid
+	token := req.FormValue("token")
+	password := req.FormValue("password")
+	conformPassword := req.FormValue("conformpassword")
+
+	logs.WithFields(logs.Fields{
+		"package":  "API Gateway",
+		"function": "updatePassword",
+		"ApiUUID":  requestID,
+	}).Info("Update password received updated passwords")
+
+	if password != conformPassword {
+		logs.WithFields(logs.Fields{
+			"package":         "API-Gateway",
+			"function":        "updatePassword",
+			"uuid":            requestID,
+			"password":        password,
+			"conformPassword": conformPassword,
+		}).Error("Password and conform password mismatch")
+		return
+	}
+
+	password = hashPassword(password)
+
+	_, err := http.PostForm("http://user:7071/updateaccount", url.Values{"uid": {requestID.String()},
+		"token": {token}, "password": {password}, "request": {"updatepassword"}})
+
+	if err != nil {
+		logs.WithFields(logs.Fields{
+			"package":  "API-Gateway",
+			"function": "registerUser",
+			"error":    err,
+			"uuid":     requestID,
+		}).Error("Error posting data to User - Service from updatePassword")
+	}
+
+}
+
+// Insert Req/Res to table
+func storeDetails(uuid string, reqType, status bool) error {
+	db := dbConn()
+
+	t := time.Now()
+
+	// insert token to gateway_req_res table
+	insData, err := db.Prepare("INSERT INTO gateway_req_res (uuid,type,status,time) VALUES(?,?,?,?)")
+	if err != nil {
+		logs.WithFields(logs.Fields{
+			"package":  "API Gateway",
+			"function": "storeDetails",
+			"Error":    err,
+		}).Error("Couldnt prepare insert statement for gateway_req_res table")
+
+		return err
+	}
+	insData.Exec(uuid, reqType, status, t)
+	defer db.Close()
+	return nil
+}
+
+// hashing password
+func hashPassword(password string) string {
+	// This will generate a token to
+
+	bs := []byte(password) // convert UUID into a bytestream
+
+	hashedPass, err := bcrypt.GenerateFromPassword(bs, 8)
+
+	if err != nil {
+		logs.WithFields(logs.Fields{
+			"package":  "User Service",
+			"function": "generateToken",
+			"error":    err,
+		}).Error("Failed to generate a token")
+	}
+	return string(hashedPass)
 }
 
 // Response for a request is recorded.
@@ -284,76 +398,4 @@ func reportResponse(res http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-}
-func (apiID *UUID) passwordReset(res http.ResponseWriter, req *http.Request) {
-
-	requestID := apiID.apiUuid
-	email := req.FormValue("email")
-
-	logs.WithFields(logs.Fields{
-		"package":  "API Gateway",
-		"function": "passwordReset",
-		"ApiUUID":  requestID,
-		"email":    email,
-	}).Info("Password Reset received email address")
-
-	_, err := http.PostForm("http://user:7071/checkemail", url.Values{"email": {email}, "uid": {requestID.String()}, "request": {"passwordreset"}})
-
-	if err != nil {
-		logs.WithFields(logs.Fields{
-			"package":  "API-Gateway",
-			"function": "passwordReset",
-			"email":    email,
-			"error":    err,
-			"uuid":     requestID,
-		}).Error("Error posting data to User - Service")
-
-		_, err := http.PostForm("http://localhost:7070/response", url.Values{"uid": {requestID.String()}, "service": {"API Gateway"},
-			"function": {"passwordReset"}, "package": {"main"}, "status": {"0"}})
-
-		if err != nil {
-			log.Println("Error response sending")
-		}
-	}
-
-}
-
-// Insert Req/Res to table
-func storeDetails(uuid string, reqType, status bool) error {
-	db := dbConn()
-
-	t := time.Now()
-
-	// insert token to gateway_req_res table
-	insData, err := db.Prepare("INSERT INTO gateway_req_res (uuid,type,status,time) VALUES(?,?,?,?)")
-	if err != nil {
-		logs.WithFields(logs.Fields{
-			"package":  "API Gateway",
-			"function": "storeDetails",
-			"Error":    err,
-		}).Error("Couldnt prepare insert statement for gateway_req_res table")
-
-		return err
-	}
-	insData.Exec(uuid, reqType, status, t)
-	defer db.Close()
-	return nil
-}
-
-// hashing password
-func hashPassword(password string) string {
-	// This will generate a token to
-
-	bs := []byte(password) // convert UUID into a bytestream
-
-	hashedPass, err := bcrypt.GenerateFromPassword(bs, 8)
-
-	if err != nil {
-		logs.WithFields(logs.Fields{
-			"package":  "User Service",
-			"function": "generateToken",
-			"error":    err,
-		}).Error("Failed to generate a token")
-	}
-	return string(hashedPass)
 }
