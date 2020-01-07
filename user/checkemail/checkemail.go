@@ -247,16 +247,60 @@ func passwordReset(email, apiUUID string) {
 
 	token := generateToken(apiUUID)
 
+	// Insert this token to "passwordResetToken" table
+	insertedToTable := insertPasswordResetToken(email, apiUUID, token)
+	// if its inserted to table, then send email
+
+	if insertedToTable != true {
+		logs.WithFields(logs.Fields{
+			"package":  "User Service",
+			"function": "passwordReset",
+			"uuid":     apiUUID,
+		}).Error("Failed to insert token to passwordResetToken table")
+
+		return
+	}
 	_, err := http.PostForm("http://notification:7072/sendemail", url.Values{"email": {email}, "uuid": {apiUUID}, "token": {token}, "nofitication": {"passwordreset"}})
 
 	if err != nil {
 		logs.WithFields(logs.Fields{
 			"package":  "User Service",
-			"function": "sendLoginEmail",
+			"function": "passwordReset",
 			"error":    err,
 			"uuid":     apiUUID,
 		}).Error("Failed to connect to Notification Service")
 	}
+}
+
+func insertPasswordResetToken(email, uuid, token string) bool {
+
+	db := dbConn()
+
+	logs.WithFields(logs.Fields{
+		"package":  "User Service",
+		"function": "insertPasswordResetToken",
+		"uuid":     uuid,
+	}).Info("Password reset token insert to passwordResetToken request received")
+
+	insToken, err := db.Prepare("INSERT INTO passwordResetToken (email,resettoken) VALUES(?,?)")
+	if err != nil {
+		logs.WithFields(logs.Fields{
+			"package":  "User Service",
+			"function": "insertPasswordResetToken",
+			"uuid":     uuid,
+			"Error":    err,
+		}).Error("Couldnt prepare insert statement for passwordResetToken table")
+		defer db.Close()
+		return false
+	}
+	insToken.Exec(email, token)
+
+	logs.WithFields(logs.Fields{
+		"package":  "User Service",
+		"function": "insertPasswordResetToken",
+		"uuid":     uuid,
+	}).Info("Password reset token inserted to passwordResetToken table")
+	return true
 }
 
 // This is a custom token generation. This will use only for initial step

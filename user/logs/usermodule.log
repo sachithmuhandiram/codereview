@@ -228,3 +228,16 @@ created by net/http.(*Server).Serve
 2020/01/01 01:09:17 User Service started
 2020/01/01 01:12:45 User Service started
 2020/01/02 00:34:50 User Service started
+2020/01/06 23:37:16 User Service started
+2020/01/06 23:41:00 User Service started
+2020/01/06 23:57:12 User Service started
+2020/01/07 00:03:06 User Service started
+2020/01/07 00:07:05 User Service started
+2020/01/07 00:12:15 User Service started
+2020/01/07 00:14:59 User Service started
+2020/01/07 00:15:12 Password reset Toekn :  false
+2020/01/07 00:17:10 User Service started
+2020/01/07 00:18:19 Token received :  abash8/4nlkLWQGotcSFgzzJ/CrKtDQ3w4a
+2020/01/07 00:18:19 Password reset Toekn :  false
+2020/01/07 00:20:24 Token received :  mMej3fdSQO2rEcOUfzP2xusX/4nlkLWQGotcSFgzzJ/CrKtDQ3w4a
+2020/01/07 00:20:24 Password reset Toekn :  false

@@ -4,6 +4,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 
 	checkemail "./checkemail"
@@ -41,13 +42,12 @@ func checkUpdateRequest(res http.ResponseWriter, req *http.Request) {
 	requestID := req.FormValue("uid")
 	request := req.FormValue("request")
 	token := req.FormValue("token")
-	password := req.FormValue("password")
 
 	logs.WithFields(logs.Fields{
 		"package":  "User Service",
 		"function": "checkUpdateRequest",
 		"ApiUUID":  requestID,
-	}).Info("Update password received to User service")
+	}).Info("Update password form received to User service")
 
 	switch request {
 	case "updatepassword":
@@ -60,9 +60,17 @@ func checkUpdateRequest(res http.ResponseWriter, req *http.Request) {
 				"ApiUUID":  requestID,
 			}).Warning("Token is not valid for updatepassword")
 
-			return
-		}
+			_, err := http.PostForm("http://localhost:7070/response", url.Values{"uid": {requestID}, "service": {"User Service"},
+				"function": {"checkUpdateRequest"}, "package": {"Password Reset"}, "status": {"0"}})
 
+			if err != nil {
+				log.Println("Error response sending")
+			}
+
+			return
+		} // token is not valid
+
+		password := req.FormValue("password")
 		updatePassword := passwordreset.UpdatePassword(requestID, token, password)
 
 		if updatePassword != true {
@@ -72,7 +80,26 @@ func checkUpdateRequest(res http.ResponseWriter, req *http.Request) {
 				"ApiUUID":  requestID,
 			}).Error("Could not updatepassword in User module")
 
+			_, err := http.PostForm("http://localhost:7070/response", url.Values{"uid": {requestID}, "service": {"User Service"},
+				"function": {"checkUpdateRequest"}, "package": {"Password Reset"}, "status": {"0"}})
+
+			if err != nil {
+				log.Println("Error response sending")
+			}
 			return
+		} // password update request faild to update table
+
+		logs.WithFields(logs.Fields{
+			"package":  "User Service",
+			"function": "checkUpdateRequest",
+			"ApiUUID":  requestID,
+		}).Info("Password successfully updated")
+
+		_, err := http.PostForm("http://localhost:7070/response", url.Values{"uid": {requestID}, "service": {"User Service"},
+			"function": {"checkUpdateRequest"}, "package": {"Password Reset"}, "status": {"0"}})
+
+		if err != nil {
+			log.Println("Error response sending")
 		}
 	} // updatepassword case
 
