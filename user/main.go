@@ -7,10 +7,10 @@ import (
 	"net/url"
 	"os"
 
-	checkemail "./checkemail"
-	login "./login"
-	passwordreset "./passwordreset"
-	register "./register"
+	//checkemail "./checkemail"
+	//login "./login"
+	//passwordreset "./passwordreset"
+	//register "./register"
 	logs "github.com/sirupsen/logrus"
 )
 
@@ -26,10 +26,10 @@ func main() {
 	log.Println("User Service started")
 
 	// web server
-	http.HandleFunc("/checkemail", checkemail.CheckEmail)
-	http.HandleFunc("/register", register.UserRegister)
-	http.HandleFunc("/login", login.UserLogin)
-	http.HandleFunc("/loginWithJWT", login.CheckUserLogin)
+	http.HandleFunc("/checkemail", CheckEmail)
+	http.HandleFunc("/register", UserRegister)
+	http.HandleFunc("/login", UserLogin)
+	http.HandleFunc("/loginWithJWT", CheckUserLogin)
 	http.HandleFunc("/updateaccount", checkUpdateRequest)
 	http.ListenAndServe("0.0.0.0:7071", nil)
 
@@ -51,7 +51,7 @@ func checkUpdateRequest(res http.ResponseWriter, req *http.Request) {
 
 	switch request {
 	case "updatepassword":
-		validToken := passwordreset.CheckUpdatePasswordToken(requestID, token)
+		validToken := CheckUpdatePasswordToken(requestID, token)
 
 		if validToken != true {
 			logs.WithFields(logs.Fields{
@@ -71,7 +71,7 @@ func checkUpdateRequest(res http.ResponseWriter, req *http.Request) {
 		} // token is not valid
 
 		password := req.FormValue("password")
-		updatePassword := passwordreset.UpdatePassword(requestID, token, password)
+		updatePassword := UpdatePassword(requestID, token, password)
 
 		if updatePassword != true {
 			logs.WithFields(logs.Fields{

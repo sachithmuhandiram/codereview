@@ -1,32 +1,30 @@
-package passwordreset
+package main
 
 import (
-	"database/sql"
 	"log"
-	"net/http"
 
 	_ "github.com/go-sql-driver/mysql"
 	logs "github.com/sirupsen/logrus"
 )
 
 // database connection
-func dbConn() (db *sql.DB) {
-	db, err := sql.Open("mysql", "root:7890@tcp(127.0.0.1:3306)/codereview_users")
+// func dbConn() (db *sql.DB) {
+// 	db, err := sql.Open("mysql", "root:7890@tcp(127.0.0.1:3306)/codereview_users")
 
-	if err != nil {
-		logs.WithFields(logs.Fields{
-			"package":  "User Service",
-			"function": "dbConn",
-			"error":    err,
-		}).Error("Failed to connect to database")
-	}
-	return db
-}
+// 	if err != nil {
+// 		logs.WithFields(logs.Fields{
+// 			"package":  "User Service",
+// 			"function": "dbConn",
+// 			"error":    err,
+// 		}).Error("Failed to connect to database")
+// 	}
+// 	return db
+// }
 
 // CheckEmail verifies whether given email associates with an account
-func CheckEmail(res http.ResponseWriter, req *http.Request) {
+// func CheckEmail(res http.ResponseWriter, req *http.Request) {
 
-}
+// }
 
 func CheckUpdatePasswordToken(requestID, token string) bool {
 	db := dbConn()
