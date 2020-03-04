@@ -19,9 +19,8 @@ RUN set -e \
 COPY . /go/src
 
 WORKDIR /go/src
-RUN echo $GOPATH
-RUN echo $GOROOT
-RUN ls 
+
+RUN ls
 
 RUN go build -o main .
 
