@@ -1,0 +1,3 @@
+[submodule "code-reviewer-frontend"]
+	path = code-reviewer-frontend
+	url = https://github.com/vikumDheemantha/code-reviewer-frontend

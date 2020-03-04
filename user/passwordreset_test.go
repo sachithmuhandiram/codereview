@@ -1,4 +1,4 @@
-package passwordreset
+package main
 
 import "testing"
 

@@ -1,29 +1,28 @@
-package register
+package main
 
 import (
-	"database/sql"
 	"log"
 	"net/http"
 	"net/url"
 
-	checkemail "../checkemail"
+	//checkemail "../"
 	logs "github.com/sirupsen/logrus"
 )
 
 // database connection
-func dbConn() (db *sql.DB) {
-	db, err := sql.Open("mysql", "root:7890@tcp(127.0.0.1:3306)/codereview_users")
+// func dbConn() (db *sql.DB) {
+// 	db, err := sql.Open("mysql", "root:7890@tcp(127.0.0.1:3306)/codereview_users")
 
-	if err != nil {
-		logs.WithFields(logs.Fields{
-			"Service":  "User Service",
-			"Package":  "register",
-			"function": "dbConn",
-			"error":    err,
-		}).Error("Failed to connect to database")
-	}
-	return db
-}
+// 	if err != nil {
+// 		logs.WithFields(logs.Fields{
+// 			"Service":  "User Service",
+// 			"Package":  "register",
+// 			"function": "dbConn",
+// 			"error":    err,
+// 		}).Error("Failed to connect to database")
+// 	}
+// 	return db
+// }
 
 // UserRegister function just insert new user to users table
 func UserRegister(res http.ResponseWriter, req *http.Request) {
@@ -52,7 +51,7 @@ func UserRegister(res http.ResponseWriter, req *http.Request) {
 	}).Info("Received data to insert to users table")
 
 	// check user entered same email address
-	hasAccount := checkemail.Checkmail(email, requestID)
+	hasAccount := Checkmail(email, requestID)
 
 	if hasAccount != true {
 
