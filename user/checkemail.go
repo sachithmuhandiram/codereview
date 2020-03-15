@@ -129,7 +129,16 @@ func sendRegisterEmail(email string, apiUUID string) {
 			"error":    err,
 			"uuid":     apiUUID,
 		}).Error("Failed to connect to Notification Service")
+
+
+		_, err = http.PostForm("http://localhost:7070/response", url.Values{"uid": {apiUUID}, "service": {"User Service"},
+		"function": {"sendRegisterEmail"}, "package": {"Register"}, "status": {"0"}})
+
+	if err != nil {
+		log.Println("Error response sending")
 	}
+
+	}else{
 
 	// This is mistake, I should take response from notification service and then send the response to API gateway
 	logs.WithFields(logs.Fields{
@@ -145,6 +154,7 @@ func sendRegisterEmail(email string, apiUUID string) {
 	if err != nil {
 		log.Println("Error response sending")
 	}
+}
 }
 
 // User has an account, send login form

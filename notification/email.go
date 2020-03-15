@@ -147,7 +147,7 @@ func (regiEmail registerEmail) SendEmail(user *userEmailNotification, msg string
 
 // sending login email
 func (loginEmail loginEmail) SendEmail(user *userEmailNotification, msg string) {
-	loginURL := "http://localhost:7070/login?token=" + user.token
+	loginURL := os.Getenv("LOGINURL") + user.token
 	body := msg + "\n" + loginURL + "\n This link valid only for 10 minutes"
 	from, pass := getCredintials()
 

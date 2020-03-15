@@ -16,6 +16,8 @@ COPY . /go/src
 
 WORKDIR /go/src
 
+RUN export LOGINURL=http://localhost:7070/login?token=
+
 RUN go build -o email .
 
 EXPOSE 7072

@@ -81,7 +81,7 @@ func (apiID *UUID) validatemail(res http.ResponseWriter, req *http.Request) {
 		// Method is POST
 
 		email := req.FormValue("email") //"sachithnalaka@gmail.com" // parse form and get email
-
+		request := req.FormValue("request")
 		validEmail := regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`) // regex to validate email address
 
 		if validEmail.MatchString(email) {
@@ -98,7 +98,7 @@ func (apiID *UUID) validatemail(res http.ResponseWriter, req *http.Request) {
 				"uuid":     validatemailID, // Later this should change for function-wise uuid
 			}).Info("Email will pass to User - Service")
 
-			_, err := http.PostForm("http://user:7071/checkemail", url.Values{"email": {email}, "uid": {validatemailID.String()}})
+			_, err := http.PostForm("http://user:7071/checkemail", url.Values{"email": {email}, "uid": {validatemailID.String()},"request":{request}})
 
 			if err != nil {
 				logs.WithFields(logs.Fields{
