@@ -18,6 +18,7 @@ services:
     volumes:
       - ./notification/logs:/go/src/logs
     network_mode: "host"
+    env_file: ./api.env
     depends_on:
       - apigateway
 

@@ -114,7 +114,9 @@ func sendUserEmail(res http.ResponseWriter, req *http.Request) {
 }
 
 func (regiEmail registerEmail) SendEmail(user *userEmailNotification, msg string) {
-	body := msg + user.token
+	loginURL := os.Getenv("LOGINURL") 
+
+	body := msg + "\n" + loginURL + "=" +  user.token
 	from, pass := getCredintials()
 
 	emailMsg := "From: " + from + "\n" +
@@ -147,7 +149,8 @@ func (regiEmail registerEmail) SendEmail(user *userEmailNotification, msg string
 
 // sending login email
 func (loginEmail loginEmail) SendEmail(user *userEmailNotification, msg string) {
-	loginURL := os.Getenv("LOGINURL") + user.token
+	
+	loginURL := os.Getenv("LOGINURL") 
 	body := msg + "\n" + loginURL + "\n This link valid only for 10 minutes"
 	from, pass := getCredintials()
 
