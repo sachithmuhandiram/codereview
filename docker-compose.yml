@@ -9,6 +9,7 @@ services:
     volumes:
       - ./gateway/logs:/go/src/logs
     network_mode: "host"
+    env_file: ./api.env
     
   notification:
     image: notification
@@ -30,5 +31,6 @@ services:
     volumes:
       - ./user/logs:/go/src/logs
     network_mode: "host"
+    env_file: ./api.env
     depends_on:
       - apigateway

@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"strconv"
 	"time"
+	"os"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
@@ -15,6 +16,11 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// Globle variable
+var checkEMAIL = os.Getenv("CHECKEMAIL")
+var userLOGIN = os.Getenv("LOGIN")
+var userREGISTER = os.Getenv("REGISTER")
+var passwordRESET = os.Getenv("PASSWORDRESET")
 // database connection
 func dbConn() (db *sql.DB) {
 	db, err := sql.Open("mysql", "root:7890@tcp(127.0.0.1:3306)/codereview_users")
@@ -81,7 +87,7 @@ func (apiID *UUID) validatemail(res http.ResponseWriter, req *http.Request) {
 		// Method is POST
 
 		email := req.FormValue("email") //"sachithnalaka@gmail.com" // parse form and get email
-		request := req.FormValue("request")
+		request := "hasaccount"
 		validEmail := regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`) // regex to validate email address
 
 		if validEmail.MatchString(email) {
@@ -98,7 +104,7 @@ func (apiID *UUID) validatemail(res http.ResponseWriter, req *http.Request) {
 				"uuid":     validatemailID, // Later this should change for function-wise uuid
 			}).Info("Email will pass to User - Service")
 
-			_, err := http.PostForm("http://user:7071/checkemail", url.Values{"email": {email}, "uid": {validatemailID.String()},"request":{request}})
+			_, err := http.PostForm(checkEMAIL, url.Values{"email": {email}, "uid": {validatemailID.String()},"request":{request}})
 
 			if err != nil {
 				logs.WithFields(logs.Fields{
@@ -163,7 +169,7 @@ func (apiID *UUID) userLogin(res http.ResponseWriter, req *http.Request) {
 		"uuid":     apiID,
 	}).Info("User Login request received")
 
-	_, err := http.PostForm("http://user:7071/login", url.Values{"userid": {userid}, "uid": {requestID.String()},
+	_, err := http.PostForm(userLOGIN, url.Values{"userid": {userid}, "uid": {requestID.String()},
 		"password": {password}})
 
 	if err != nil {
@@ -228,7 +234,7 @@ func (apiID *UUID) registerUser(res http.ResponseWriter, req *http.Request) {
 
 	password = hashPassword(password)
 
-	_, err := http.PostForm("http://user:7071/register", url.Values{"email": {email}, "uid": {responseID.String()},
+	_, err := http.PostForm(userREGISTER, url.Values{"email": {email}, "uid": {responseID.String()},
 		"first_name": {firstName}, "last_name": {lastName}, "password": {password}})
 
 	if err != nil {
@@ -255,7 +261,7 @@ func (apiID *UUID) sendPasswordResetEmail(res http.ResponseWriter, req *http.Req
 		"email":    email,
 	}).Info("Password Reset received email address")
 
-	_, err := http.PostForm("http://user:7071/checkemail", url.Values{"email": {email}, "uid": {requestID.String()}, "request": {"passwordreset"}})
+	_, err := http.PostForm(checkEMAIL, url.Values{"email": {email}, "uid": {requestID.String()}, "request": {"passwordreset"}})
 
 	if err != nil {
 		logs.WithFields(logs.Fields{
@@ -302,7 +308,7 @@ func (apiID *UUID) updatePassword(res http.ResponseWriter, req *http.Request) {
 
 	password = hashPassword(password)
 
-	_, err := http.PostForm("http://user:7071/updateaccount", url.Values{"uid": {requestID.String()},
+	_, err := http.PostForm(passwordRESET, url.Values{"uid": {requestID.String()},
 		"token": {token}, "password": {password}, "request": {"updatepassword"}})
 
 	if err != nil {

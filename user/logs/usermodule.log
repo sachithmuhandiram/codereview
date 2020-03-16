@@ -265,3 +265,161 @@ created by net/http.(*Server).Serve
 2020/03/15 15:20:49 User Service started
 2020/03/15 15:23:23 User Service started
 2020/03/16 06:26:24 User Service started
+2020/03/16 07:31:25 User Service started
+2020/03/16 07:31:38 http: panic serving 127.0.0.1:50762: runtime error: invalid memory address or nil pointer dereference
+goroutine 6 [running]:
+net/http.(*conn).serve.func1(0xc000082a00)
+	/usr/local/go/src/net/http/server.go:1772 +0x139
+panic(0x7028a0, 0x9e1620)
+	/usr/local/go/src/runtime/panic.go:973 +0x396
+database/sql.(*Stmt).ExecContext(0x0, 0x7dc7a0, 0xc000018038, 0xc000220cd0, 0x1, 0x1, 0x0, 0x0, 0x0, 0x0)
+	/usr/local/go/src/database/sql/sql.go:2394 +0x5a
+database/sql.(*Stmt).Exec(...)
+	/usr/local/go/src/database/sql/sql.go:2423
+main.sendRegisterEmail(0xc00012a040, 0x16, 0xc000134096, 0x24)
+	/go/src/checkemail.go:126 +0x155
+main.hasAccount(0xc00012a040, 0x16, 0xc000134096, 0x24)
+	/go/src/checkemail.go:106 +0x892
+main.CheckEmail(0x7dbf60, 0xc00013a000, 0xc000128000)
+	/go/src/checkemail.go:67 +0x39a
+net/http.HandlerFunc.ServeHTTP(0x77a018, 0x7dbf60, 0xc00013a000, 0xc000128000)
+	/usr/local/go/src/net/http/server.go:2012 +0x44
+net/http.(*ServeMux).ServeHTTP(0x9ee340, 0x7dbf60, 0xc00013a000, 0xc000128000)
+	/usr/local/go/src/net/http/server.go:2387 +0x1a5
+net/http.serverHandler.ServeHTTP(0xc0000c6000, 0x7dbf60, 0xc00013a000, 0xc000128000)
+	/usr/local/go/src/net/http/server.go:2807 +0xa3
+net/http.(*conn).serve(0xc000082a00, 0x7dc760, 0xc000112000)
+	/usr/local/go/src/net/http/server.go:1895 +0x86c
+created by net/http.(*Server).Serve
+	/usr/local/go/src/net/http/server.go:2933 +0x35c
+2020/03/16 08:04:26 User Service started
+2020/03/16 08:04:31 http: panic serving 127.0.0.1:51478: runtime error: invalid memory address or nil pointer dereference
+goroutine 6 [running]:
+net/http.(*conn).serve.func1(0xc000102aa0)
+	/usr/local/go/src/net/http/server.go:1772 +0x139
+panic(0x7028a0, 0x9e1620)
+	/usr/local/go/src/runtime/panic.go:973 +0x396
+database/sql.(*Stmt).ExecContext(0x0, 0x7dc7a0, 0xc000018038, 0xc0000c0cd0, 0x1, 0x1, 0x0, 0x0, 0x0, 0x0)
+	/usr/local/go/src/database/sql/sql.go:2394 +0x5a
+database/sql.(*Stmt).Exec(...)
+	/usr/local/go/src/database/sql/sql.go:2423
+main.sendRegisterEmail(0xc00001a1e0, 0x16, 0xc0000161b6, 0x24)
+	/go/src/checkemail.go:126 +0x155
+main.hasAccount(0xc00001a1e0, 0x16, 0xc0000161b6, 0x24)
+	/go/src/checkemail.go:106 +0x892
+main.CheckEmail(0x7dbf60, 0xc0001460e0, 0xc000160000)
+	/go/src/checkemail.go:67 +0x39a
+net/http.HandlerFunc.ServeHTTP(0x77a018, 0x7dbf60, 0xc0001460e0, 0xc000160000)
+	/usr/local/go/src/net/http/server.go:2012 +0x44
+net/http.(*ServeMux).ServeHTTP(0x9ee340, 0x7dbf60, 0xc0001460e0, 0xc000160000)
+	/usr/local/go/src/net/http/server.go:2387 +0x1a5
+net/http.serverHandler.ServeHTTP(0xc000146000, 0x7dbf60, 0xc0001460e0, 0xc000160000)
+	/usr/local/go/src/net/http/server.go:2807 +0xa3
+net/http.(*conn).serve(0xc000102aa0, 0x7dc760, 0xc00001c340)
+	/usr/local/go/src/net/http/server.go:1895 +0x86c
+created by net/http.(*Server).Serve
+	/usr/local/go/src/net/http/server.go:2933 +0x35c
+2020/03/16 08:06:22 User Service started
+2020/03/16 08:06:27 http: panic serving 127.0.0.1:51566: runtime error: invalid memory address or nil pointer dereference
+goroutine 6 [running]:
+net/http.(*conn).serve.func1(0xc000102a00)
+	/usr/local/go/src/net/http/server.go:1772 +0x139
+panic(0x7028a0, 0x9e1620)
+	/usr/local/go/src/runtime/panic.go:973 +0x396
+database/sql.(*DB).conn(0x0, 0x7dc7c0, 0xc000018038, 0xc000012c01, 0x7d66e0, 0xc000012cc0, 0x6fb880)
+	/usr/local/go/src/database/sql/sql.go:1132 +0x41
+database/sql.(*DB).query(0x0, 0x7dc7c0, 0xc000018038, 0x76ff0b, 0x32, 0xc00013d400, 0x1, 0x1, 0xc000094201, 0x10, ...)
+	/usr/local/go/src/database/sql/sql.go:1565 +0x66
+database/sql.(*DB).QueryContext(0x0, 0x7dc7c0, 0xc000018038, 0x76ff0b, 0x32, 0xc00013d400, 0x1, 0x1, 0xc00013d370, 0x40b4db, ...)
+	/usr/local/go/src/database/sql/sql.go:1547 +0xd1
+database/sql.(*DB).QueryRowContext(...)
+	/usr/local/go/src/database/sql/sql.go:1648
+database/sql.(*DB).QueryRow(0x0, 0x76ff0b, 0x32, 0xc00013d400, 0x1, 0x1, 0xc000097480)
+	/usr/local/go/src/database/sql/sql.go:1659 +0x8b
+main.Checkmail(0xc0000aa040, 0x16, 0xc0000b4096, 0x24, 0x0)
+	/go/src/checkemail.go:218 +0xf9
+main.hasAccount(0xc0000aa040, 0x16, 0xc0000b4096, 0x24)
+	/go/src/checkemail.go:85 +0x2e2
+main.CheckEmail(0x7dbf80, 0xc0000ba000, 0xc0000a8000)
+	/go/src/checkemail.go:67 +0x39a
+net/http.HandlerFunc.ServeHTTP(0x77a020, 0x7dbf80, 0xc0000ba000, 0xc0000a8000)
+	/usr/local/go/src/net/http/server.go:2012 +0x44
+net/http.(*ServeMux).ServeHTTP(0x9ee340, 0x7dbf80, 0xc0000ba000, 0xc0000a8000)
+	/usr/local/go/src/net/http/server.go:2387 +0x1a5
+net/http.serverHandler.ServeHTTP(0xc000146000, 0x7dbf80, 0xc0000ba000, 0xc0000a8000)
+	/usr/local/go/src/net/http/server.go:2807 +0xa3
+net/http.(*conn).serve(0xc000102a00, 0x7dc780, 0xc000092000)
+	/usr/local/go/src/net/http/server.go:1895 +0x86c
+created by net/http.(*Server).Serve
+	/usr/local/go/src/net/http/server.go:2933 +0x35c
+2020/03/16 11:25:51 User Service started
+2020/03/16 11:26:15 http: panic serving 127.0.0.1:52268: runtime error: invalid memory address or nil pointer dereference
+goroutine 21 [running]:
+net/http.(*conn).serve.func1(0xc0000baa00)
+	/usr/local/go/src/net/http/server.go:1772 +0x139
+panic(0x7028a0, 0x9e1620)
+	/usr/local/go/src/runtime/panic.go:973 +0x396
+database/sql.(*DB).conn(0x0, 0x7dc7c0, 0xc0000a8000, 0xc0000a0c01, 0x7d66e0, 0xc0000a0ca0, 0x6fb880)
+	/usr/local/go/src/database/sql/sql.go:1132 +0x41
+database/sql.(*DB).query(0x0, 0x7dc7c0, 0xc0000a8000, 0x76ff0b, 0x32, 0xc0000f7400, 0x1, 0x1, 0xc000012201, 0x10, ...)
+	/usr/local/go/src/database/sql/sql.go:1565 +0x66
+database/sql.(*DB).QueryContext(0x0, 0x7dc7c0, 0xc0000a8000, 0x76ff0b, 0x32, 0xc0000f7400, 0x1, 0x1, 0xc0000f7370, 0x40b4db, ...)
+	/usr/local/go/src/database/sql/sql.go:1547 +0xd1
+database/sql.(*DB).QueryRowContext(...)
+	/usr/local/go/src/database/sql/sql.go:1648
+database/sql.(*DB).QueryRow(0x0, 0x76ff0b, 0x32, 0xc0000f7400, 0x1, 0x1, 0xc000067400)
+	/usr/local/go/src/database/sql/sql.go:1659 +0x8b
+main.Checkmail(0xc00001a060, 0x16, 0xc0000160f6, 0x24, 0x0)
+	/go/src/checkemail.go:218 +0xf9
+main.hasAccount(0xc00001a060, 0x16, 0xc0000160f6, 0x24)
+	/go/src/checkemail.go:85 +0x2e2
+main.CheckEmail(0x7dbf80, 0xc000182000, 0xc000076000)
+	/go/src/checkemail.go:67 +0x39a
+net/http.HandlerFunc.ServeHTTP(0x77a020, 0x7dbf80, 0xc000182000, 0xc000076000)
+	/usr/local/go/src/net/http/server.go:2012 +0x44
+net/http.(*ServeMux).ServeHTTP(0x9ee340, 0x7dbf80, 0xc000182000, 0xc000076000)
+	/usr/local/go/src/net/http/server.go:2387 +0x1a5
+net/http.serverHandler.ServeHTTP(0xc000100000, 0x7dbf80, 0xc000182000, 0xc000076000)
+	/usr/local/go/src/net/http/server.go:2807 +0xa3
+net/http.(*conn).serve(0xc0000baa00, 0x7dc780, 0xc00001c040)
+	/usr/local/go/src/net/http/server.go:1895 +0x86c
+created by net/http.(*Server).Serve
+	/usr/local/go/src/net/http/server.go:2933 +0x35c
+2020/03/16 11:28:28 User Service started
+2020/03/16 11:28:32 http: panic serving 127.0.0.1:52368: runtime error: invalid memory address or nil pointer dereference
+goroutine 6 [running]:
+net/http.(*conn).serve.func1(0xc000102aa0)
+	/usr/local/go/src/net/http/server.go:1772 +0x139
+panic(0x7028a0, 0x9e1620)
+	/usr/local/go/src/runtime/panic.go:973 +0x396
+database/sql.(*Stmt).ExecContext(0x0, 0x7dc7e0, 0xc000018038, 0xc0000c0cd0, 0x1, 0x1, 0x0, 0x0, 0x0, 0x0)
+	/usr/local/go/src/database/sql/sql.go:2394 +0x5a
+database/sql.(*Stmt).Exec(...)
+	/usr/local/go/src/database/sql/sql.go:2423
+main.sendRegisterEmail(0xc00001a1e0, 0x16, 0xc0000161b6, 0x24)
+	/go/src/checkemail.go:127 +0x155
+main.hasAccount(0xc00001a1e0, 0x16, 0xc0000161b6, 0x24)
+	/go/src/checkemail.go:107 +0x892
+main.CheckEmail(0x7dbfa0, 0xc0001460e0, 0xc000160000)
+	/go/src/checkemail.go:68 +0x39a
+net/http.HandlerFunc.ServeHTTP(0x77a028, 0x7dbfa0, 0xc0001460e0, 0xc000160000)
+	/usr/local/go/src/net/http/server.go:2012 +0x44
+net/http.(*ServeMux).ServeHTTP(0x9ee340, 0x7dbfa0, 0xc0001460e0, 0xc000160000)
+	/usr/local/go/src/net/http/server.go:2387 +0x1a5
+net/http.serverHandler.ServeHTTP(0xc000146000, 0x7dbfa0, 0xc0001460e0, 0xc000160000)
+	/usr/local/go/src/net/http/server.go:2807 +0xa3
+net/http.(*conn).serve(0xc000102aa0, 0x7dc7a0, 0xc00001c340)
+	/usr/local/go/src/net/http/server.go:1895 +0x86c
+created by net/http.(*Server).Serve
+	/usr/local/go/src/net/http/server.go:2933 +0x35c
+2020/03/16 11:30:13 User Service started
+2020/03/16 11:30:19 Error response sending
+2020/03/16 11:31:19 User Service started
+2020/03/16 11:31:27 Error response sending
+2020/03/16 11:32:16 User Service started
+2020/03/16 11:32:53 User Service started
+2020/03/16 11:34:54 User Service started
+2020/03/16 11:45:41 User Service started
+2020/03/16 11:46:30 User Service started
+2020/03/16 11:50:46 User Service started
+2020/03/16 11:51:47 User Service started

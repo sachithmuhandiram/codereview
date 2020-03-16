@@ -14,10 +14,12 @@ import (
 
 // Globle varibles
 var sendEmail = os.Getenv("SENDEMAIL")
+var responseURL = os.Getenv("RESPONSEURL")
+var mysqlDB	= os.Getenv("MYSQLDB")
 
 // database connection
 func dbConn() (db *sql.DB) {
-	db, err := sql.Open("mysql", "root:7890@tcp(127.0.0.1:3306)/codereview_users")
+	db, err := sql.Open("mysql", mysqlDB)
 
 	if err != nil {
 		logs.WithFields(logs.Fields{
@@ -136,7 +138,7 @@ func sendRegisterEmail(email string, apiUUID string) {
 		}).Error("Failed to connect to Notification Service")
 
 
-		_, err = http.PostForm("http://localhost:7070/response", url.Values{"uid": {apiUUID}, "service": {"User Service"},
+		_, err = http.PostForm(responseURL, url.Values{"uid": {apiUUID}, "service": {"User Service"},
 		"function": {"sendRegisterEmail"}, "package": {"Register"}, "status": {"0"}})
 
 	if err != nil {
@@ -153,7 +155,7 @@ func sendRegisterEmail(email string, apiUUID string) {
 		"uuid":     apiUUID,
 	}).Info("Sent registering email to user")
 
-	_, err = http.PostForm("http://localhost:7070/response", url.Values{"uid": {apiUUID}, "service": {"User Service"},
+	_, err = http.PostForm(responseURL, url.Values{"uid": {apiUUID}, "service": {"User Service"},
 		"function": {"sendRegisterEmail"}, "package": {"Register"}, "status": {"1"}})
 
 	if err != nil {
@@ -197,7 +199,7 @@ func sendLoginEmail(email string, apiUUID string) {
 		"uuid":     apiUUID,
 	}).Info("Sent login email to user")
 
-	_, err = http.PostForm("http://localhost:7070/response", url.Values{"uid": {apiUUID}, "service": {"User Service"},
+	_, err = http.PostForm(responseURL, url.Values{"uid": {apiUUID}, "service": {"User Service"},
 		"function": {"sendLoginEmail"}, "package": {"Check Email"}, "status": {"1"}})
 
 	if err != nil {
@@ -245,7 +247,7 @@ func passwordReset(email, apiUUID string) {
 			"uuid":     apiUUID,
 		}).Info("Email does not associate with an account")
 
-		_, err := http.PostForm("http://localhost:7070/response", url.Values{"uid": {apiUUID}, "service": {"User Service"},
+		_, err := http.PostForm(responseURL, url.Values{"uid": {apiUUID}, "service": {"User Service"},
 			"function": {"passwordReset"}, "package": {"Check Email"}, "status": {"0"}})
 
 		if err != nil {
