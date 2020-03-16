@@ -5,11 +5,15 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 
 	_ "github.com/go-sql-driver/mysql"
 	logs "github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
 )
+
+// Globle varibles
+var sendEmail = os.Getenv("SENDEMAIL")
 
 // database connection
 func dbConn() (db *sql.DB) {
@@ -120,7 +124,8 @@ func sendRegisterEmail(email string, apiUUID string) {
 	insToken.Exec(token) //time.Now()
 
 	// posting form to notification service
-	_, err = http.PostForm("http://notification:7072/sendemail", url.Values{"email": {email}, "uuid": {apiUUID}, "token": {token}, "nofitication": {"register"}})
+	
+	_, err = http.PostForm(sendEmail, url.Values{"email": {email}, "uuid": {apiUUID}, "token": {token}, "nofitication": {"register"}})
 
 	if err != nil {
 		logs.WithFields(logs.Fields{
@@ -174,7 +179,7 @@ func sendLoginEmail(email string, apiUUID string) {
 	}
 	insToken.Exec(token) //, time.Now()
 	// Sending login form to notification service
-	_, err = http.PostForm("http://notification:7072/sendemail", url.Values{"email": {email}, "uuid": {apiUUID}, "token": {token}, "nofitication": {"login"}})
+	_, err = http.PostForm(sendEmail, url.Values{"email": {email}, "uuid": {apiUUID}, "token": {token}, "nofitication": {"login"}})
 
 	if err != nil {
 		logs.WithFields(logs.Fields{
@@ -270,7 +275,7 @@ func passwordReset(email, apiUUID string) {
 
 		return
 	}
-	_, err := http.PostForm("http://notification:7072/sendemail", url.Values{"email": {email}, "uuid": {apiUUID}, "token": {token}, "nofitication": {"passwordreset"}})
+	_, err := http.PostForm(sendEmail, url.Values{"email": {email}, "uuid": {apiUUID}, "token": {token}, "nofitication": {"passwordreset"}})
 
 	if err != nil {
 		logs.WithFields(logs.Fields{

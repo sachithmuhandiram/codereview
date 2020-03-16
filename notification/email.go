@@ -114,9 +114,9 @@ func sendUserEmail(res http.ResponseWriter, req *http.Request) {
 }
 
 func (regiEmail registerEmail) SendEmail(user *userEmailNotification, msg string) {
-	loginURL := os.Getenv("LOGINURL") 
+	registerURL := os.Getenv("REGISTERURL") 
 
-	body := msg + "\n" + loginURL + "=" +  user.token
+	body := msg + "\n" + registerURL + "=" +  user.token
 	from, pass := getCredintials()
 
 	emailMsg := "From: " + from + "\n" +
