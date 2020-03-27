@@ -99,6 +99,11 @@ func UserLogin(res http.ResponseWriter, req *http.Request) {
 		"requestID": requestID,
 	}).Info("Passwords match")
 
+	// need to redirect tp /home
+	/*
+		Also to insert to db, logged user, password expire and token.
+	*/
+
 	_, err = http.PostForm("http://localhost:7070/response", url.Values{"uid": {requestID}, "service": {"User Service"},
 		"function": {"UserLogin"}, "package": {"Login"}, "status": {"1"}})
 

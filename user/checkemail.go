@@ -122,6 +122,8 @@ func sendRegisterEmail(email string, apiUUID string) {
 			"uuid":     apiUUID,
 			"Error":    err,
 		}).Error("Couldnt prepare insert statement for registering_token table")
+
+		return
 	}
 	insToken.Exec(token) //time.Now()
 
