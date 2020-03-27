@@ -18,6 +18,8 @@ Here it uses `key:value` combination.
 
 [Golang Interfaces](https://medium.com/better-programming/a-real-world-example-of-go-interfaces-98e89b2ddb67)
 
+[Passing structs to golang function](https://stackoverflow.com/questions/29805583/how-can-i-pass-struct-to-function-as-parameter-in-go-lang)
+
 ## Environment variables
 
 [Docker-compose environment variables](https://docs.docker.com/compose/environment-variables/)

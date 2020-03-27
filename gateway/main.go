@@ -21,6 +21,17 @@ var checkEMAIL = os.Getenv("CHECKEMAIL")
 var userLOGIN = os.Getenv("LOGIN")
 var userREGISTER = os.Getenv("REGISTER")
 var passwordRESET = os.Getenv("PASSWORDRESET")
+var resposeURL = os.Getenv("RESPONSEURL")
+
+// Response struct
+type resposeObj struct{
+	uid 	string
+	service string
+	function string
+	pack string
+	status string
+}
+
 // database connection
 func dbConn() (db *sql.DB) {
 	db, err := sql.Open("mysql", "root:7890@tcp(127.0.0.1:3306)/codereview_users")
@@ -76,8 +87,8 @@ func (apiID *UUID) validatemail(res http.ResponseWriter, req *http.Request) {
 			"uuid":     validatemailID,
 		}).Error("Request method is not POST")
 
-		_, err := http.PostForm("http://localhost:7070/response", url.Values{"uid": {validatemailID.String()}, "service": {"API Gateway"},
-			"function": {"validatemail"}, "package": {"main"}, "status": {"0"}})
+		validatemailResoise := resposeObj{uid:validatemailID.String(),service:"API Gateway",function:"validatemail",pack:"main",status:"0"}
+		err := sendResponse(validatemailResoise)
 
 		if err != nil {
 			log.Println("Error response sending")
@@ -361,9 +372,24 @@ func hashPassword(password string) string {
 	}
 	return string(hashedPass)
 }
+// Sending a response
+func sendResponse(res resposeObj)error{
+
+	log.Println("Send response received : ",res.uid)
+	_, err := http.PostForm(resposeURL, url.Values{res})
+
+	if err != nil{
+		return err
+	}
+
+	return nil
+}
 
 // Response for a request is recorded.
 func reportResponse(res http.ResponseWriter, req *http.Request) {
+
+	reportObj := resposeObj{}
+	log.Println("Report received : ",req.FormValue(reportObj))
 
 	responseID := req.FormValue("uid")
 	service := req.FormValue("service")
