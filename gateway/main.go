@@ -9,6 +9,10 @@ import (
 	"strconv"
 	"time"
 	"os"
+	//"strings"
+	"io/ioutil"
+	"encoding/json"
+	"bytes"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
@@ -25,11 +29,11 @@ var resposeURL = os.Getenv("RESPONSEURL")
 
 // Response struct
 type resposeObj struct{
-	uid 	string
-	service string
-	function string
-	pack string
-	status string
+	UID 	string `json :"uid"`
+	Service string `json : "service"`
+	Function string `json : "function"`
+	Pack string 	`json : "pack"`
+	Status string 	`json : "status"`
 }
 
 // database connection
@@ -87,8 +91,15 @@ func (apiID *UUID) validatemail(res http.ResponseWriter, req *http.Request) {
 			"uuid":     validatemailID,
 		}).Error("Request method is not POST")
 
-		validatemailResoise := resposeObj{uid:validatemailID.String(),service:"API Gateway",function:"validatemail",pack:"main",status:"0"}
-		err := sendResponse(validatemailResoise)
+		response := resposeObj{UID:validatemailID.String(),Service:"API Gateway",Function:"validatemail",Pack:"main",Status:"0"}
+		
+		validatemailResponse,err := json.Marshal(response)
+
+		if err != nil{
+			log.Println("Error in marshaling data",err)
+		}
+
+		err = sendResponse(validatemailResponse)
 
 		if err != nil {
 			log.Println("Error response sending")
@@ -373,10 +384,19 @@ func hashPassword(password string) string {
 	return string(hashedPass)
 }
 // Sending a response
-func sendResponse(res resposeObj)error{
+func sendResponse(req []byte)error{
 
-	log.Println("Send response received : ",res.uid)
-	_, err := http.PostForm(resposeURL, url.Values{res})
+
+	log.Println("Received response : ",string(req))
+	request,err := http.NewRequest("POST",resposeURL, bytes.NewBuffer(req))
+	request.Header.Set("Content-Type","application/json")
+
+	client := &http.Client{}
+    resp, err := client.Do(request)
+    if err != nil {
+        panic(err)
+    }
+    defer resp.Body.Close()
 
 	if err != nil{
 		return err
@@ -388,28 +408,33 @@ func sendResponse(res resposeObj)error{
 // Response for a request is recorded.
 func reportResponse(res http.ResponseWriter, req *http.Request) {
 
-	reportObj := resposeObj{}
-	log.Println("Report received : ",req.FormValue(reportObj))
+	data,_ := ioutil.ReadAll(req.Body)
 
-	responseID := req.FormValue("uid")
-	service := req.FormValue("service")
-	function := req.FormValue("function")
-	pack := req.FormValue("package")
-	status := req.FormValue("status")
+	log.Printf("Request data from reportResponse function: %s\n",data)
+
+
+    var request resposeObj
+    err := json.Unmarshal(data, &request)
+    
+    if err != nil {
+        log.Println("Error occured decoding JSON object",err)
+    }
+
+    log.Println("From response reporting",request.UID)
 
 	logs.WithFields(logs.Fields{
-		"ResponseService": service,
-		"ResponsePackage": pack,
-		"ResponseFunc":    function,
-		"responseID":      responseID,
-		"status":          status,
+		"ResponseService": request.Service,
+		"ResponsePackage": request.Pack,
+		"ResponseFunc":    request.Function,
+		"responseID":      request.UID,
+		"status":          request.Status,
 	}).Info("Response received for the request")
 
-	stat, _ := strconv.Atoi(status) // convert string to int
+	stat, _ := strconv.Atoi(request.Status) // convert string to int
 
 	// stat 1 = success, 0 = failed
 	if stat == 1 {
-		storeData := storeDetails(responseID, true, true)
+		storeData := storeDetails(request.UID, true, true)
 
 		if storeData != nil {
 			logs.WithFields(logs.Fields{
@@ -419,7 +444,7 @@ func reportResponse(res http.ResponseWriter, req *http.Request) {
 			}).Error("Response data insert to DB failed")
 		}
 	} else {
-		storeData := storeDetails(responseID, true, false)
+		storeData := storeDetails(request.UID, true, false)
 
 		if storeData != nil {
 			logs.WithFields(logs.Fields{
