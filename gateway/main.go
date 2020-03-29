@@ -177,7 +177,7 @@ func (apiID *UUID) userLogin(res http.ResponseWriter, req *http.Request) {
 		logs.WithFields(logs.Fields{
 			"package":  "API-Gateway",
 			"function": "userLogin",
-			"uuid":     apiID,
+			"uuid":     requestID,
 		}).Error("User Login request received,without password")
 		return
 
@@ -188,7 +188,7 @@ func (apiID *UUID) userLogin(res http.ResponseWriter, req *http.Request) {
 	logs.WithFields(logs.Fields{
 		"package":  "API-Gateway",
 		"function": "validuserLoginatemail",
-		"uuid":     apiID,
+		"uuid":     requestID,
 	}).Info("User Login request received")
 
 	_, err := http.PostForm(userLOGIN, url.Values{"userid": {userid}, "uid": {requestID.String()},
@@ -407,34 +407,60 @@ func sendResponse(req []byte)error{
 
 // Response for a request is recorded.
 func reportResponse(res http.ResponseWriter, req *http.Request) {
+	var stat int
+	var requestID string
+	requestType := req.Header.Get("Content-Type")
 
-	data,_ := ioutil.ReadAll(req.Body)
+	log.Println("Content type is : ",requestType)
+	switch(requestType){
+	case "application/json" :
+		data,_ := ioutil.ReadAll(req.Body)
 
-	log.Printf("Request data from reportResponse function: %s\n",data)
+		log.Printf("Request data from reportResponse function: %s\n",data)
 
 
-    var request resposeObj
-    err := json.Unmarshal(data, &request)
-    
-    if err != nil {
-        log.Println("Error occured decoding JSON object",err)
-    }
+	    var request resposeObj
+	    err := json.Unmarshal(data, &request)
+	    
+	    if err != nil {
+	        log.Println("Error occured decoding JSON object",err)
+	    }
 
-    log.Println("From response reporting",request.UID)
+	    requestID = request.UID
 
-	logs.WithFields(logs.Fields{
-		"ResponseService": request.Service,
-		"ResponsePackage": request.Pack,
-		"ResponseFunc":    request.Function,
-		"responseID":      request.UID,
-		"status":          request.Status,
-	}).Info("Response received for the request")
+		logs.WithFields(logs.Fields{
+			"ResponseService": request.Service,
+			"ResponsePackage": request.Pack,
+			"ResponseFunc":    request.Function,
+			"responseID":      request.UID,
+			"status":          request.Status,
+		}).Info("Response received for the request")
 
-	stat, _ := strconv.Atoi(request.Status) // convert string to int
+		stat, _ = strconv.Atoi(request.Status) // convert string to int
+	default: // form data
+		responseID := req.FormValue("uid")
+		service := req.FormValue("service")
+		function := req.FormValue("function")
+		pack := req.FormValue("package")
+		status := req.FormValue("status")
+
+		requestID = req.FormValue("uid")
+		logs.WithFields(logs.Fields{
+			"ResponseService": service,
+			"ResponsePackage": pack,
+			"ResponseFunc":    function,
+			"responseID":      responseID,
+			"status":          status,
+		}).Info("Response received for the request")
+
+		stat, _ = strconv.Atoi(status) // convert string to int
+
+	} // response is json or form data
+	
 
 	// stat 1 = success, 0 = failed
 	if stat == 1 {
-		storeData := storeDetails(request.UID, true, true)
+		storeData := storeDetails(requestID, true, true)
 
 		if storeData != nil {
 			logs.WithFields(logs.Fields{
@@ -444,7 +470,7 @@ func reportResponse(res http.ResponseWriter, req *http.Request) {
 			}).Error("Response data insert to DB failed")
 		}
 	} else {
-		storeData := storeDetails(request.UID, true, false)
+		storeData := storeDetails(requestID, true, false)
 
 		if storeData != nil {
 			logs.WithFields(logs.Fields{
