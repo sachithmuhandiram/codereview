@@ -20,8 +20,6 @@ COPY . /go/src
 
 WORKDIR /go/src
 
-RUN ls
-
 RUN go build -o main .
 
 EXPOSE 7071

@@ -59,6 +59,24 @@ type UUID struct {
 	apiUuid uuid.UUID
 }
 
+// Requests are authenticated
+func authenticateToken(handlerFunc http.HandlerFunc) http.HandlerFunc {
+
+	log.Println("Authentication function called")
+
+	return func(res http.ResponseWriter, req *http.Request) {
+		token := req.FormValue("token")
+
+		log.Println("Tocken is : ",token)
+
+		if token == "abc"{
+			handlerFunc(res, req)
+		}else{
+			log.Println("Wrong token")
+		}
+	}
+}
+
 func main() {
 
 	apiID := &UUID{apiUuid: generateUUID()}
@@ -69,7 +87,7 @@ func main() {
 		"uuid":     apiID,
 	}).Info("API - Gateway started at 7070")
 
-	http.HandleFunc("/getemail", apiID.validatemail)
+	http.HandleFunc("/getemail", authenticateToken(apiID.validatemail))
 	http.HandleFunc("/response", reportResponse)
 	http.HandleFunc("/login", apiID.userLogin)
 	http.HandleFunc("/register", apiID.registerUser)
@@ -385,9 +403,7 @@ func hashPassword(password string) string {
 }
 // Sending a response
 func sendResponse(req []byte)error{
-
-
-	log.Println("Received response : ",string(req))
+	//log.Println("Received response : ",string(req))
 	request,err := http.NewRequest("POST",resposeURL, bytes.NewBuffer(req))
 	request.Header.Set("Content-Type","application/json")
 
@@ -411,14 +427,12 @@ func reportResponse(res http.ResponseWriter, req *http.Request) {
 	var requestID string
 	requestType := req.Header.Get("Content-Type")
 
-	log.Println("Content type is : ",requestType)
+	//log.Println("Content type is : ",requestType)
 	switch(requestType){
 	case "application/json" :
 		data,_ := ioutil.ReadAll(req.Body)
 
-		log.Printf("Request data from reportResponse function: %s\n",data)
-
-
+		//log.Printf("Request data from reportResponse function: %s\n",data)
 	    var request resposeObj
 	    err := json.Unmarshal(data, &request)
 	    
