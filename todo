@@ -7,7 +7,8 @@
 	- [ x ] Create MySQL table for validcookies.
 	
 	- [ ]   Login function to insert token to this table.
-		- [ ]	Check valid token is with login request.
-		- [ ]	If it matches, delete that login_token from database.
+
+		- [ x ]	Check valid token is with login request. login_token
+		- [ x ]	If it matches, delete that login_token from database.
 
 	- [ ]	Check / route refreshing with this table (using Middleware) 

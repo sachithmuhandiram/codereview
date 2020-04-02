@@ -131,7 +131,33 @@ func UserLogin(res http.ResponseWriter, req *http.Request) {
 	}).Info("Passwords match")
 
 	// need to redirect tp /home
-	res.WriteHeader(http.StatusOK)
+	jwtToken,jwtErr := GenerateJWT(loginToken,3600) // token valid for an hour
+
+		if jwtErr != nil{
+			logs.WithFields(logs.Fields{
+			"Service":   "User Service",
+			"Package":   "Login",
+			"function":  "UserLogin",
+			"userid":    userID,
+			"requestID": requestID,
+		}).Error("Generating jwt failed")
+
+		}
+
+	validTkn := insertToValidToken(userID,jwtToken,requestID)
+
+	if validTkn != nil{
+	
+			logs.WithFields(logs.Fields{
+			"Service":   "User Service",
+			"Package":   "Login",
+			"function":  "UserLogin",
+			"userid":    userID,
+			"requestID": requestID,
+		}).Error("Couldnt insert JWT to table")
+	}
+
+	http.Redirect(res, req, "/", 301)
 	/*
 		Also to insert to db, logged user, password expire and token.
 	*/
@@ -147,18 +173,37 @@ func UserLogin(res http.ResponseWriter, req *http.Request) {
 
 }
 
+// Insert into valid token
+func insertToValidToken(userID,jwtToken,requestID string) error{
+
+	t := time.Now()
+	// t.Format("20060102150405")
+	db := dbConn()
+	insertToken, err := db.Prepare("INSERT INTO activeJWTtokens(user_id,jwt,created_at,last_update) VALUES(?,?,?,?)")
+        if err != nil {
+            panic(err.Error())
+
+            return err
+        }
+
+    insertToken.Exec(userID, jwtToken,t.Format("yyyy-MM-dd HH:mm:ss"),t.Format("yyyy-MM-dd HH:mm:ss"))
+
+    logs.WithFields(logs.Fields{
+		"Service":   "User Service",
+		"Package":   "Login",
+		"function":  "insertToValidToken",
+		"userid":    userID,
+		"requestID": requestID,
+	}).Info("Insert into valid jwt tokens")
+
+	defer db.Close()
+	return nil  
+
+}
 
 // Checks login form's token.
 func checkLoginToken(requestID,loginToken string) bool{
 	var logintoken bool
-
-	logs.WithFields(logs.Fields{
-		"Service":   "User Service",
-		"Package":   "Login",
-		"function":  "checkLoginToken",
-		"requestID": requestID,
-	}).Info("Check login token with login tokens table")
-
 
 	db := dbConn()
 	row := db.QueryRow("SELECT EXISTS(SELECT login_token FROM login_token WHERE login_token=?)", loginToken)
@@ -175,6 +220,21 @@ func checkLoginToken(requestID,loginToken string) bool{
 	}
 
 	if logintoken {
+
+		logs.WithFields(logs.Fields{
+			"Service":   "User Service",
+			"Package":   "Login",
+			"function":  "checkLoginToken",
+			"requestID": requestID,
+		}).Info("Valid login token")
+
+		
+		/*
+						Delete Valid Token
+			For simplicity of the system, assums that this will delete that token from table
+		*/
+		deleteLoginToken(loginToken,requestID)
+
 		return true
 	}
 
@@ -183,6 +243,25 @@ func checkLoginToken(requestID,loginToken string) bool{
 
 }
 
+// Delete login token
+func deleteLoginToken(loginToken,requestID string){
+	db := dbConn()
+
+	delTkn, err := db.Prepare("DELETE FROM login_token WHERE login_token=?")
+    if err != nil {
+        panic(err.Error())
+    }
+    delTkn.Exec(loginToken)
+
+    logs.WithFields(logs.Fields{
+			"Service":   "User Service",
+			"Package":   "Login",
+			"function":  "deleteLoginToken",
+			"requestID": requestID,
+		}).Info("Successfully deleted login token")
+
+	defer db.Close()
+}
 
 func CheckUserLogin(res http.ResponseWriter, req *http.Request) {
 
@@ -202,7 +281,7 @@ func checkJWT(jwt string) bool {
 
 }
 
-// GenerateJWT takes eventID as a parameter and time for JWT
+// GenerateJWT takes eventID as a parameter and time (minutes) for JWT
 func GenerateJWT(initialToken string, validDuration int) (string, error) {
 
 	loginKey := []byte(initialToken)

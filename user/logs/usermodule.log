@@ -473,3 +473,26 @@ created by net/http.(*Server).Serve
 2020/04/02 16:33:47 User Service started
 2020/04/02 16:40:33 User Service started
 2020/04/02 16:53:53 User Service started
+2020/04/02 17:07:32 User Service started
+2020/04/02 17:52:37 User Service started
+2020/04/02 17:53:01 http: panic serving 127.0.0.1:43392: Error 1136: Column count doesn't match value count at row 1
+goroutine 21 [running]:
+net/http.(*conn).serve.func1(0xc0000bca00)
+	/usr/local/go/src/net/http/server.go:1772 +0x139
+panic(0x6fc7e0, 0xc0000a1020)
+	/usr/local/go/src/runtime/panic.go:973 +0x396
+main.insertToValidToken(0xc000018080, 0xe, 0xc0002c4000, 0x9f, 0xc0000160e2, 0x24, 0x0, 0x0)
+	/go/src/login.go:184 +0x6c3
+main.UserLogin(0x7f3360, 0xc0000140e0, 0xc00007a000)
+	/go/src/login.go:147 +0x143a
+net/http.HandlerFunc.ServeHTTP(0x78dee8, 0x7f3360, 0xc0000140e0, 0xc00007a000)
+	/usr/local/go/src/net/http/server.go:2012 +0x44
+net/http.(*ServeMux).ServeHTTP(0xa10560, 0x7f3360, 0xc0000140e0, 0xc00007a000)
+	/usr/local/go/src/net/http/server.go:2387 +0x1a5
+net/http.serverHandler.ServeHTTP(0xc0000a20e0, 0x7f3360, 0xc0000140e0, 0xc00007a000)
+	/usr/local/go/src/net/http/server.go:2807 +0xa3
+net/http.(*conn).serve(0xc0000bca00, 0x7f3c20, 0xc000020040)
+	/usr/local/go/src/net/http/server.go:1895 +0x86c
+created by net/http.(*Server).Serve
+	/usr/local/go/src/net/http/server.go:2933 +0x35c
+2020/04/02 17:55:48 User Service started
