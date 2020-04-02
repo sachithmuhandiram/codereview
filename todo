@@ -2,3 +2,12 @@
 
 - When user email is checked with emails table, check whether its active or not.. If it's inactive, handle that case separately.
 
+- Date 2/4/2020
+
+	- [ x ] Create MySQL table for validcookies.
+	
+	- [ ]   Login function to insert token to this table.
+		- [ ]	Check valid token is with login request.
+		- [ ]	If it matches, delete that login_token from database.
+
+	- [ ]	Check / route refreshing with this table (using Middleware) 

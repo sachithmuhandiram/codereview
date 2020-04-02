@@ -29,8 +29,9 @@ import (
 
 func UserLogin(res http.ResponseWriter, req *http.Request) {
 
-	requestID := req.FormValue("requestID")
+	requestID := req.FormValue("uid")
 	userID := req.FormValue("userid")
+	loginToken := req.FormValue("logintoken")
 	password := req.FormValue("password")
 
 	var userpassword string // to use with select table
@@ -44,6 +45,35 @@ func UserLogin(res http.ResponseWriter, req *http.Request) {
 	}).Info("Login request received")
 
 	db := dbConn()
+
+	// if user form doesnt have a logintoken then it rejects:
+	validToken := checkLoginToken(requestID,loginToken)
+
+	if validToken == false  {
+
+		logs.WithFields(logs.Fields{
+						"Service":   "User Service",
+						"Package":   "Login",
+						"function":  "UserLogin",
+						"userid":    userID,
+						"requestID": requestID,
+	}).Warn("Login request does not have a login token")
+
+	// response is sent to login page again , for now its status unauthorize
+	res.WriteHeader(http.StatusUnauthorized)
+
+	_, err = http.PostForm("http://localhost:7070/response", url.Values{"uid": {requestID}, "service": {"User Service"},
+			"function": {"UserLogin"}, "package": {"Login"}, "status": {"0"}})
+
+		if err != nil {
+			log.Println("Error response sending")
+		}
+		
+	return
+
+	}
+
+	// else goes to password matching
 
 	//getting user password from users table
 	row := db.QueryRow("select password from users where email=?", userID)
@@ -114,6 +144,43 @@ func UserLogin(res http.ResponseWriter, req *http.Request) {
 	defer db.Close()
 
 }
+
+
+// Checks login form's token.
+func checkLoginToken(requestID,loginToken string) bool{
+	var logintoken bool
+
+	logs.WithFields(logs.Fields{
+		"Service":   "User Service",
+		"Package":   "Login",
+		"function":  "checkLoginToken",
+		"requestID": requestID,
+	}).Info("Check login token with login tokens table")
+
+
+	db := dbConn()
+	row := db.QueryRow("SELECT EXISTS(SELECT login_token FROM login_token WHERE login_token=?)", loginToken)
+
+	err := row.Scan(&logintoken)
+	if err != nil {
+		logs.WithFields(logs.Fields{
+			"Service":   "User Service",
+			"Package":   "Login",
+			"function":  "checkLoginToken",
+			"requestID": requestID,
+			"error"		: err,
+		}).Error("Failed to fetch data from login token table")
+	}
+
+	if logintoken {
+		return true
+	}
+
+	defer db.Close()
+	return false
+
+}
+
 
 func CheckUserLogin(res http.ResponseWriter, req *http.Request) {
 

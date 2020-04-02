@@ -187,6 +187,7 @@ func (apiID *UUID) validatemail(res http.ResponseWriter, req *http.Request) {
 func (apiID *UUID) userLogin(res http.ResponseWriter, req *http.Request) {
 
 	//jwt := req.FormValue("jwt") //req.URL.Query()["jwt"]
+	loginToken := req.FormValue("logintoken")
 	requestID := apiID.apiUuid
 	userid := req.FormValue("email")
 	password := req.FormValue("password")
@@ -209,8 +210,10 @@ func (apiID *UUID) userLogin(res http.ResponseWriter, req *http.Request) {
 		"uuid":     requestID,
 	}).Info("User Login request received")
 
-	_, err := http.PostForm(userLOGIN, url.Values{"userid": {userid}, "uid": {requestID.String()},
-		"password": {password}})
+	_, err := http.PostForm(userLOGIN, url.Values{"userid": {userid}, 
+													"uid": {requestID.String()},
+													"logintoken" : {loginToken},
+													"password": {password}})
 
 	if err != nil {
 		logs.WithFields(logs.Fields{
