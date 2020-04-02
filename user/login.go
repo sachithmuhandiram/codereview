@@ -61,8 +61,9 @@ func UserLogin(res http.ResponseWriter, req *http.Request) {
 
 	// response is sent to login page again , for now its status unauthorize
 	res.WriteHeader(http.StatusUnauthorized)
+	res.Write([]byte("500 - Something bad happened!"))
 
-	_, err = http.PostForm("http://localhost:7070/response", url.Values{"uid": {requestID}, "service": {"User Service"},
+	_, err := http.PostForm("http://localhost:7070/response", url.Values{"uid": {requestID}, "service": {"User Service"},
 			"function": {"UserLogin"}, "package": {"Login"}, "status": {"0"}})
 
 		if err != nil {
@@ -130,6 +131,7 @@ func UserLogin(res http.ResponseWriter, req *http.Request) {
 	}).Info("Passwords match")
 
 	// need to redirect tp /home
+	res.WriteHeader(http.StatusOK)
 	/*
 		Also to insert to db, logged user, password expire and token.
 	*/
