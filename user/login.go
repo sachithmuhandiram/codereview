@@ -34,8 +34,6 @@ func UserLogin(res http.ResponseWriter, req *http.Request) {
 	loginToken := req.FormValue("logintoken")
 	password := req.FormValue("password")
 
-	var userpassword string // to use with select table
-
 	logs.WithFields(logs.Fields{
 		"Service":   "User Service",
 		"Package":   "Login",
@@ -74,35 +72,21 @@ func UserLogin(res http.ResponseWriter, req *http.Request) {
 
 	}
 
-	// else goes to password matching
+	// compare password
+	passwordMatch := comparePassword(requestID,userID,password)
 
-	//getting user password from users table
-	row := db.QueryRow("select password from users where email=?", userID)
-	err := row.Scan(&userpassword)
+	if passwordMatch == true{
 
-	if err != nil {
-		if err == sql.ErrNoRows {
-			logs.WithFields(logs.Fields{
-				"Service":   "User Service",
-				"Package":   "Login",
-				"function":  "UserLogin",
-				"userid":    userID,
-				"requestID": requestID,
-			}).Error("No record available for the user")
-		} else {
-			logs.WithFields(logs.Fields{
-				"Service":   "User Service",
-				"Package":   "Login",
-				"function":  "UserLogin",
-				"userid":    userID,
-				"requestID": requestID,
-			}).Error("Couldnt fetch users table")
-		}
-	} // querying database table if
+		logs.WithFields(logs.Fields{
+			"Service":   "User Service",
+			"Package":   "Login",
+			"function":  "UserLogin",
+			"userid":    userID,
+			"requestID": requestID,
+		}).Info("Passwords match")
 
-	comparePassword := bcrypt.CompareHashAndPassword([]byte(userpassword), []byte(password))
+	}else{
 
-	if comparePassword != nil {
 		logs.WithFields(logs.Fields{
 			"Service":   "User Service",
 			"Package":   "Login",
@@ -110,9 +94,9 @@ func UserLogin(res http.ResponseWriter, req *http.Request) {
 			"userid":    userID,
 			"requestID": requestID,
 		}).Error("Passwords do not match")
-		defer db.Close()
 
-		_, err = http.PostForm("http://localhost:7070/response", url.Values{"uid": {requestID}, "service": {"User Service"},
+
+		_, err := http.PostForm("http://localhost:7070/response", url.Values{"uid": {requestID}, "service": {"User Service"},
 			"function": {"UserLogin"}, "package": {"Login"}, "status": {"0"}})
 
 		if err != nil {
@@ -121,16 +105,8 @@ func UserLogin(res http.ResponseWriter, req *http.Request) {
 
 		return
 
-	}
-	logs.WithFields(logs.Fields{
-		"Service":   "User Service",
-		"Package":   "Login",
-		"function":  "UserLogin",
-		"userid":    userID,
-		"requestID": requestID,
-	}).Info("Passwords match")
+	} // password do not match
 
-	// need to redirect tp /home
 	jwtToken,jwtErr := GenerateJWT(loginToken,3600) // token valid for an hour
 
 		if jwtErr != nil{
@@ -157,12 +133,13 @@ func UserLogin(res http.ResponseWriter, req *http.Request) {
 		}).Error("Couldnt insert JWT to table")
 	}
 
-	http.Redirect(res, req, "/", 301)
+	
+	http.Redirect(res, req, "/", http.StatusSeeOther)
 	/*
 		Also to insert to db, logged user, password expire and token.
 	*/
 
-	_, err = http.PostForm("http://localhost:7070/response", url.Values{"uid": {requestID}, "service": {"User Service"},
+	_, err := http.PostForm("http://localhost:7070/response", url.Values{"uid": {requestID}, "service": {"User Service"},
 		"function": {"UserLogin"}, "package": {"Login"}, "status": {"1"}})
 
 	if err != nil {
@@ -172,7 +149,44 @@ func UserLogin(res http.ResponseWriter, req *http.Request) {
 	defer db.Close()
 
 }
+// Password comparision
+func comparePassword(requestID,userID,password string) bool{
 
+	db := dbConn()
+	var userpassword string // to use with select table
+
+	row := db.QueryRow("select password from users where email=?", userID)
+	err := row.Scan(&userpassword)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			logs.WithFields(logs.Fields{
+				"Service":   "User Service",
+				"Package":   "Login",
+				"function":  "passwordComparision",
+				"userid":    userID,
+				"requestID": requestID,
+			}).Error("No record available for the user")
+		} else {
+			logs.WithFields(logs.Fields{
+				"Service":   "User Service",
+				"Package":   "Login",
+				"function":  "passwordComparision",
+				"userid":    userID,
+				"requestID": requestID,
+			}).Error("Couldnt fetch users table")
+		}
+	} // querying database table if
+
+	comparePassword := bcrypt.CompareHashAndPassword([]byte(userpassword), []byte(password))
+
+	if comparePassword != nil {
+		return false
+	}
+	defer db.Close()
+
+	return true
+}
 // Insert into valid token
 func insertToValidToken(userID,jwtToken,requestID string) error{
 

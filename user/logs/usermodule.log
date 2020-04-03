@@ -496,3 +496,5 @@ net/http.(*conn).serve(0xc0000bca00, 0x7f3c20, 0xc000020040)
 created by net/http.(*Server).Serve
 	/usr/local/go/src/net/http/server.go:2933 +0x35c
 2020/04/02 17:55:48 User Service started
+2020/04/03 06:55:24 User Service started
+2020/04/03 08:16:55 User Service started
