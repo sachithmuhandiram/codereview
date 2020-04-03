@@ -498,3 +498,25 @@ created by net/http.(*Server).Serve
 2020/04/02 17:55:48 User Service started
 2020/04/03 06:55:24 User Service started
 2020/04/03 08:16:55 User Service started
+2020/04/03 11:26:48 User Service started
+2020/04/03 11:45:08 User Service started
+2020/04/03 11:52:08 User Service started
+2020/04/03 13:09:19 User Service started
+2020/04/03 13:25:25 User Service started
+2020/04/03 13:25:32 Cookie setting step
+2020/04/03 13:25:32 Cookie set :  {csrftoken eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOiIyMDIwLTA0LTA2VDAxOjI1OjMyLjI3MzU5NTY5OFoifQ.9M-lEw7RARNHPIeXZAjuuerRB1uZH-_INPwPBLaQTvY   2020-04-04 13:25:32.274909418 +0000 UTC m=+86406.898393610  0 false false 0  []}
+2020/04/03 14:33:38 User Service started
+2020/04/03 14:33:48 Cookie setting step
+2020/04/03 14:33:48 Cookie set :  {csrftoken eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOiIyMDIwLTA0LTA2VDAyOjMzOjQ4Ljg5MDc0NTUwMloifQ.2JbyC6JvEC06VRS8iayO_ShzhJaXFn9P5l3sgvT7l9g   2020-04-04 14:33:48.89226198 +0000 UTC m=+86410.662507271  0 false false 0  []}
+2020/04/03 15:40:43 User Service started
+2020/04/03 15:42:59 User Service started
+2020/04/03 15:44:15 User Service started
+2020/04/03 15:45:16 User Service started
+2020/04/03 15:47:51 User Service started
+2020/04/03 15:49:23 User Service started
+2020/04/03 15:54:07 User Service started
+2020/04/03 15:57:36 User Service started
+2020/04/03 16:03:25 User Service started
+2020/04/03 16:08:08 User Service started
+2020/04/03 16:09:00 User Service started
+2020/04/03 16:29:13 User Service started

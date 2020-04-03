@@ -109,17 +109,17 @@ func UserLogin(res http.ResponseWriter, req *http.Request) {
 
 	jwtToken,jwtErr := GenerateJWT(loginToken,3600) // token valid for an hour
 
-		if jwtErr != nil{
-			logs.WithFields(logs.Fields{
-			"Service":   "User Service",
-			"Package":   "Login",
-			"function":  "UserLogin",
-			"userid":    userID,
-			"requestID": requestID,
-		}).Error("Generating jwt failed")
+	if jwtErr != nil{
+		logs.WithFields(logs.Fields{
+		"Service":   "User Service",
+		"Package":   "Login",
+		"function":  "UserLogin",
+		"userid":    userID,
+		"requestID": requestID,
+	}).Error("Generating jwt failed")
 
-		}
-
+	}
+	// Write into valid token table
 	validTkn := insertToValidToken(userID,jwtToken,requestID)
 
 	if validTkn != nil{
@@ -132,21 +132,24 @@ func UserLogin(res http.ResponseWriter, req *http.Request) {
 			"requestID": requestID,
 		}).Error("Couldnt insert JWT to table")
 	}
-
-	
-	http.Redirect(res, req, "/", http.StatusSeeOther)
 	/*
 		Also to insert to db, logged user, password expire and token.
 	*/
 
-	_, err := http.PostForm("http://localhost:7070/response", url.Values{"uid": {requestID}, "service": {"User Service"},
-		"function": {"UserLogin"}, "package": {"Login"}, "status": {"1"}})
+	// Writing response to home
 
-	if err != nil {
-		log.Println("Error response sending")
-	}
+	expiration := time.Now().Add(24 * time.Hour)
+	cookie    := http.Cookie{Name: "usercookie",Value:jwtToken,Expires:expiration,Path:"/"}
+	http.SetCookie(res, &cookie)
+
+	redirectURL := "http://localhost:7070/home?usercookie=" + url.QueryEscape(cookie)
+
+	http.Redirect(res, req, redirectURL , http.StatusFound)
+
+	// send response to / 
 
 	defer db.Close()
+	return
 
 }
 // Password comparision

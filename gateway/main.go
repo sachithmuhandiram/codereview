@@ -88,6 +88,7 @@ func main() {
 	}).Info("API - Gateway started at 7070")
 
 	http.HandleFunc("/getemail", authenticateToken(apiID.validatemail))
+	http.HandleFunc("/home",home)
 	http.HandleFunc("/response", reportResponse)
 	http.HandleFunc("/login", apiID.userLogin)
 	http.HandleFunc("/register", apiID.registerUser)
@@ -95,6 +96,16 @@ func main() {
 	http.HandleFunc("/updatepassword", apiID.updatePassword)
 
 	http.ListenAndServe(":7070", nil)
+}
+// Test home function
+func home(res http.ResponseWriter,req *http.Request){
+	log.Println("Came to home controller")
+
+	cookie,_:= req.Cookie("usercookie") //URL.Query().Get("usercookie")
+
+	log.Println("User cookie is : ",cookie)
+
+	
 }
 
 // This will validate email address has valid syntax
