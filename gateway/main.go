@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"time"
 	"os"
-	//"strings"
+	"io"
 	"io/ioutil"
 	"encoding/json"
 	"bytes"
@@ -90,6 +90,7 @@ func main() {
 
 	http.HandleFunc("/getemail", authenticateToken(apiID.validatemail))
 	http.HandleFunc("/home",home)
+	http.HandleFunc("/test",test)
 	http.HandleFunc("/response", reportResponse)
 	http.HandleFunc("/login", apiID.userLogin)
 	http.HandleFunc("/register", apiID.registerUser)
@@ -98,7 +99,11 @@ func main() {
 
 	http.ListenAndServe(":7070", nil)
 }
-// Test home function
+// Test function
+func test(res http.ResponseWriter,req *http.Request){
+	io.WriteString(res,"Got the page")
+}
+// home function
 func home(res http.ResponseWriter,req *http.Request){
 	log.Println("Came to home controller")
 
@@ -107,18 +112,23 @@ func home(res http.ResponseWriter,req *http.Request){
 
 	if authorized == "1"{
 		user := req.FormValue("user")
+		expirationTime := time.Now().Add(5 * time.Minute)
 
 		// creating JWT for user
-		jwt,jwtErr := GenerateJWT(user,3600)
+		jwt,jwtErr := GenerateJWT(user)
 
 		if jwtErr != nil{
 			log.Println("Error generating JWT, cant go further")
 			return
 		}
+		// Setting jwt cookie
+		http.SetCookie(res, &http.Cookie{
+			Name:    "usertoken",
+			Value:   jwt,
+			Expires: expirationTime,
+		})
 
-		log.Println("JWT : ",jwt)
-
-
+		http.Redirect(res, req, "/test", http.StatusSeeOther)
 
 	}else{ // authorized = 0
 
@@ -533,7 +543,7 @@ func reportResponse(res http.ResponseWriter, req *http.Request) {
 
 // JWT
 // GenerateJWT takes eventID as a parameter and time (minutes) for JWT
-func GenerateJWT(user string, validDuration int) (string, error) {
+func GenerateJWT(user string) (string, error) {
 
 	//loginKey := []byte(user)
 	appSecretKey  := []byte("du-bi-du-bi-dub") // takes 531855448467 years to break using brute-force attack
@@ -542,7 +552,7 @@ func GenerateJWT(user string, validDuration int) (string, error) {
 
 	claims["authorized"] = true
 	claims["user"] = user
-	claims["exp"] = time.Now().Add(time.Minute * time.Duration(validDuration))
+	claims["exp"] = time.Now().Add(time.Duration(5))
 
 	jwtToken, jwtErr := token.SignedString(appSecretKey)
 

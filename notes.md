@@ -22,6 +22,12 @@ Here it uses `key:value` combination.
 
 [Handling JSON objects in POST](https://stackoverflow.com/questions/15672556/handling-json-post-request-in-go)
 
+[Implementing JWT based authentication in Golang](https://www.sohamkamani.com/golang/2019-01-01-jwt-authentication/)
+
+[JWT authentication sample SO](https://stackoverflow.com/questions/36236109/go-and-jwt-simple-authentication)
+
+[]()
+
 ## Environment variables
 
 [Docker-compose environment variables](https://docs.docker.com/compose/environment-variables/)
