@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"time"
 	"os"
-	"io"
+	"fmt"
 	"io/ioutil"
 	"encoding/json"
 	"bytes"
@@ -88,7 +88,7 @@ func main() {
 		"uuid":     apiID,
 	}).Info("API - Gateway started at 7070")
 
-	http.HandleFunc("/getemail", authenticateToken(apiID.validatemail))
+//	http.HandleFunc("/getemail", authenticateToken(apiID.validatemail))
 	http.HandleFunc("/home",home)
 	http.HandleFunc("/test",test)
 	http.HandleFunc("/response", reportResponse)
@@ -101,7 +101,8 @@ func main() {
 }
 // Test function
 func test(res http.ResponseWriter,req *http.Request){
-	io.WriteString(res,"Got the page")
+	log.Println("Test function called")
+	fmt.Fprintf(res, "You have been redirected here!")
 }
 // home function
 func home(res http.ResponseWriter,req *http.Request){
@@ -114,7 +115,7 @@ func home(res http.ResponseWriter,req *http.Request){
 		user := req.FormValue("user")
 		expirationTime := time.Now().Add(5 * time.Minute)
 
-		// creating JWT for user
+		// // creating JWT for user
 		jwt,jwtErr := GenerateJWT(user)
 
 		if jwtErr != nil{
@@ -128,7 +129,7 @@ func home(res http.ResponseWriter,req *http.Request){
 			Expires: expirationTime,
 		})
 
-		http.Redirect(res, req, "/test", http.StatusSeeOther)
+		http.Redirect(res, req, "/test", http.StatusFound)
 
 	}else{ // authorized = 0
 
