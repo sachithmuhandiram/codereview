@@ -107,46 +107,27 @@ func UserLogin(res http.ResponseWriter, req *http.Request) {
 
 	} // password do not match
 
-	jwtToken,jwtErr := GenerateJWT(loginToken,3600) // token valid for an hour
+	//jwtToken,jwtErr := GenerateJWT(loginToken,3600) // token valid for an hour
 
-	if jwtErr != nil{
-		logs.WithFields(logs.Fields{
-		"Service":   "User Service",
-		"Package":   "Login",
-		"function":  "UserLogin",
-		"userid":    userID,
-		"requestID": requestID,
-	}).Error("Generating jwt failed")
-
-	}
 	// Write into valid token table
-	validTkn := insertToValidToken(userID,jwtToken,requestID)
-
-	if validTkn != nil{
-	
-			logs.WithFields(logs.Fields{
-			"Service":   "User Service",
-			"Package":   "Login",
-			"function":  "UserLogin",
-			"userid":    userID,
-			"requestID": requestID,
-		}).Error("Couldnt insert JWT to table")
-	}
+	//validTkn := insertToValidToken(userID,jwtToken,requestID)
 	/*
 		Also to insert to db, logged user, password expire and token.
 	*/
+		// StatusSeeOther will redirect and that will have GET
+	_, err := http.PostForm("http://localhost:7070/home", url.Values{"uid": {requestID},"user":{userID},"authorize": {"1"}})
 
-	// Writing response to home
+	if err != nil {
+		log.Println("Error login user details sending")
+	}
 
-	expiration := time.Now().Add(24 * time.Hour)
-	cookie    := http.Cookie{Name: "usercookie",Value:jwtToken,Expires:expiration,Path:"/"}
-	http.SetCookie(res, &cookie)
+	// send response to /gateway respose
+	_, err = http.PostForm("http://localhost:7070/response", url.Values{"uid": {requestID}, "service": {"User Service"},
+			"function": {"UserLogin"}, "package": {"Login"}, "status": {"1"}})
 
-	redirectURL := "http://localhost:7070/home?usercookie=" + url.QueryEscape(cookie)
-
-	http.Redirect(res, req, redirectURL , http.StatusFound)
-
-	// send response to / 
+		if err != nil {
+			log.Println("Error response sending")
+		}
 
 	defer db.Close()
 	return

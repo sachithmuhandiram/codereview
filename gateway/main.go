@@ -18,6 +18,7 @@ import (
 	"github.com/google/uuid"
 	logs "github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
+	"github.com/dgrijalva/jwt-go"
 )
 
 // Globle variable
@@ -101,9 +102,28 @@ func main() {
 func home(res http.ResponseWriter,req *http.Request){
 	log.Println("Came to home controller")
 
-	cookie,_:= req.Cookie("usercookie") //URL.Query().Get("usercookie")
+	//uid := req.FormValue("uid")
+	authorized := req.FormValue("authorize")
 
-	log.Println("User cookie is : ",cookie)
+	if authorized == "1"{
+		user := req.FormValue("user")
+
+		// creating JWT for user
+		jwt,jwtErr := GenerateJWT(user,3600)
+
+		if jwtErr != nil{
+			log.Println("Error generating JWT, cant go further")
+			return
+		}
+
+		log.Println("JWT : ",jwt)
+
+
+
+	}else{ // authorized = 0
+
+		log.Println("Something bad happened")
+	}
 
 	
 }
@@ -509,4 +529,27 @@ func reportResponse(res http.ResponseWriter, req *http.Request) {
 		}
 	}
 
+}
+
+// JWT
+// GenerateJWT takes eventID as a parameter and time (minutes) for JWT
+func GenerateJWT(user string, validDuration int) (string, error) {
+
+	//loginKey := []byte(user)
+	appSecretKey  := []byte("du-bi-du-bi-dub") // takes 531855448467 years to break using brute-force attack
+	token := jwt.New(jwt.SigningMethodHS256)
+	claims := token.Claims.(jwt.MapClaims)
+
+	claims["authorized"] = true
+	claims["user"] = user
+	claims["exp"] = time.Now().Add(time.Minute * time.Duration(validDuration))
+
+	jwtToken, jwtErr := token.SignedString(appSecretKey)
+
+	if jwtErr != nil {
+		log.Println("Error creating jwt Token : ", jwtErr)
+		return "", jwtErr
+	}
+
+	return jwtToken, nil
 }
