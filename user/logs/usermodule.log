@@ -546,3 +546,152 @@ created by net/http.(*Server).Serve
 2020/04/06 14:39:56 User Service started
 2020/04/06 14:42:10 User Service started
 2020/04/06 14:45:40 User Service started
+2020/04/07 04:34:57 User Service started
+2020/04/07 04:35:08 http: superfluous response.WriteHeader call from main.UserLogin (login.go:119)
+2020/04/07 04:35:34 http: superfluous response.WriteHeader call from main.UserLogin (login.go:119)
+2020/04/07 04:43:34 User Service started
+2020/04/07 04:47:21 User Service started
+2020/04/07 04:48:05 http: superfluous response.WriteHeader call from main.UserLogin (login.go:119)
+2020/04/07 04:50:42 User Service started
+2020/04/07 04:53:53 User Service started
+2020/04/07 05:11:46 User Service started
+2020/04/07 05:15:08 User Service started
+2020/04/07 05:16:04 User Service started
+2020/04/07 05:17:23 User Service started
+2020/04/07 05:18:06 User Service started
+2020/04/07 05:22:31 User Service started
+2020/04/07 05:25:04 User Service started
+2020/04/07 05:29:11 User Service started
+2020/04/08 06:11:48 User Service started
+2020/04/08 06:21:18 User Service started
+2020/04/08 06:29:29 User Service started
+2020/04/08 06:33:06 User Service started
+2020/04/08 06:38:04 User Service started
+2020/04/08 06:38:13 User service loing check
+2020/04/08 06:57:52 User Service started
+2020/04/08 06:58:33 User service loing check, userID :  
+2020/04/08 07:20:47 User Service started
+2020/04/08 07:21:12 User service loing check, userID :  test@email.com
+2020/04/08 07:23:20 User Service started
+2020/04/08 07:23:25 User service loing check, userID :  test@email.com
+2020/04/08 07:59:18 User Service started
+2020/04/08 07:59:27 User service loing check, userID :  test@email.com
+2020/04/08 07:59:27 http: superfluous response.WriteHeader call from main.UserLogin (login.go:113)
+2020/04/08 08:10:05 User Service started
+2020/04/08 08:10:16 User service loing check, userID :  test@email.com
+2020/04/08 08:10:16 http: superfluous response.WriteHeader call from main.UserLogin (login.go:113)
+2020/04/08 08:19:51 User Service started
+2020/04/08 08:20:24 User service loing check, userID :  
+2020/04/08 08:27:38 User Service started
+2020/04/08 08:27:55 User service loing check, userID :  sachith
+2020/04/08 08:28:29 User service loing check, userID :  
+2020/04/08 08:39:32 User Service started
+2020/04/08 08:39:43 User service loing check, userID :  sachith
+2020/04/08 08:39:43 Request ID :  
+2020/04/08 08:41:21 User Service started
+2020/04/08 08:47:22 User Service started
+2020/04/08 08:47:29 User service loing check, userID :  
+2020/04/08 08:47:29 Request ID :  
+2020/04/08 08:47:45 User service loing check, userID :  sachith
+2020/04/08 08:47:45 Request ID :  
+2020/04/08 08:49:29 User Service started
+2020/04/08 08:49:39 User service loing check, userID :  
+2020/04/08 08:49:39 Request ID :  
+2020/04/08 08:49:47 User service loing check, userID :  sachith
+2020/04/08 08:49:47 Request ID :  
+2020/04/08 08:51:14 User Service started
+2020/04/08 08:52:16 User Service started
+2020/04/08 08:53:08 User Service started
+2020/04/08 08:53:51 User Service started
+2020/04/08 09:02:38 User Service started
+2020/04/08 09:06:34 User Service started
+2020/04/08 09:06:35 User service loing check, userID :  
+2020/04/08 09:06:35 Request ID :  
+2020/04/08 09:07:10 User service loing check, userID :  
+2020/04/08 09:07:10 Request ID :  
+2020/04/08 09:08:19 User Service started
+2020/04/08 09:09:06 User Service started
+2020/04/08 09:11:33 User Service started
+2020/04/08 09:11:40 User service loing check, userID :  
+2020/04/08 09:11:40 Request ID :  
+2020/04/08 10:17:43 User Service started
+2020/04/08 10:18:36 User service loing check, userID :  
+2020/04/08 10:18:36 Request ID :  foo
+2020/04/08 10:24:06 User Service started
+2020/04/08 10:24:24 User service loing check, userID :  
+2020/04/08 10:24:24 Request ID :  
+2020/04/08 10:25:41 User Service started
+2020/04/08 10:26:48 User service loing check, userID :  
+2020/04/08 10:26:48 Request ID :  
+2020/04/08 10:27:43 User Service started
+2020/04/08 10:28:25 User service loing check, userID :  
+2020/04/08 10:28:57 User service loing check, userID :  
+2020/04/08 10:29:30 User Service started
+2020/04/08 10:29:37 User service loing check, userID :  
+2020/04/08 10:54:49 User Service started
+2020/04/08 10:54:57 User service loing check, userID :  
+2020/04/08 10:57:29 User Service started
+2020/04/08 10:57:36 User service loing check, userID :  
+2020/04/08 11:46:01 User Service started
+2020/04/08 11:48:14 User Service started
+2020/04/08 11:48:25 Request ID :  d3d5a9cf-798e-11ea-a3c4-c46516a78d3b
+2020/04/08 11:49:35 User Service started
+2020/04/08 11:49:48 Request ID :  041b0b58-798f-11ea-9b77-c46516a78d3b
+2020/04/08 11:49:48 User iD :  
+2020/04/08 11:50:24 User Service started
+2020/04/08 11:50:25 Request ID :  2192a07f-798f-11ea-a642-c46516a78d3b
+2020/04/08 11:50:25 User iD :  
+2020/04/08 11:51:43 User Service started
+2020/04/08 11:51:45 Request ID :  5056c1bf-798f-11ea-85a9-c46516a78d3b
+2020/04/08 11:51:45 User iD :  sachith
+2020/04/08 11:53:55 User Service started
+2020/04/08 11:54:05 User Service started
+2020/04/08 11:54:26 Request ID :  a569095d-798f-11ea-9d48-c46516a78d3b
+2020/04/08 11:54:26 User iD :  sachith
+2020/04/08 11:54:48 Request ID :  a569095d-798f-11ea-9d48-c46516a78d3b
+2020/04/08 11:54:48 User iD :  sachith
+2020/04/08 14:40:32 User Service started
+2020/04/08 14:40:43 Request ID :  e610e766-79a6-11ea-823a-c46516a78d3b
+2020/04/08 14:40:43 User iD :  sachith
+2020/04/08 14:40:43 Password:  
+2020/04/08 14:42:04 User Service started
+2020/04/08 14:42:13 Request ID :  1c72f30c-79a7-11ea-b496-c46516a78d3b
+2020/04/08 14:42:13 User iD :  sachith
+2020/04/08 14:42:13 Password:  
+2020/04/08 14:43:46 User Service started
+2020/04/08 14:43:52 Request ID :  59b4b1ae-79a7-11ea-bd1d-c46516a78d3b
+2020/04/08 14:43:52 User iD :  sachith
+2020/04/08 14:43:52 Password:  hi
+2020/04/08 14:44:06 Request ID :  59b4b1ae-79a7-11ea-bd1d-c46516a78d3b
+2020/04/08 14:44:06 User iD :  sachith
+2020/04/08 14:44:06 Password:  hi
+2020/04/08 14:44:32 Request ID :  59b4b1ae-79a7-11ea-bd1d-c46516a78d3b
+2020/04/08 14:44:32 User iD :  sachith
+2020/04/08 14:44:32 Password:  hi
+2020/04/08 14:46:21 User Service started
+2020/04/08 14:46:45 Request ID :  b5b9c6b9-79a7-11ea-8f64-c46516a78d3b
+2020/04/08 14:46:45 User iD :  sachith
+2020/04/08 14:46:45 Password:  hi
+2020/04/08 14:46:45 login token:  
+2020/04/08 14:48:59 User Service started
+2020/04/08 14:49:09 Request ID :  13e83732-79a8-11ea-9af0-c46516a78d3b
+2020/04/08 14:49:09 User iD :  sachith
+2020/04/08 14:49:09 Password:  
+2020/04/08 14:49:09 login token:  
+2020/04/08 14:50:20 User Service started
+2020/04/08 14:50:38 Request ID :  4427900f-79a8-11ea-bdc3-c46516a78d3b
+2020/04/08 14:50:38 User iD :  
+2020/04/08 14:50:38 Password:  hi
+2020/04/08 14:50:38 login token:  hi1234
+2020/04/08 14:51:25 Request ID :  4427900f-79a8-11ea-bdc3-c46516a78d3b
+2020/04/08 14:51:25 User iD :  sachith
+2020/04/08 14:51:25 Password:  hi
+2020/04/08 14:51:25 login token:  hi1234
+2020/04/08 14:58:54 User Service started
+2020/04/08 14:59:34 http: superfluous response.WriteHeader call from main.UserLogin (login.go:84)
+2020/04/08 15:01:50 User Service started
+2020/04/08 15:07:37 User Service started
+2020/04/08 15:09:17 User Service started
+2020/04/08 15:11:22 User Service started
+2020/04/08 15:21:27 User Service started
+2020/04/08 15:22:44 User Service started

@@ -28,8 +28,9 @@ import (
 // }
 
 func UserLogin(res http.ResponseWriter, req *http.Request) {
+	req.ParseForm()
 
-	requestID := req.FormValue("uid")
+	requestID := req.URL.Query().Get("uid")
 	userID := req.FormValue("userid")
 	loginToken := req.FormValue("logintoken")
 	password := req.FormValue("password")
@@ -44,7 +45,7 @@ func UserLogin(res http.ResponseWriter, req *http.Request) {
 
 	db := dbConn()
 
-	// if user form doesnt have a logintoken then it rejects:
+	// // if user form doesnt have a logintoken then it rejects:
 	validToken := checkLoginToken(requestID,loginToken)
 
 	if validToken == false  {
@@ -57,10 +58,6 @@ func UserLogin(res http.ResponseWriter, req *http.Request) {
 						"requestID": requestID,
 	}).Warn("Login request does not have a login token")
 
-	// response is sent to login page again , for now its status unauthorize
-	res.WriteHeader(http.StatusUnauthorized)
-	res.Write([]byte("500 - Something bad happened!"))
-
 	_, err := http.PostForm("http://localhost:7070/response", url.Values{"uid": {requestID}, "service": {"User Service"},
 			"function": {"UserLogin"}, "package": {"Login"}, "status": {"0"}})
 
@@ -68,8 +65,7 @@ func UserLogin(res http.ResponseWriter, req *http.Request) {
 			log.Println("Error response sending")
 		}
 		
-	return
-
+		http.Redirect(res, req, "http://localhost:7070/login", http.StatusSeeOther)
 	}
 
 	// compare password
@@ -85,7 +81,17 @@ func UserLogin(res http.ResponseWriter, req *http.Request) {
 			"requestID": requestID,
 		}).Info("Passwords match")
 
-	}else{
+		http.Redirect(res, req, "http://localhost:7070/createsession?userid="+userID+"&authorize="+"1", http.StatusSeeOther)
+
+		// send response to /gateway respose
+		_, err := http.PostForm("http://localhost:7070/response", url.Values{"uid": {requestID}, "service": {"User Service"},
+			"function": {"UserLogin"}, "package": {"Login"}, "status": {"1"}})
+
+		if err != nil {
+			log.Println("Error response sending")
+		}
+
+	}else{ // password do not match
 
 		logs.WithFields(logs.Fields{
 			"Service":   "User Service",
@@ -107,31 +113,7 @@ func UserLogin(res http.ResponseWriter, req *http.Request) {
 
 	} // password do not match
 
-	//jwtToken,jwtErr := GenerateJWT(loginToken,3600) // token valid for an hour
-
-	// Write into valid token table
-	//validTkn := insertToValidToken(userID,jwtToken,requestID)
-	/*
-		Also to insert to db, logged user, password expire and token.
-	*/
-		// StatusSeeOther will redirect and that will have GET
-	_, err := http.PostForm("http://localhost:7070/home", url.Values{"uid": {requestID},"user":{userID},"authorize": {"1"}})
-
-	if err != nil {
-		log.Println("Error login user details sending")
-	}
-
-	// send response to /gateway respose
-	_, err = http.PostForm("http://localhost:7070/response", url.Values{"uid": {requestID}, "service": {"User Service"},
-			"function": {"UserLogin"}, "package": {"Login"}, "status": {"1"}})
-
-		if err != nil {
-			log.Println("Error response sending")
-		}
-
 	defer db.Close()
-	return
-
 }
 // Password comparision
 func comparePassword(requestID,userID,password string) bool{

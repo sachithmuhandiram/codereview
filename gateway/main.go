@@ -90,7 +90,7 @@ func main() {
 
 //	http.HandleFunc("/getemail", authenticateToken(apiID.validatemail))
 	http.HandleFunc("/home",home)
-	http.HandleFunc("/test",test)
+	http.HandleFunc("/createsession",createSession)
 	http.HandleFunc("/response", reportResponse)
 	http.HandleFunc("/login", apiID.userLogin)
 	http.HandleFunc("/register", apiID.registerUser)
@@ -99,21 +99,26 @@ func main() {
 
 	http.ListenAndServe(":7070", nil)
 }
-// Test function
-func test(res http.ResponseWriter,req *http.Request){
-	log.Println("Test function called")
+// Home function
+func home(res http.ResponseWriter,req *http.Request){
 	fmt.Fprintf(res, "You have been redirected here!")
 }
-// home function
-func home(res http.ResponseWriter,req *http.Request){
-	log.Println("Came to home controller")
 
-	//uid := req.FormValue("uid")
+// createSession function
+func createSession(res http.ResponseWriter,req *http.Request){
+
+	uid := req.FormValue("uid")
 	authorized := req.FormValue("authorize")
 
 	if authorized == "1"{
-		user := req.FormValue("user")
+		user := req.FormValue("userid")
 		expirationTime := time.Now().Add(5 * time.Minute)
+
+		logs.WithFields(logs.Fields{
+			"package":  "API-Gateway",
+			"function": "createSession",
+			"uuid":     uid,
+		}).Info("User details received to create a session")
 
 		// // creating JWT for user
 		jwt,jwtErr := GenerateJWT(user)
@@ -129,14 +134,12 @@ func home(res http.ResponseWriter,req *http.Request){
 			Expires: expirationTime,
 		})
 
-		http.Redirect(res, req, "/test", http.StatusFound)
+		http.Redirect(res,req,"/home",http.StatusSeeOther)
 
 	}else{ // authorized = 0
 
 		log.Println("Something bad happened")
-	}
-
-	
+	}	
 }
 
 // This will validate email address has valid syntax
@@ -228,7 +231,6 @@ func (apiID *UUID) validatemail(res http.ResponseWriter, req *http.Request) {
 // User login
 func (apiID *UUID) userLogin(res http.ResponseWriter, req *http.Request) {
 
-	//jwt := req.FormValue("jwt") //req.URL.Query()["jwt"]
 	loginToken := req.FormValue("logintoken")
 	requestID := apiID.apiUuid
 	userid := req.FormValue("email")
@@ -244,7 +246,7 @@ func (apiID *UUID) userLogin(res http.ResponseWriter, req *http.Request) {
 
 	}
 
-	//hashedPassword := hashPassword(password)
+	// //hashedPassword := hashPassword(password)
 
 	logs.WithFields(logs.Fields{
 		"package":  "API-Gateway",
@@ -252,20 +254,8 @@ func (apiID *UUID) userLogin(res http.ResponseWriter, req *http.Request) {
 		"uuid":     requestID,
 	}).Info("User Login request received")
 
-	_, err := http.PostForm(userLOGIN, url.Values{"userid": {userid}, 
-													"uid": {requestID.String()},
-													"logintoken" : {loginToken},
-													"password": {password}})
-
-	if err != nil {
-		logs.WithFields(logs.Fields{
-			"package":  "API-Gateway",
-			"function": "userLogin",
-			"userid":   userid,
-			"error":    err,
-			"uuid":     requestID,
-		}).Error("Error posting data to User - Service")
-	}
+	parameters := userLOGIN+"?userid="+ userid +"&uid="+requestID.String()+"&password="+password+"&logintoken="+loginToken
+	http.Redirect(res, req, parameters, http.StatusSeeOther)
 
 }
 
