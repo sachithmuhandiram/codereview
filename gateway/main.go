@@ -38,8 +38,11 @@ type resposeObj struct{
 }
 
 // database connection
+
+var gatewayDB	= os.Getenv("MYSQLDBGATEWAY")
+
 func dbConn() (db *sql.DB) {
-	db, err := sql.Open("mysql", "root:7890@tcp(127.0.0.1:3306)/codereview_users")
+	db, err := sql.Open("mysql", gatewayDB)
 
 	if err != nil {
 		logs.WithFields(logs.Fields{
@@ -147,10 +150,10 @@ func createSession(res http.ResponseWriter,req *http.Request){
 			return
 		}
 		// Insert JWT to table
-		insertJWTResponse,err := http.PostForm("http://user:7071/insertJWT",url.Values{"uid":{uid},"userid":{user},"jwt":{jwt}})
+		insertJWTResponse,err := InsertJWT(uid,user,jwt)
 		
-		if insertJWTResponse.StatusCode == 200 && err == nil{
-			log.Println("JWT sent to user service to insert to table")
+		if insertJWTResponse == true && err == nil{
+			log.Println("JWT insert to insert to table")
 
 			// Setting jwt cookie
 			http.SetCookie(res, &http.Cookie{

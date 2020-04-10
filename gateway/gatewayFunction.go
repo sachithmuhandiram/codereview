@@ -1,12 +1,13 @@
 package main
 
+import(
+	logs "github.com/sirupsen/logrus"
+	"time"
+	"log"
+)
+
 // Insert into valid token
-func InsertJWT(res http.ResponseWriter,req * http.Request) {
-	
-	req.ParseForm()
-	requestID := req.FormValue("uid")
-	userID := req.FormValue("userid")//req.FormValue("userid")
-	jwtToken := req.FormValue("jwt")
+func InsertJWT(requestID,userID,jwtToken string) (bool,error) {
 	
 	t := time.Now()
 	t.Format("yyyy-MM-dd HH:mm:ss")
@@ -17,12 +18,13 @@ func InsertJWT(res http.ResponseWriter,req * http.Request) {
         if err != nil {
             panic(err.Error())
 
-            return 
+            return false,err
         }
 
     _,err = insertToken.Exec(userID, jwtToken,t,t)
 	if err != nil{
 		log.Println("Error occured : ",err)
+		return false,err
 	}else{
 	
 		logs.WithFields(logs.Fields{
@@ -32,9 +34,9 @@ func InsertJWT(res http.ResponseWriter,req * http.Request) {
 			"userid":    userID,
 			"requestID": requestID,
 			//"JWT" : jwtToken,
-		}).Info("Insert into valid jwt tokens")
+		}).Info("Insert into valid jwt tokens")	
 	}
-
+	
 	defer db.Close()
-
+	return true,nil // success
 }

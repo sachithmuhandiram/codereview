@@ -30,7 +30,6 @@ func main() {
 	http.HandleFunc("/register", UserRegister)
 	http.HandleFunc("/login", UserLogin)
 	http.HandleFunc("/loginWithJWT", CheckUserLogin)
-	http.HandleFunc("/insertJWT",InsertJWT)
 	http.HandleFunc("/passwordreset", checkUpdateRequest)
 	http.ListenAndServe("0.0.0.0:7071", nil)
 

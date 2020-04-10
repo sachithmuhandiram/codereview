@@ -9,21 +9,6 @@ import (
 	logs "github.com/sirupsen/logrus"
 )
 
-// database connection
-// func dbConn() (db *sql.DB) {
-// 	db, err := sql.Open("mysql", "root:7890@tcp(127.0.0.1:3306)/codereview_users")
-
-// 	if err != nil {
-// 		logs.WithFields(logs.Fields{
-// 			"Service":  "User Service",
-// 			"Package":  "register",
-// 			"function": "dbConn",
-// 			"error":    err,
-// 		}).Error("Failed to connect to database")
-// 	}
-// 	return db
-// }
-
 // UserRegister function just insert new user to users table
 func UserRegister(res http.ResponseWriter, req *http.Request) {
 
