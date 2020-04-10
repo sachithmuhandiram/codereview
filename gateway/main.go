@@ -72,8 +72,9 @@ func authenticateToken(handlerFunc http.HandlerFunc) http.HandlerFunc {
 		cookie, _ := req.Cookie("usertoken")
 
 		if cookie == nil {
-			log.Println("Cant find cookie :")
+			log.Println("Cant find cookie")
 			http.Redirect(res,req,"/login",http.StatusSeeOther)
+			return
 		}else{
 			// Cookie is there, need to validate that cookie
 			if cookie.Name == "usertoken"{
@@ -81,13 +82,16 @@ func authenticateToken(handlerFunc http.HandlerFunc) http.HandlerFunc {
 
 				if err != nil{
 					log.Println("There was an error getting user details ",err)
-					http.Redirect(res,req,"/login",http.StatusSeeOther)		
+					http.Redirect(res,req,"/login",http.StatusSeeOther)	
+					return	
 				} // got jwt claims 
 					
 				user := jwtClaims["user"].(string)
-				log.Println("User is : ",user)
-				home(res,req)
+				validJWT,err := checkJWT(user,cookie.Value)
 
+				if validJWT == true && err == nil{
+					home(res,req)
+				}
 			} // cookie name checking if loop
 
 		} // there is a cookie
@@ -588,25 +592,4 @@ func GenerateJWT(user string) (string, error) {
 	return jwtToken, nil
 }
 
-// Get claims from JWT
-func getUserFromJWT(userJWT string)(jwt.MapClaims,error){
 
-	    hmacSecretString := "du-bi-du-bi-dub"
-        hmacSecret := []byte(hmacSecretString)
-        token, err := jwt.Parse(userJWT, func(token *jwt.Token) (interface{}, error) {
-             // check token signing method etc
-             return hmacSecret, nil
-        })
-
-        if err != nil {
-            return nil, err
-        }
-
-        if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-            return claims, nil
-        } else {
-            log.Printf("Invalid JWT Token")
-            return nil, nil
-        }
-
-}
