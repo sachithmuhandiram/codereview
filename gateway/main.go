@@ -92,16 +92,31 @@ func main() {
 	http.HandleFunc("/home",home)
 	http.HandleFunc("/createsession",createSession)
 	http.HandleFunc("/response", reportResponse)
-	http.HandleFunc("/login", apiID.userLogin)
+	http.HandleFunc("/userlogin", apiID.userLogin)
 	http.HandleFunc("/register", apiID.registerUser)
 	http.HandleFunc("/passwordreset", apiID.sendPasswordResetEmail)
 	http.HandleFunc("/updatepassword", apiID.updatePassword)
+	http.HandleFunc("/login",login)
 
 	http.ListenAndServe(":7070", nil)
 }
 // Home function
 func home(res http.ResponseWriter,req *http.Request){
-	fmt.Fprintf(res, "You have been redirected here!")
+
+	cookie, _ := req.Cookie("usertoken")
+
+	if cookie == nil {
+		log.Println("Cant find cookie :")
+		http.Redirect(res,req,"/login",http.StatusSeeOther)
+	}else{
+		// User has a cookie, check it
+		log.Println("Cookie is : " + cookie.Value +" name is  " + cookie.Name)
+		fmt.Fprintf(res, "Welcome to Home Page!")
+	}
+}
+// Login function - This will return login form
+func login(res http.ResponseWriter,req *http.Request){
+	fmt.Fprintf(res, "This is login page")
 }
 
 // createSession function
@@ -266,8 +281,8 @@ func (apiID *UUID) userLogin(res http.ResponseWriter, req *http.Request) {
 	}).Info("User Login request received")
 
 	parameters := userLOGIN+"?userid="+ userid +"&uid="+requestID.String()+"&password="+password+"&logintoken="+loginToken
+	
 	http.Redirect(res, req, parameters, http.StatusSeeOther)
-
 }
 
 func generateUUID() uuid.UUID {
