@@ -26,7 +26,9 @@ Here it uses `key:value` combination.
 
 [JWT authentication sample SO](https://stackoverflow.com/questions/36236109/go-and-jwt-simple-authentication)
 
-[]()
+[Extract JWT claims](https://stackoverflow.com/questions/39859244/how-to-extract-the-claims-from-jwt-token)
+
+[Middleware checking and sending to appropriate route](https://stackoverflow.com/questions/48899277/what-is-the-best-way-to-send-back-the-response-from-the-middle-ware-in-golang)
 
 ## Environment variables
 
