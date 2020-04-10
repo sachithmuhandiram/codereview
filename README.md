@@ -8,12 +8,11 @@ No need to have locally installed `golang` instance. If you have locally install
 
 ## Prerequest
 
-* Linux environment. (Project developed and tested in Debian environment)
-
-* You must have installed [Docker](https://www.docker.com/) and [Docker-Compose](https://docs.docker.com/compose/) installed.
+* [Docker](https://www.docker.com/) and [Docker-Compose](https://docs.docker.com/compose/).
 
 * MySQL 5.7.* ( 5.7.29 used for development)
 
+Linux environment is prefered. Didnt test on Windows and MacOS. (Project developed and tested in Debian environment)
 
 ## How to run
 
