@@ -66,14 +66,11 @@ func authenticateToken(handlerFunc http.HandlerFunc) http.HandlerFunc {
 	log.Println("Authentication function called")
 
 	return func(res http.ResponseWriter, req *http.Request) {
-		token := req.FormValue("token")
+		cookie, _ := req.Cookie("usertoken")
 
-		log.Println("Tocken is : ",token)
-
-		if token == "abc"{
-			handlerFunc(res, req)
-		}else{
-			log.Println("Wrong token")
+		if cookie == nil {
+			log.Println("Cant find cookie :")
+			http.Redirect(res,req,"/login",http.StatusSeeOther)
 		}
 	}
 }
@@ -88,8 +85,8 @@ func main() {
 		"uuid":     apiID,
 	}).Info("API - Gateway started at 7070")
 
-//	http.HandleFunc("/getemail", authenticateToken(apiID.validatemail))
-	http.HandleFunc("/home",home)
+	http.HandleFunc("/getemail", apiID.validatemail)
+	http.HandleFunc("/home",authenticateToken(home))
 	http.HandleFunc("/createsession",createSession)
 	http.HandleFunc("/response", reportResponse)
 	http.HandleFunc("/userlogin", apiID.userLogin)
@@ -102,17 +99,8 @@ func main() {
 }
 // Home function
 func home(res http.ResponseWriter,req *http.Request){
-
-	cookie, _ := req.Cookie("usertoken")
-
-	if cookie == nil {
-		log.Println("Cant find cookie :")
-		http.Redirect(res,req,"/login",http.StatusSeeOther)
-	}else{
-		// User has a cookie, check it
-		log.Println("Cookie is : " + cookie.Value +" name is  " + cookie.Name)
-		fmt.Fprintf(res, "Welcome to Home Page!")
-	}
+	fmt.Fprintf(res, "Welcome to Home Page!")
+	
 }
 // Login function - This will return login form
 func login(res http.ResponseWriter,req *http.Request){
