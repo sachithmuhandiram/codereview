@@ -4,14 +4,61 @@ This is a hobby project developed by myself and [Vikum](https://www.linkedin.com
 
 This system will facilitate people to submit their codes to their peers and get their comments.
 
+No need to have locally installed `golang` instance. If you have locally installed `golang` ,some libries may show as not found locally in your IDE. It wont be a problem. 
+
+## Prerequest
+
+* Linux environment. (Project developed and tested in Debian environment)
+
+* You must have installed [Docker](https://www.docker.com/) and [Docker-Compose](https://docs.docker.com/compose/) installed.
+
+* MySQL 5.7.* ( 5.7.29 used for development)
+
+
 ## How to run
-
-### Prerequest
-
-You must have installed `Docker` and `Docker-Compose` to test this.
 
 `git clone https://github.com/sachithmuhandiram/codereview.git`
 
 `cd codereview`
 
 `sudo docker-compose up --build`
+
+
+## Configuration
+
+### Networking
+
+In order to run services, add followings to your `/etc/hosts` file 
+```
+0.0.0.0         user                # runs users service
+0.0.0.0         notification        # notification service
+0.0.0.0         localhost           # gateway
+```
+
+### Databases
+
+Database files are located in `resources/` folder. For this project, I have used `root` user with a simple password `7890`. 
+
+To add your used and password, please edit `api.env` file.
+
+```
+ MYSQLDBGATEWAY=database_user:password@tcp(127.0.0.1:3306)/api_gateway
+ MYSQLDBUSERS=database_user:password@tcp(127.0.0.1:3306)/codereview_users
+```
+
+If you run your MySQL instance other than localhost (127.0.0.1), please add that IP address to `api.env`.
+
+* Import `sql` schema files to your MySQL database.
+
+### Notifications
+
+To send emails, you need to configure your email server, or gmail. I have used gmail for test.
+
+* Create a file in `notification` folder `emailData.json` and add :
+
+```
+{
+    "From" : "your gmail",
+    "Parse" : "parse given by gmail",
+}
+```

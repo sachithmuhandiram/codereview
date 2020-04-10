@@ -1,6 +1,6 @@
 # Notes
 
-This documents holds some important golang methods used during this project.
+This document holds some important golang methods used during this project.
 
 ## How to pass data to REST API
 
