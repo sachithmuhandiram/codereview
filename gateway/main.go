@@ -81,7 +81,8 @@ func authenticateToken(handlerFunc http.HandlerFunc) http.HandlerFunc {
 					http.Redirect(res,req,"/login",http.StatusSeeOther)		
 				} // got jwt claims 
 					
-				log.Println("Claims are : ",jwtClaims)
+				user := jwtClaims["user"].(string)
+				log.Println("User is : ",user)
 				home(res,req)
 
 			} // cookie name checking if loop

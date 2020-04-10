@@ -727,3 +727,9 @@ created by net/http.(*Server).Serve
 2020/04/10 08:27:52 User Service started
 2020/04/10 08:35:04 User Service started
 2020/04/10 08:36:09 User Service started
+2020/04/10 08:55:37 User Service started
+2020/04/10 08:55:48 http: superfluous response.WriteHeader call from main.UserLogin (login.go:69)
+2020/04/10 08:57:32 User Service started
+2020/04/10 09:00:01 User Service started
+2020/04/10 09:06:13 User Service started
+2020/04/10 09:09:27 User Service started

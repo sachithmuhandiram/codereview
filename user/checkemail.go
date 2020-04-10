@@ -15,7 +15,7 @@ import (
 // Globle varibles
 var sendEmail = os.Getenv("SENDEMAIL")
 var responseURL = os.Getenv("RESPONSEURL")
-var mysqlDB	= os.Getenv("MYSQLDB")
+var mysqlDB	= os.Getenv("MYSQLDBUSERS")
 
 // database connection
 func dbConn() (db *sql.DB) {
