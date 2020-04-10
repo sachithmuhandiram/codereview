@@ -695,3 +695,15 @@ created by net/http.(*Server).Serve
 2020/04/08 15:11:22 User Service started
 2020/04/08 15:21:27 User Service started
 2020/04/08 15:22:44 User Service started
+2020/04/09 06:43:42 User Service started
+2020/04/10 04:46:11 User Service started
+2020/04/10 04:50:20 User Service started
+2020/04/10 04:51:45 User Service started
+2020/04/10 04:53:30 User Service started
+2020/04/10 04:56:55 User Service started
+2020/04/10 04:57:02 Error occured :  Error 1292: Incorrect datetime value: 'yyyy-MM-dd HH:mm:ss' for column 'created_at' at row 1
+2020/04/10 04:59:39 User Service started
+2020/04/10 04:59:43 Time is :  2020-04-10 04:59:43.31214237 +0000 UTC m=+3.735645221
+2020/04/10 04:59:43 Result is :  {0xc00007a700 0xc0000184b0}
+2020/04/10 05:04:25 User Service started
+2020/04/10 05:07:08 User Service started

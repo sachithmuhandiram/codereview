@@ -127,14 +127,25 @@ func createSession(res http.ResponseWriter,req *http.Request){
 			log.Println("Error generating JWT, cant go further")
 			return
 		}
-		// Setting jwt cookie
-		http.SetCookie(res, &http.Cookie{
-			Name:    "usertoken",
-			Value:   jwt,
-			Expires: expirationTime,
-		})
+		// Insert JWT to table
+		insertJWTResponse,err := http.PostForm("http://user:7071/insertJWT",url.Values{"uid":{uid},"userid":{user},"jwt":{jwt}})
+		
+		if insertJWTResponse.StatusCode == 200 && err == nil{
+			log.Println("JWT sent to user service to insert to table")
 
-		http.Redirect(res,req,"/home",http.StatusSeeOther)
+			// Setting jwt cookie
+			http.SetCookie(res, &http.Cookie{
+				Name:    "usertoken",
+				Value:   jwt,
+				Expires: expirationTime,
+			})
+
+			http.Redirect(res,req,"/home",http.StatusSeeOther)
+
+		}else{
+			log.Println("JWT sending to user service failed : Abort",err)
+			return
+		}
 
 	}else{ // authorized = 0
 

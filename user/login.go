@@ -12,26 +12,11 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// database connection
-// func dbConn() (db *sql.DB) {
-// 	db, err := sql.Open("mysql", "root:7890@tcp(127.0.0.1:3306)/codereview_users")
-
-// 	if err != nil {
-// 		logs.WithFields(logs.Fields{
-// 			"Service":  "User Service",
-// 			"Package":  "Login",
-// 			"function": "dbConn",
-// 			"error":    err,
-// 		}).Error("Failed to connect to database")
-// 	}
-// 	return db
-// }
-
 func UserLogin(res http.ResponseWriter, req *http.Request) {
 	req.ParseForm()
 
 	requestID := req.URL.Query().Get("uid")
-	userID := req.FormValue("userid")
+	userID := req.URL.Query().Get("userid")//req.FormValue("userid")
 	loginToken := req.FormValue("logintoken")
 	password := req.FormValue("password")
 
@@ -81,7 +66,7 @@ func UserLogin(res http.ResponseWriter, req *http.Request) {
 			"requestID": requestID,
 		}).Info("Passwords match")
 
-		http.Redirect(res, req, "http://localhost:7070/createsession?userid="+userID+"&authorize="+"1", http.StatusSeeOther)
+		http.Redirect(res, req, "http://localhost:7070/createsession?userid="+userID+"&authorize="+"1&uid="+requestID, http.StatusSeeOther)
 
 		// send response to /gateway respose
 		_, err := http.PostForm("http://localhost:7070/response", url.Values{"uid": {requestID}, "service": {"User Service"},
@@ -154,30 +139,41 @@ func comparePassword(requestID,userID,password string) bool{
 	return true
 }
 // Insert into valid token
-func insertToValidToken(userID,jwtToken,requestID string) error{
-
+func InsertJWT(res http.ResponseWriter,req * http.Request) {
+	
+	req.ParseForm()
+	requestID := req.FormValue("uid")
+	userID := req.FormValue("userid")//req.FormValue("userid")
+	jwtToken := req.FormValue("jwt")
+	
 	t := time.Now()
-	// t.Format("20060102150405")
+	t.Format("yyyy-MM-dd HH:mm:ss")
+
+
 	db := dbConn()
 	insertToken, err := db.Prepare("INSERT INTO activeJWTtokens(user_id,jwt,created_at,last_update) VALUES(?,?,?,?)")
         if err != nil {
             panic(err.Error())
 
-            return err
+            return 
         }
 
-    insertToken.Exec(userID, jwtToken,t.Format("yyyy-MM-dd HH:mm:ss"),t.Format("yyyy-MM-dd HH:mm:ss"))
-
-    logs.WithFields(logs.Fields{
-		"Service":   "User Service",
-		"Package":   "Login",
-		"function":  "insertToValidToken",
-		"userid":    userID,
-		"requestID": requestID,
-	}).Info("Insert into valid jwt tokens")
+    _,err = insertToken.Exec(userID, jwtToken,t,t)
+	if err != nil{
+		log.Println("Error occured : ",err)
+	}else{
+	
+		logs.WithFields(logs.Fields{
+			"Service":   "User Service",
+			"Package":   "Login",
+			"function":  "InsertJWT",
+			"userid":    userID,
+			"requestID": requestID,
+			//"JWT" : jwtToken,
+		}).Info("Insert into valid jwt tokens")
+	}
 
 	defer db.Close()
-	return nil  
 
 }
 
