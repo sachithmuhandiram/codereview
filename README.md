@@ -6,13 +6,15 @@ This system will facilitate people to submit their codes to their peers and get 
 
 No need to have locally installed `golang` instance. If you have locally installed `golang` ,some libries may show as not found locally in your IDE. It wont be a problem. 
 
+Project developed and tested in Debian environment
+
 ## Prerequest
 
 * [Docker](https://www.docker.com/) and [Docker-Compose](https://docs.docker.com/compose/).
 
 * MySQL 5.7.* ( 5.7.29 used for development)
 
-Linux environment is prefered. Didnt test on Windows and MacOS. (Project developed and tested in Debian environment)
+Linux environment is prefered. Didnt test on Windows.
 
 ## How to run
 
