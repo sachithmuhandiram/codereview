@@ -63,3 +63,20 @@ To send emails, you need to configure your email server, or gmail. I have used g
     "Parse" : "parse given by gmail",
 }
 ```
+
+## Important Notes
+
+To change Docker time, you need to add you timezone to each service's Dockerfile.
+Here we used `Asia/Colombo` timezone, add your time zone and continet for following configs.
+
+```
+# # setting container time zone
+RUN \
+    apk --update add curl bash nano tzdata && \
+    cp /usr/share/zoneinfo/Asia/Colombo /etc/localtime && \
+    echo "Asia/Colombo" > /etc/timezone && \
+    apk del tzdata && \
+    rm -r /var/cache/apk/* && \
+    mkdir -p /usr/share/zoneinfo/Asia && \
+    ln -s /etc/localtime /usr/share/zoneinfo/Asia/Colombo
+```

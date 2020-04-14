@@ -33,3 +33,5 @@ Here it uses `key:value` combination.
 ## Environment variables
 
 [Docker-compose environment variables](https://docs.docker.com/compose/environment-variables/)
+
+[Setting-up timezones](https://stackoverflow.com/questions/47498297/docker-compose-container-timezone)
