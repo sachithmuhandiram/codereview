@@ -17,7 +17,6 @@ func UserLogin(res http.ResponseWriter, req *http.Request) {
 
 	requestID := req.URL.Query().Get("uid")
 	userID := req.URL.Query().Get("userid")//req.FormValue("userid")
-	loginToken := req.FormValue("logintoken")
 	password := req.FormValue("password")
 
 	logs.WithFields(logs.Fields{
@@ -31,29 +30,30 @@ func UserLogin(res http.ResponseWriter, req *http.Request) {
 	db := dbConn()
 
 	// // if user form doesnt have a logintoken then it rejects:
-	validToken := checkLoginToken(requestID,loginToken)
+	// Remove from here to
+	// validToken := checkLoginToken(requestID,loginToken)
 
-	if validToken == false  {
+	// if validToken == false  {
 
-		logs.WithFields(logs.Fields{
-						"Service":   "User Service",
-						"Package":   "Login",
-						"function":  "UserLogin",
-						"userid":    userID,
-						"requestID": requestID,
-	}).Warn("Login request does not have a login token")
+	// 	logs.WithFields(logs.Fields{
+	// 					"Service":   "User Service",
+	// 					"Package":   "Login",
+	// 					"function":  "UserLogin",
+	// 					"userid":    userID,
+	// 					"requestID": requestID,
+	// }).Warn("Login request does not have a login token")
 
-	_, err := http.PostForm("http://localhost:7070/response", url.Values{"uid": {requestID}, "service": {"User Service"},
-			"function": {"UserLogin"}, "package": {"Login"}, "status": {"0"}})
+	// _, err := http.PostForm("http://localhost:7070/response", url.Values{"uid": {requestID}, "service": {"User Service"},
+	// 		"function": {"UserLogin"}, "package": {"Login"}, "status": {"0"}})
 
-		if err != nil {
-			log.Println("Error response sending")
-		}
+	// 	if err != nil {
+	// 		log.Println("Error response sending")
+	// 	}
 		
-		http.Redirect(res, req, "http://localhost:7070/login", http.StatusSeeOther)
-		return
-	}
-
+	// 	http.Redirect(res, req, "http://localhost:7070/login", http.StatusSeeOther)
+	// 	return
+	// }
+		// here after login token is fixed in api gateway
 	// compare password
 	passwordMatch := comparePassword(requestID,userID,password)
 

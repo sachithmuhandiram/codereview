@@ -8,6 +8,48 @@ import(
 	"database/sql"
 )
 
+// Checks login form's token.
+func checkLoginToken(requestID,loginToken string) bool{
+	var logintoken bool
+
+	db := dbConn()
+	row := db.QueryRow("SELECT EXISTS(SELECT login_token FROM login_token WHERE login_token=?)", loginToken)
+
+	err := row.Scan(&logintoken)
+	if err != nil {
+		logs.WithFields(logs.Fields{
+			"Service":   "User Service",
+			"Package":   "Login",
+			"function":  "checkLoginToken",
+			"requestID": requestID,
+			"error"		: err,
+		}).Error("Failed to fetch data from login token table")
+	}
+
+	if logintoken {
+
+		logs.WithFields(logs.Fields{
+			"Service":   "User Service",
+			"Package":   "Login",
+			"function":  "checkLoginToken",
+			"requestID": requestID,
+		}).Info("Valid login token")
+
+		
+		/*
+						Delete Valid Token
+			For simplicity of the system, assums that this will delete that token from table
+		*/
+		deleteLoginToken(loginToken,requestID)
+
+		return true
+	}
+
+	defer db.Close()
+	return false
+
+}
+
 // Insert into valid token
 func InsertJWT(requestID,userID,jwtToken string) (bool,error) {
 	
@@ -117,4 +159,24 @@ func checkJWT(user,jwt string)(bool,error){
 
 		return false,nil	
 	}
+}
+
+// Delete login token
+func deleteLoginToken(loginToken,requestID string){
+	db := dbConn()
+
+	delTkn, err := db.Prepare("DELETE FROM login_token WHERE login_token=?")
+    if err != nil {
+        panic(err.Error())
+    }
+    delTkn.Exec(loginToken)
+
+    logs.WithFields(logs.Fields{
+			"Service":   "User Service",
+			"Package":   "Login",
+			"function":  "deleteLoginToken",
+			"requestID": requestID,
+		}).Info("Successfully deleted login token")
+
+	defer db.Close()
 }

@@ -282,16 +282,46 @@ func (apiID *UUID) userLogin(res http.ResponseWriter, req *http.Request) {
 		return
 
 	}
+	// check email syntax
+	validEmail := regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`) 
 
-	// //hashedPassword := hashPassword(password)
+	if validEmail.MatchString(userid) {  // correct email syntax
+		// check login token
 
-	logs.WithFields(logs.Fields{
-		"package":  "API-Gateway",
-		"function": "validuserLoginatemail",
-		"uuid":     requestID,
-	}).Info("User Login request received")
+		logs.WithFields(logs.Fields{
+			"package":  "API-Gateway",
+			"function": "validuserLoginatemail",
+			"uuid":     requestID,
+		}).Info("User Login request received")
 
-	parameters := userLOGIN+"?userid="+ userid +"&uid="+requestID.String()+"&password="+password+"&logintoken="+loginToken
+		validLoginToken := checkLoginToken(requestID.String(),loginToken)
+
+		if validLoginToken != true{
+
+			logs.WithFields(logs.Fields{
+				"Service":   "API Gateway Service",
+				"function":  "UserLogin",
+				"userid":    userid,
+				"requestID": requestID,
+			}).Warn("Login request does not have a login token")
+
+			http.Redirect(res,req,"/login",http.StatusSeeOther)
+			return
+		}
+		
+
+	}else{
+		// wrong email syntax
+		logs.WithFields(logs.Fields{
+			"package":  "API-Gateway",
+			"function": "validuserLoginatemail",
+			"uuid":     requestID,
+		}).Error("User entered invalid email syntax")
+
+		http.Redirect(res,req,"/login",http.StatusSeeOther)
+		return
+	}
+	parameters := userLOGIN+"?userid="+ userid +"&uid="+requestID.String()+"&password="+password
 	
 	http.Redirect(res, req, parameters, http.StatusSeeOther)
 }
