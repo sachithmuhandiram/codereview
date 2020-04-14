@@ -116,7 +116,7 @@ func main() {
 	http.HandleFunc("/register", apiID.registerUser)
 	http.HandleFunc("/passwordreset", apiID.sendPasswordResetEmail)
 	http.HandleFunc("/updatepassword", apiID.updatePassword)
-	http.HandleFunc("/login",login)
+	http.HandleFunc("/login",apiID.login)
 
 	http.ListenAndServe(":7070", nil)
 }
@@ -126,7 +126,26 @@ func home(res http.ResponseWriter,req *http.Request){
 	
 }
 // Login function - This will return login form
-func login(res http.ResponseWriter,req *http.Request){
+func (apiID *UUID) login(res http.ResponseWriter,req *http.Request){
+	// generate  UUID for login
+	loginID := apiID.apiUuid
+
+	// create JWT for login session
+	loginJWT,jwtErr := GenerateJWT(loginID.String())
+
+	if jwtErr != nil{
+		log.Println("Couldt generate login JWT")
+		return
+	}
+	expirationTime := time.Now().Add(5 * time.Minute)
+	
+	http.SetCookie(res, &http.Cookie{
+		Name:    "logintoken",
+		Value:   loginJWT,
+		Expires: expirationTime,
+	})
+	
+	// add that token to login_token table
 	fmt.Fprintf(res, "This is login page")
 }
 

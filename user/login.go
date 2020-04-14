@@ -29,31 +29,6 @@ func UserLogin(res http.ResponseWriter, req *http.Request) {
 
 	db := dbConn()
 
-	// // if user form doesnt have a logintoken then it rejects:
-	// Remove from here to
-	// validToken := checkLoginToken(requestID,loginToken)
-
-	// if validToken == false  {
-
-	// 	logs.WithFields(logs.Fields{
-	// 					"Service":   "User Service",
-	// 					"Package":   "Login",
-	// 					"function":  "UserLogin",
-	// 					"userid":    userID,
-	// 					"requestID": requestID,
-	// }).Warn("Login request does not have a login token")
-
-	// _, err := http.PostForm("http://localhost:7070/response", url.Values{"uid": {requestID}, "service": {"User Service"},
-	// 		"function": {"UserLogin"}, "package": {"Login"}, "status": {"0"}})
-
-	// 	if err != nil {
-	// 		log.Println("Error response sending")
-	// 	}
-		
-	// 	http.Redirect(res, req, "http://localhost:7070/login", http.StatusSeeOther)
-	// 	return
-	// }
-		// here after login token is fixed in api gateway
 	// compare password
 	passwordMatch := comparePassword(requestID,userID,password)
 
@@ -138,68 +113,6 @@ func comparePassword(requestID,userID,password string) bool{
 	defer db.Close()
 
 	return true
-}
-
-// Checks login form's token.
-func checkLoginToken(requestID,loginToken string) bool{
-	var logintoken bool
-
-	db := dbConn()
-	row := db.QueryRow("SELECT EXISTS(SELECT login_token FROM login_token WHERE login_token=?)", loginToken)
-
-	err := row.Scan(&logintoken)
-	if err != nil {
-		logs.WithFields(logs.Fields{
-			"Service":   "User Service",
-			"Package":   "Login",
-			"function":  "checkLoginToken",
-			"requestID": requestID,
-			"error"		: err,
-		}).Error("Failed to fetch data from login token table")
-	}
-
-	if logintoken {
-
-		logs.WithFields(logs.Fields{
-			"Service":   "User Service",
-			"Package":   "Login",
-			"function":  "checkLoginToken",
-			"requestID": requestID,
-		}).Info("Valid login token")
-
-		
-		/*
-						Delete Valid Token
-			For simplicity of the system, assums that this will delete that token from table
-		*/
-		deleteLoginToken(loginToken,requestID)
-
-		return true
-	}
-
-	defer db.Close()
-	return false
-
-}
-
-// Delete login token
-func deleteLoginToken(loginToken,requestID string){
-	db := dbConn()
-
-	delTkn, err := db.Prepare("DELETE FROM login_token WHERE login_token=?")
-    if err != nil {
-        panic(err.Error())
-    }
-    delTkn.Exec(loginToken)
-
-    logs.WithFields(logs.Fields{
-			"Service":   "User Service",
-			"Package":   "Login",
-			"function":  "deleteLoginToken",
-			"requestID": requestID,
-		}).Info("Successfully deleted login token")
-
-	defer db.Close()
 }
 
 func CheckUserLogin(res http.ResponseWriter, req *http.Request) {
