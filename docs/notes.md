@@ -32,6 +32,8 @@ Here it uses `key:value` combination.
 
 [API design and testing](https://semaphoreci.com/community/tutorials/building-and-testing-a-rest-api-in-go-with-gorilla-mux-and-postgresql)
 
+[Deleting a cookie](https://stackoverflow.com/questions/29499843/how-do-you-delete-a-cookie-with-go-and-http-package)
+
 ## Environment variables
 
 [Docker-compose environment variables](https://docs.docker.com/compose/environment-variables/)

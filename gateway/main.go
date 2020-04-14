@@ -163,8 +163,11 @@ func createSession(res http.ResponseWriter,req *http.Request){
 	authorized := req.FormValue("authorize")
 
 	if authorized == "1"{
+		loc, _ := time.LoadLocation("Asia/Colombo")
 		user := req.FormValue("userid")
-		expirationTime := time.Now().Add(5 * time.Minute)
+		expirationTime := time.Now().In(loc).Add(5 * time.Minute)
+
+		log.Println("Expire time : ",expirationTime)
 
 		logs.WithFields(logs.Fields{
 			"package":  "API-Gateway",
@@ -186,7 +189,8 @@ func createSession(res http.ResponseWriter,req *http.Request){
 			log.Println("JWT insert to insert to table")
 
 			// removing logintoken
-			expire := time.Now().Add(-7 * 24 * time.Hour)
+			loc, _ := time.LoadLocation("Asia/Colombo")
+			expire := time.Now().In(loc).Add(-7 * 24 * time.Hour)
 			logincookie := http.Cookie{
 				Name:    "logintoken",
 				//Value:   "value",

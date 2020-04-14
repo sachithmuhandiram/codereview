@@ -84,7 +84,8 @@ func addLoginJWT(uuid,loginJWT string) bool{
 // Insert into valid token
 func InsertJWT(requestID,userID,jwtToken string) (bool,error) {
 	
-	t := time.Now()
+	loc, _ := time.LoadLocation("Asia/Colombo")
+	t := time.Now().In(loc)
 	t.Format("yyyy-MM-dd HH:mm:ss")
 
 
@@ -192,7 +193,8 @@ func checkJWT(user,jwt string)(bool,error){
 }
 // Update JWT
 func updateUserActivity(user string){
-	t := time.Now()
+	loc, _ := time.LoadLocation("Asia/Colombo")
+	t := time.Now().In(loc)
 	t.Format("yyyy-MM-dd HH:mm:ss")
 
 
