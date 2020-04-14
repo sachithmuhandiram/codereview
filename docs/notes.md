@@ -30,6 +30,8 @@ Here it uses `key:value` combination.
 
 [Middleware checking and sending to appropriate route](https://stackoverflow.com/questions/48899277/what-is-the-best-way-to-send-back-the-response-from-the-middle-ware-in-golang)
 
+[API design and testing](https://semaphoreci.com/community/tutorials/building-and-testing-a-rest-api-in-go-with-gorilla-mux-and-postgresql)
+
 ## Environment variables
 
 [Docker-compose environment variables](https://docs.docker.com/compose/environment-variables/)
