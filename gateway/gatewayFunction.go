@@ -33,9 +33,7 @@ func checkLoginToken(requestID,loginToken string) bool{
 			"Package":   "Login",
 			"function":  "checkLoginToken",
 			"requestID": requestID,
-		}).Info("Valid login token")
-
-		
+		}).Info("Valid login token")	
 		/*
 						Delete Valid Token
 			For simplicity of the system, assums that this will delete that token from table
@@ -48,6 +46,39 @@ func checkLoginToken(requestID,loginToken string) bool{
 	defer db.Close()
 	return false
 
+}
+
+func addLoginJWT(uuid,loginJWT string) bool{
+	db := dbConn()
+	t := time.Now()
+	t.Format("yyyy-MM-dd HH:mm:ss")
+
+	insertLoginToken, err := db.Prepare("INSERT INTO login_token(login_token,created_at) VALUES(?,?)")
+        if err != nil {
+            panic(err.Error())
+
+            return false
+        }
+
+    _,err = insertLoginToken.Exec(loginJWT,t)
+	if err != nil{
+		log.Println("Error occured : ",err)
+		return false
+	}else{
+	
+		logs.WithFields(logs.Fields{
+			"Service":   "API gateway",
+			"function":  "addLoginJWT",
+			"requestID": uuid,
+			//"JWT" : jwtToken,
+		}).Info("Insert into Login jwt tokens")	
+
+		return true
+	}
+	
+	defer db.Close()
+
+	return false
 }
 
 // Insert into valid token
@@ -138,8 +169,7 @@ func checkJWT(user,jwt string)(bool,error){
 			return false,err
 		}
 	} // querying database table if
-	log.Println("Assigned JWT : ",assignedjwt)
-	log.Println("Available JWT",jwt)
+
 	if assignedjwt == jwt{
 
 		logs.WithFields(logs.Fields{
@@ -159,6 +189,36 @@ func checkJWT(user,jwt string)(bool,error){
 
 		return false,nil	
 	}
+}
+// Update JWT
+func updateUserActivity(user string){
+	t := time.Now()
+	t.Format("yyyy-MM-dd HH:mm:ss")
+
+
+	db := dbConn()
+	updateActivity, err := db.Prepare("UPDATE activeJWTtokens SET last_update =? WHERE user_id=?")
+        if err != nil {
+            log.Println(err.Error())
+
+            return
+        }
+
+    _,err = updateActivity.Exec(t,user)
+	if err != nil{
+		log.Println("Error occured : ",err)
+		return 
+	}else{
+	
+		logs.WithFields(logs.Fields{
+			"Service":   "API Gateway",
+			"function":  "updateUserActivity",
+			"userid":    user,
+			//"JWT" : jwtToken,
+		}).Info("Updated user activity")	
+	}
+	
+	defer db.Close()
 }
 
 // Delete login token

@@ -90,6 +90,7 @@ func authenticateToken(handlerFunc http.HandlerFunc) http.HandlerFunc {
 				validJWT,err := checkJWT(user,cookie.Value)
 
 				if validJWT == true && err == nil{
+					updateUserActivity(user)
 					home(res,req)
 				}
 			} // cookie name checking if loop
@@ -137,16 +138,22 @@ func (apiID *UUID) login(res http.ResponseWriter,req *http.Request){
 		log.Println("Couldt generate login JWT")
 		return
 	}
-	expirationTime := time.Now().Add(5 * time.Minute)
-	
-	http.SetCookie(res, &http.Cookie{
-		Name:    "logintoken",
-		Value:   loginJWT,
-		Expires: expirationTime,
-	})
-	
+
 	// add that token to login_token table
-	fmt.Fprintf(res, "This is login page")
+
+	addLoginJWT := addLoginJWT(loginID.String(),loginJWT)
+
+	if addLoginJWT != false{
+		expirationTime := time.Now().Add(5 * time.Minute)
+		http.SetCookie(res, &http.Cookie{
+			Name:    "logintoken",
+			Value:   loginJWT,
+			Expires: expirationTime,
+		})
+		fmt.Fprintf(res, "This is login page")
+	}else{
+		log.Println("Could not insert login token to table")
+	}
 }
 
 // createSession function
@@ -177,6 +184,15 @@ func createSession(res http.ResponseWriter,req *http.Request){
 		
 		if insertJWTResponse == true && err == nil{
 			log.Println("JWT insert to insert to table")
+
+			// removing logintoken
+			expire := time.Now().Add(-7 * 24 * time.Hour)
+			logincookie := http.Cookie{
+				Name:    "logintoken",
+				//Value:   "value",
+				Expires: expire,
+			}
+			http.SetCookie(res, &logincookie)
 
 			// Setting jwt cookie
 			http.SetCookie(res, &http.Cookie{
@@ -286,8 +302,16 @@ func (apiID *UUID) validatemail(res http.ResponseWriter, req *http.Request) {
 
 // User login
 func (apiID *UUID) userLogin(res http.ResponseWriter, req *http.Request) {
+	
+	cookie, _ := req.Cookie("logintoken")
+log.Println("Cookies are : ",cookie.Name)
+	if cookie.Name != "logintoken"{
+		log.Println("There are many other tokens")
+		http.Redirect(res,req,"/login",http.StatusSeeOther)
+		return
+	}
 
-	loginToken := req.FormValue("logintoken")
+	loginToken := cookie.Value
 	requestID := apiID.apiUuid
 	userid := req.FormValue("email")
 	password := req.FormValue("password")
