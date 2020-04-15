@@ -34,3 +34,13 @@ services:
     env_file: ./api.env
     depends_on:
       - apigateway
+  
+  db_helper:
+    image: db_helper
+    build: 
+      context: ./db_helper
+      dockerfile: Dockerfile
+    network_mode: "host"
+    env_file: "./api.env"
+    depends_on: 
+      - apigateway

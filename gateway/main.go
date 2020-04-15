@@ -79,7 +79,7 @@ func authenticateToken(handlerFunc http.HandlerFunc) http.HandlerFunc {
 			// Cookie is there, need to validate that cookie
 			if cookie.Name == "usertoken"{
 				jwtClaims,err := getUserFromJWT(cookie.Value)
-
+				
 				if err != nil{
 					log.Println("There was an error getting user details ",err)
 					http.Redirect(res,req,"/login",http.StatusSeeOther)	
@@ -144,7 +144,10 @@ func (apiID *UUID) login(res http.ResponseWriter,req *http.Request){
 	addLoginJWT := addLoginJWT(loginID.String(),loginJWT)
 
 	if addLoginJWT != false{
+		
 		expirationTime := time.Now().Add(5 * time.Minute)
+
+		log.Println("Loging token time : ",expirationTime)
 		http.SetCookie(res, &http.Cookie{
 			Name:    "logintoken",
 			Value:   loginJWT,
@@ -163,9 +166,8 @@ func createSession(res http.ResponseWriter,req *http.Request){
 	authorized := req.FormValue("authorize")
 
 	if authorized == "1"{
-		loc, _ := time.LoadLocation("Asia/Colombo")
 		user := req.FormValue("userid")
-		expirationTime := time.Now().In(loc).Add(5 * time.Minute)
+		expirationTime := time.Now().Add(5 * time.Minute)
 
 		log.Println("Expire time : ",expirationTime)
 
@@ -189,8 +191,7 @@ func createSession(res http.ResponseWriter,req *http.Request){
 			log.Println("JWT insert to insert to table")
 
 			// removing logintoken
-			loc, _ := time.LoadLocation("Asia/Colombo")
-			expire := time.Now().In(loc).Add(-7 * 24 * time.Hour)
+			expire := time.Now().Add(-7 * 24 * time.Hour)
 			logincookie := http.Cookie{
 				Name:    "logintoken",
 				//Value:   "value",
@@ -650,7 +651,6 @@ func reportResponse(res http.ResponseWriter, req *http.Request) {
 // GenerateJWT takes eventID as a parameter and time (minutes) for JWT
 func GenerateJWT(user string) (string, error) {
 
-	//loginKey := []byte(user)
 	appSecretKey  := []byte("du-bi-du-bi-dub") // takes 531855448467 years to break using brute-force attack
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
