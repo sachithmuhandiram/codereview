@@ -5,7 +5,8 @@ RUN apk add git
 
 RUN set -e \
     && go get github.com/sirupsen/logrus \
-    && go get github.com/carlescere/scheduler
+    && go get github.com/carlescere/scheduler \
+    && go get github.com/go-sql-driver/mysql
 
 # # setting container time zone
 RUN \

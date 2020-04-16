@@ -34,6 +34,8 @@ Here it uses `key:value` combination.
 
 [Deleting a cookie](https://stackoverflow.com/questions/29499843/how-do-you-delete-a-cookie-with-go-and-http-package)
 
+[Getting time data from MySQL](https://stackoverflow.com/questions/29341590/how-to-parse-time-from-database)
+
 ## Environment variables
 
 [Docker-compose environment variables](https://docs.docker.com/compose/environment-variables/)
