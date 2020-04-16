@@ -70,7 +70,6 @@ func readLoginToken(){
 	t := time.Now()
 	utc := t.In(time.UTC)
 
-	log.Println("UTC time: ",utc)
     for rows.Next() {
         err := rows.Scan(&loginToken,&createdAt)
         if err != nil {
@@ -80,10 +79,7 @@ func readLoginToken(){
 		if utc.Sub(createdAt).Minutes() > 10 {
 			// older tokens
 			deleteOldLoginToken(loginToken)
-		}else{
-			log.Println("There are new records")
 		}
-
     }
 	defer rows.Close()
 }
@@ -123,20 +119,15 @@ func readActiveJWTToken(){
 	t := time.Now()
 	utc := t.In(time.UTC)
 
-	log.Println("UTC time: ",utc)
     for rows.Next() {
         err := rows.Scan(&jwt,&lastUpdated)
         if err != nil {
             log.Println(err)
 		}
-		// t1.Sub(t2).Hours()
-		if utc.Sub(lastUpdated).Minutes() > 10 {
-			// older tokens
-			deleteJWTToken(jwt)
-		}else{
-			log.Println("There are new records")
-		}
 
+		if utc.Sub(lastUpdated).Minutes() > 10 {
+			deleteJWTToken(jwt)
+		}
     }
 	defer rows.Close()
 }
