@@ -12,3 +12,7 @@
 		- [ x ]	If it matches, delete that login_token from database.
 
 	- [ ]	Check / route refreshing with this table (using Middleware) 
+
+- User JWT expire time should update with last activity.
+
+- Use interfaces to deletel login and active tokens in DB helper service.

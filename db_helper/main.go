@@ -21,8 +21,8 @@ func gatewayDBConn() (db *sql.DB) {
 
 	if err != nil {
 		logs.WithFields(logs.Fields{
-			"package":  "User Service",
-			"function": "dbConn",
+			"package":  "Database Helper Service",
+			"function": "GatewayDBConn",
 			"error":    err,
 		}).Error("Failed to connect to database")
 	}
@@ -35,8 +35,8 @@ func userDBConn() (db *sql.DB) {
 
 	if err != nil {
 		logs.WithFields(logs.Fields{
-			"package":  "User Service",
-			"function": "dbConn",
+			"package":  "Database Helper Service",
+			"function": "userDBConn",
 			"error":    err,
 		}).Error("Failed to connect to database")
 	}
@@ -45,15 +45,11 @@ func userDBConn() (db *sql.DB) {
 
 func main(){
 
-	
-
-	job := func() {
-		log.Println("Time's up!")
-	   }
-	   scheduler.Every(30).Seconds().Run(job)
-	   scheduler.Every().Day().Run(job)
-	   scheduler.Every().Sunday().At("08:30").Run(job)
-	   readLoginToken()
+	   scheduler.Every(30).Seconds().Run(readLoginToken)
+	   scheduler.Every(30).Seconds().Run(readActiveJWTToken)
+	//    scheduler.Every().Day().Run(job)
+	//    scheduler.Every().Sunday().At("08:30").Run(job)
+	//    readLoginToken()
 	   http.ListenAndServe("0.0.0.0:7073", nil)
 }
 
@@ -70,7 +66,7 @@ func readLoginToken(){
         log.Println(err)
     }
 
-	// GMT time
+	// UTC time, as we store time as UTC
 	t := time.Now()
 	utc := t.In(time.UTC)
 
@@ -82,14 +78,83 @@ func readLoginToken(){
 		}
 		// t1.Sub(t2).Hours()
 		if utc.Sub(createdAt).Minutes() > 10 {
-			log.Println("this", loginToken,createdAt)
+			// older tokens
+			deleteOldLoginToken(loginToken)
 		}else{
 			log.Println("There are new records")
 		}
 
     }
-
-	// tokens older than 10mins send to deleteLoginToken(token) 
-	
 	defer rows.Close()
+}
+
+// This will delete un-used old login tokens
+func deleteOldLoginToken(token string){
+	gatewaydb := gatewayDBConn()
+
+	delTkn, err := gatewaydb.Prepare("DELETE FROM login_token WHERE login_token=?")
+    if err != nil {
+        log.Println(err.Error())
+    }
+    delTkn.Exec(token)
+
+    logs.WithFields(logs.Fields{
+			"Service":  "Database Helper Service",
+			"function":  "deleteOldLoginToken",
+		}).Info("Successfully deleted login token")
+
+	defer gatewaydb.Close()
+}
+
+// Reading from API gateway activeJWTtokens table
+func readActiveJWTToken(){
+	// reads login tokens and checks whether they are older than 10mins
+	gatewaydb := gatewayDBConn()
+
+	var jwt string 
+	var lastUpdated time.Time 
+
+	rows, err := gatewaydb.Query("select jwt,last_update from activeJWTtokens")
+    if err != nil {
+        log.Println(err)
+    }
+
+	// UTC time, as we store time as UTC
+	t := time.Now()
+	utc := t.In(time.UTC)
+
+	log.Println("UTC time: ",utc)
+    for rows.Next() {
+        err := rows.Scan(&jwt,&lastUpdated)
+        if err != nil {
+            log.Println(err)
+		}
+		// t1.Sub(t2).Hours()
+		if utc.Sub(lastUpdated).Minutes() > 10 {
+			// older tokens
+			deleteJWTToken(jwt)
+		}else{
+			log.Println("There are new records")
+		}
+
+    }
+	defer rows.Close()
+}
+
+// This will delete un-updated JWT tokens
+func deleteJWTToken(jwttoken string){
+	gatewaydb := gatewayDBConn()
+
+	delTkn, err := gatewaydb.Prepare("DELETE FROM activeJWTtokens WHERE jwt=?")
+    if err != nil {
+        log.Println(err.Error())
+    }
+    delTkn.Exec(jwttoken)
+
+    logs.WithFields(logs.Fields{
+			"Service":  "Database Helper Service",
+			"function":  "deleteJWTTokenn",
+		}).Info("Successfully deleted jwt token")
+
+	defer gatewaydb.Close()
 }

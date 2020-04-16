@@ -36,6 +36,8 @@ Here it uses `key:value` combination.
 
 [Getting time data from MySQL](https://stackoverflow.com/questions/29341590/how-to-parse-time-from-database)
 
+[Comparing time difference using golang](https://stackoverflow.com/questions/40260599/difference-between-two-time-time-objects)
+
 ## Environment variables
 
 [Docker-compose environment variables](https://docs.docker.com/compose/environment-variables/)
