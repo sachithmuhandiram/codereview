@@ -92,6 +92,9 @@ func authenticateToken(handlerFunc http.HandlerFunc) http.HandlerFunc {
 				if validJWT == true && err == nil{
 					updateUserActivity(user)
 					home(res,req)
+				}else{ // no valid JWT or there is an error
+					http.Redirect(res,req,"/login",http.StatusSeeOther)	
+					return	
 				}
 			} // cookie name checking if loop
 
