@@ -23,6 +23,8 @@ COPY . /go/src
 
 WORKDIR /go/src
 
+ENV CGO_ENABLED=0 GO111MODULE=off
+
 RUN go build -o main .
 
 EXPOSE 7071
@@ -30,3 +32,5 @@ EXPOSE 7071
 RUN chmod 755 main
 
 CMD [ "./main" ]
+
+RUN go test -v

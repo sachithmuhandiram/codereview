@@ -38,6 +38,10 @@ Here it uses `key:value` combination.
 
 [Comparing time difference using golang](https://stackoverflow.com/questions/40260599/difference-between-two-time-time-objects)
 
+[Testing Docker-based Go Applications with Go Test](https://medium.com/@jmarhee/testing-docker-based-go-applications-with-go-test-and-drone-io-5ae5db7d3bcf)
+
+[Fix error with go-test and gcc](https://stackoverflow.com/questions/55442155/why-are-go-tests-suddenly-requiring-gcc)
+
 ## Environment variables
 
 [Docker-compose environment variables](https://docs.docker.com/compose/environment-variables/)
