@@ -8,10 +8,10 @@ import (
 
 func TestEmptyTable(t *testing.T) {
     
-    req, _ := http.NewRequest("POST", "/checkemail?email=sachith@email.com&uid=878273823&request=hasaccount", nil)
+    req, _ := http.NewRequest("GET", "/login", nil)
     response := executeRequest(req)
 
-    checkResponseCode(t, http.StatusNotFound, response.Code)
+    checkResponseCode(t, http.StatusSeeOther, response.Code)
 
     if body := response.Body.String(); body == "" {
         t.Errorf("Expected an empty array. Got %s", body)
