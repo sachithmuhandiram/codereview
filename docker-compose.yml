@@ -9,6 +9,7 @@ services:
     volumes:
       - ./gateway/logs:/go/src/logs
     network_mode: "host"
+    env_file: ./api.env
     
   notification:
     image: notification
@@ -18,6 +19,7 @@ services:
     volumes:
       - ./notification/logs:/go/src/logs
     network_mode: "host"
+    env_file: ./api.env
     depends_on:
       - apigateway
 
@@ -29,5 +31,16 @@ services:
     volumes:
       - ./user/logs:/go/src/logs
     network_mode: "host"
+    env_file: ./api.env
     depends_on:
+      - apigateway
+  
+  db_helper:
+    image: db_helper
+    build: 
+      context: ./db_helper
+      dockerfile: Dockerfile
+    network_mode: "host"
+    env_file: "./api.env"
+    depends_on: 
       - apigateway

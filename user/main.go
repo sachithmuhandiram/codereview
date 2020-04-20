@@ -30,7 +30,7 @@ func main() {
 	http.HandleFunc("/register", UserRegister)
 	http.HandleFunc("/login", UserLogin)
 	http.HandleFunc("/loginWithJWT", CheckUserLogin)
-	http.HandleFunc("/updateaccount", checkUpdateRequest)
+	http.HandleFunc("/passwordreset", checkUpdateRequest)
 	http.ListenAndServe("0.0.0.0:7071", nil)
 
 	// register email is sent to email sytax check, if its true,

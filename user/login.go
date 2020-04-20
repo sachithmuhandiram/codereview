@@ -12,28 +12,12 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// database connection
-// func dbConn() (db *sql.DB) {
-// 	db, err := sql.Open("mysql", "root:7890@tcp(127.0.0.1:3306)/codereview_users")
-
-// 	if err != nil {
-// 		logs.WithFields(logs.Fields{
-// 			"Service":  "User Service",
-// 			"Package":  "Login",
-// 			"function": "dbConn",
-// 			"error":    err,
-// 		}).Error("Failed to connect to database")
-// 	}
-// 	return db
-// }
-
 func UserLogin(res http.ResponseWriter, req *http.Request) {
+	req.ParseForm()
 
-	requestID := req.FormValue("requestID")
-	userID := req.FormValue("userid")
+	requestID := req.URL.Query().Get("uid")
+	userID := req.URL.Query().Get("userid")//req.FormValue("userid")
 	password := req.FormValue("password")
-
-	var userpassword string // to use with select table
 
 	logs.WithFields(logs.Fields{
 		"Service":   "User Service",
@@ -45,7 +29,59 @@ func UserLogin(res http.ResponseWriter, req *http.Request) {
 
 	db := dbConn()
 
-	//getting user password from users table
+	// compare password
+	passwordMatch := comparePassword(requestID,userID,password)
+
+	if passwordMatch == true{
+
+		logs.WithFields(logs.Fields{
+			"Service":   "User Service",
+			"Package":   "Login",
+			"function":  "UserLogin",
+			"userid":    userID,
+			"requestID": requestID,
+		}).Info("Passwords match")
+
+		http.Redirect(res, req, "http://localhost:7070/createsession?userid="+userID+"&authorize="+"1&uid="+requestID, http.StatusSeeOther)
+
+		// send response to /gateway respose
+		_, err := http.PostForm("http://localhost:7070/response", url.Values{"uid": {requestID}, "service": {"User Service"},
+			"function": {"UserLogin"}, "package": {"Login"}, "status": {"1"}})
+
+		if err != nil {
+			log.Println("Error response sending")
+		}
+
+	}else{ // password do not match
+
+		logs.WithFields(logs.Fields{
+			"Service":   "User Service",
+			"Package":   "Login",
+			"function":  "UserLogin",
+			"userid":    userID,
+			"requestID": requestID,
+		}).Error("Passwords do not match")
+
+
+		_, err := http.PostForm("http://localhost:7070/response", url.Values{"uid": {requestID}, "service": {"User Service"},
+			"function": {"UserLogin"}, "package": {"Login"}, "status": {"0"}})
+
+		if err != nil {
+			log.Println("Error response sending")
+		}
+
+		return
+
+	} // password do not match
+
+	defer db.Close()
+}
+// Password comparision
+func comparePassword(requestID,userID,password string) bool{
+
+	db := dbConn()
+	var userpassword string // to use with select table
+
 	row := db.QueryRow("select password from users where email=?", userID)
 	err := row.Scan(&userpassword)
 
@@ -54,7 +90,7 @@ func UserLogin(res http.ResponseWriter, req *http.Request) {
 			logs.WithFields(logs.Fields{
 				"Service":   "User Service",
 				"Package":   "Login",
-				"function":  "UserLogin",
+				"function":  "passwordComparision",
 				"userid":    userID,
 				"requestID": requestID,
 			}).Error("No record available for the user")
@@ -62,7 +98,7 @@ func UserLogin(res http.ResponseWriter, req *http.Request) {
 			logs.WithFields(logs.Fields{
 				"Service":   "User Service",
 				"Package":   "Login",
-				"function":  "UserLogin",
+				"function":  "passwordComparision",
 				"userid":    userID,
 				"requestID": requestID,
 			}).Error("Couldnt fetch users table")
@@ -72,42 +108,11 @@ func UserLogin(res http.ResponseWriter, req *http.Request) {
 	comparePassword := bcrypt.CompareHashAndPassword([]byte(userpassword), []byte(password))
 
 	if comparePassword != nil {
-		logs.WithFields(logs.Fields{
-			"Service":   "User Service",
-			"Package":   "Login",
-			"function":  "UserLogin",
-			"userid":    userID,
-			"requestID": requestID,
-		}).Error("Passwords do not match")
-		defer db.Close()
-
-		_, err = http.PostForm("http://localhost:7070/response", url.Values{"uid": {requestID}, "service": {"User Service"},
-			"function": {"UserLogin"}, "package": {"Login"}, "status": {"0"}})
-
-		if err != nil {
-			log.Println("Error response sending")
-		}
-
-		return
-
+		return false
 	}
-	logs.WithFields(logs.Fields{
-		"Service":   "User Service",
-		"Package":   "Login",
-		"function":  "UserLogin",
-		"userid":    userID,
-		"requestID": requestID,
-	}).Info("Passwords match")
-
-	_, err = http.PostForm("http://localhost:7070/response", url.Values{"uid": {requestID}, "service": {"User Service"},
-		"function": {"UserLogin"}, "package": {"Login"}, "status": {"1"}})
-
-	if err != nil {
-		log.Println("Error response sending")
-	}
-
 	defer db.Close()
 
+	return true
 }
 
 func CheckUserLogin(res http.ResponseWriter, req *http.Request) {
@@ -128,7 +133,7 @@ func checkJWT(jwt string) bool {
 
 }
 
-// GenerateJWT takes eventID as a parameter and time for JWT
+// GenerateJWT takes eventID as a parameter and time (minutes) for JWT
 func GenerateJWT(initialToken string, validDuration int) (string, error) {
 
 	loginKey := []byte(initialToken)

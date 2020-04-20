@@ -246,3 +246,576 @@ created by net/http.(*Server).Serve
 2020/03/04 06:38:57 User Service started
 2020/03/04 10:36:28 User Service started
 2020/03/04 11:48:47 User Service started
+2020/03/15 12:32:17 User Service started
+2020/03/15 12:41:27 User Service started
+2020/03/15 12:43:34 User Service started
+2020/03/15 13:50:07 User Service started
+2020/03/15 13:54:08 User Service started
+2020/03/15 13:55:15 User Service started
+2020/03/15 14:05:30 User Service started
+2020/03/15 14:11:32 User Service started
+2020/03/15 14:37:47 User Service started
+2020/03/15 14:43:23 User Service started
+2020/03/15 15:02:58 User Service started
+2020/03/15 15:03:41 User Service started
+2020/03/15 15:06:21 User Service started
+2020/03/15 15:09:22 User Service started
+2020/03/15 15:13:06 User Service started
+2020/03/15 15:18:57 User Service started
+2020/03/15 15:20:49 User Service started
+2020/03/15 15:23:23 User Service started
+2020/03/16 06:26:24 User Service started
+2020/03/16 07:31:25 User Service started
+2020/03/16 07:31:38 http: panic serving 127.0.0.1:50762: runtime error: invalid memory address or nil pointer dereference
+goroutine 6 [running]:
+net/http.(*conn).serve.func1(0xc000082a00)
+	/usr/local/go/src/net/http/server.go:1772 +0x139
+panic(0x7028a0, 0x9e1620)
+	/usr/local/go/src/runtime/panic.go:973 +0x396
+database/sql.(*Stmt).ExecContext(0x0, 0x7dc7a0, 0xc000018038, 0xc000220cd0, 0x1, 0x1, 0x0, 0x0, 0x0, 0x0)
+	/usr/local/go/src/database/sql/sql.go:2394 +0x5a
+database/sql.(*Stmt).Exec(...)
+	/usr/local/go/src/database/sql/sql.go:2423
+main.sendRegisterEmail(0xc00012a040, 0x16, 0xc000134096, 0x24)
+	/go/src/checkemail.go:126 +0x155
+main.hasAccount(0xc00012a040, 0x16, 0xc000134096, 0x24)
+	/go/src/checkemail.go:106 +0x892
+main.CheckEmail(0x7dbf60, 0xc00013a000, 0xc000128000)
+	/go/src/checkemail.go:67 +0x39a
+net/http.HandlerFunc.ServeHTTP(0x77a018, 0x7dbf60, 0xc00013a000, 0xc000128000)
+	/usr/local/go/src/net/http/server.go:2012 +0x44
+net/http.(*ServeMux).ServeHTTP(0x9ee340, 0x7dbf60, 0xc00013a000, 0xc000128000)
+	/usr/local/go/src/net/http/server.go:2387 +0x1a5
+net/http.serverHandler.ServeHTTP(0xc0000c6000, 0x7dbf60, 0xc00013a000, 0xc000128000)
+	/usr/local/go/src/net/http/server.go:2807 +0xa3
+net/http.(*conn).serve(0xc000082a00, 0x7dc760, 0xc000112000)
+	/usr/local/go/src/net/http/server.go:1895 +0x86c
+created by net/http.(*Server).Serve
+	/usr/local/go/src/net/http/server.go:2933 +0x35c
+2020/03/16 08:04:26 User Service started
+2020/03/16 08:04:31 http: panic serving 127.0.0.1:51478: runtime error: invalid memory address or nil pointer dereference
+goroutine 6 [running]:
+net/http.(*conn).serve.func1(0xc000102aa0)
+	/usr/local/go/src/net/http/server.go:1772 +0x139
+panic(0x7028a0, 0x9e1620)
+	/usr/local/go/src/runtime/panic.go:973 +0x396
+database/sql.(*Stmt).ExecContext(0x0, 0x7dc7a0, 0xc000018038, 0xc0000c0cd0, 0x1, 0x1, 0x0, 0x0, 0x0, 0x0)
+	/usr/local/go/src/database/sql/sql.go:2394 +0x5a
+database/sql.(*Stmt).Exec(...)
+	/usr/local/go/src/database/sql/sql.go:2423
+main.sendRegisterEmail(0xc00001a1e0, 0x16, 0xc0000161b6, 0x24)
+	/go/src/checkemail.go:126 +0x155
+main.hasAccount(0xc00001a1e0, 0x16, 0xc0000161b6, 0x24)
+	/go/src/checkemail.go:106 +0x892
+main.CheckEmail(0x7dbf60, 0xc0001460e0, 0xc000160000)
+	/go/src/checkemail.go:67 +0x39a
+net/http.HandlerFunc.ServeHTTP(0x77a018, 0x7dbf60, 0xc0001460e0, 0xc000160000)
+	/usr/local/go/src/net/http/server.go:2012 +0x44
+net/http.(*ServeMux).ServeHTTP(0x9ee340, 0x7dbf60, 0xc0001460e0, 0xc000160000)
+	/usr/local/go/src/net/http/server.go:2387 +0x1a5
+net/http.serverHandler.ServeHTTP(0xc000146000, 0x7dbf60, 0xc0001460e0, 0xc000160000)
+	/usr/local/go/src/net/http/server.go:2807 +0xa3
+net/http.(*conn).serve(0xc000102aa0, 0x7dc760, 0xc00001c340)
+	/usr/local/go/src/net/http/server.go:1895 +0x86c
+created by net/http.(*Server).Serve
+	/usr/local/go/src/net/http/server.go:2933 +0x35c
+2020/03/16 08:06:22 User Service started
+2020/03/16 08:06:27 http: panic serving 127.0.0.1:51566: runtime error: invalid memory address or nil pointer dereference
+goroutine 6 [running]:
+net/http.(*conn).serve.func1(0xc000102a00)
+	/usr/local/go/src/net/http/server.go:1772 +0x139
+panic(0x7028a0, 0x9e1620)
+	/usr/local/go/src/runtime/panic.go:973 +0x396
+database/sql.(*DB).conn(0x0, 0x7dc7c0, 0xc000018038, 0xc000012c01, 0x7d66e0, 0xc000012cc0, 0x6fb880)
+	/usr/local/go/src/database/sql/sql.go:1132 +0x41
+database/sql.(*DB).query(0x0, 0x7dc7c0, 0xc000018038, 0x76ff0b, 0x32, 0xc00013d400, 0x1, 0x1, 0xc000094201, 0x10, ...)
+	/usr/local/go/src/database/sql/sql.go:1565 +0x66
+database/sql.(*DB).QueryContext(0x0, 0x7dc7c0, 0xc000018038, 0x76ff0b, 0x32, 0xc00013d400, 0x1, 0x1, 0xc00013d370, 0x40b4db, ...)
+	/usr/local/go/src/database/sql/sql.go:1547 +0xd1
+database/sql.(*DB).QueryRowContext(...)
+	/usr/local/go/src/database/sql/sql.go:1648
+database/sql.(*DB).QueryRow(0x0, 0x76ff0b, 0x32, 0xc00013d400, 0x1, 0x1, 0xc000097480)
+	/usr/local/go/src/database/sql/sql.go:1659 +0x8b
+main.Checkmail(0xc0000aa040, 0x16, 0xc0000b4096, 0x24, 0x0)
+	/go/src/checkemail.go:218 +0xf9
+main.hasAccount(0xc0000aa040, 0x16, 0xc0000b4096, 0x24)
+	/go/src/checkemail.go:85 +0x2e2
+main.CheckEmail(0x7dbf80, 0xc0000ba000, 0xc0000a8000)
+	/go/src/checkemail.go:67 +0x39a
+net/http.HandlerFunc.ServeHTTP(0x77a020, 0x7dbf80, 0xc0000ba000, 0xc0000a8000)
+	/usr/local/go/src/net/http/server.go:2012 +0x44
+net/http.(*ServeMux).ServeHTTP(0x9ee340, 0x7dbf80, 0xc0000ba000, 0xc0000a8000)
+	/usr/local/go/src/net/http/server.go:2387 +0x1a5
+net/http.serverHandler.ServeHTTP(0xc000146000, 0x7dbf80, 0xc0000ba000, 0xc0000a8000)
+	/usr/local/go/src/net/http/server.go:2807 +0xa3
+net/http.(*conn).serve(0xc000102a00, 0x7dc780, 0xc000092000)
+	/usr/local/go/src/net/http/server.go:1895 +0x86c
+created by net/http.(*Server).Serve
+	/usr/local/go/src/net/http/server.go:2933 +0x35c
+2020/03/16 11:25:51 User Service started
+2020/03/16 11:26:15 http: panic serving 127.0.0.1:52268: runtime error: invalid memory address or nil pointer dereference
+goroutine 21 [running]:
+net/http.(*conn).serve.func1(0xc0000baa00)
+	/usr/local/go/src/net/http/server.go:1772 +0x139
+panic(0x7028a0, 0x9e1620)
+	/usr/local/go/src/runtime/panic.go:973 +0x396
+database/sql.(*DB).conn(0x0, 0x7dc7c0, 0xc0000a8000, 0xc0000a0c01, 0x7d66e0, 0xc0000a0ca0, 0x6fb880)
+	/usr/local/go/src/database/sql/sql.go:1132 +0x41
+database/sql.(*DB).query(0x0, 0x7dc7c0, 0xc0000a8000, 0x76ff0b, 0x32, 0xc0000f7400, 0x1, 0x1, 0xc000012201, 0x10, ...)
+	/usr/local/go/src/database/sql/sql.go:1565 +0x66
+database/sql.(*DB).QueryContext(0x0, 0x7dc7c0, 0xc0000a8000, 0x76ff0b, 0x32, 0xc0000f7400, 0x1, 0x1, 0xc0000f7370, 0x40b4db, ...)
+	/usr/local/go/src/database/sql/sql.go:1547 +0xd1
+database/sql.(*DB).QueryRowContext(...)
+	/usr/local/go/src/database/sql/sql.go:1648
+database/sql.(*DB).QueryRow(0x0, 0x76ff0b, 0x32, 0xc0000f7400, 0x1, 0x1, 0xc000067400)
+	/usr/local/go/src/database/sql/sql.go:1659 +0x8b
+main.Checkmail(0xc00001a060, 0x16, 0xc0000160f6, 0x24, 0x0)
+	/go/src/checkemail.go:218 +0xf9
+main.hasAccount(0xc00001a060, 0x16, 0xc0000160f6, 0x24)
+	/go/src/checkemail.go:85 +0x2e2
+main.CheckEmail(0x7dbf80, 0xc000182000, 0xc000076000)
+	/go/src/checkemail.go:67 +0x39a
+net/http.HandlerFunc.ServeHTTP(0x77a020, 0x7dbf80, 0xc000182000, 0xc000076000)
+	/usr/local/go/src/net/http/server.go:2012 +0x44
+net/http.(*ServeMux).ServeHTTP(0x9ee340, 0x7dbf80, 0xc000182000, 0xc000076000)
+	/usr/local/go/src/net/http/server.go:2387 +0x1a5
+net/http.serverHandler.ServeHTTP(0xc000100000, 0x7dbf80, 0xc000182000, 0xc000076000)
+	/usr/local/go/src/net/http/server.go:2807 +0xa3
+net/http.(*conn).serve(0xc0000baa00, 0x7dc780, 0xc00001c040)
+	/usr/local/go/src/net/http/server.go:1895 +0x86c
+created by net/http.(*Server).Serve
+	/usr/local/go/src/net/http/server.go:2933 +0x35c
+2020/03/16 11:28:28 User Service started
+2020/03/16 11:28:32 http: panic serving 127.0.0.1:52368: runtime error: invalid memory address or nil pointer dereference
+goroutine 6 [running]:
+net/http.(*conn).serve.func1(0xc000102aa0)
+	/usr/local/go/src/net/http/server.go:1772 +0x139
+panic(0x7028a0, 0x9e1620)
+	/usr/local/go/src/runtime/panic.go:973 +0x396
+database/sql.(*Stmt).ExecContext(0x0, 0x7dc7e0, 0xc000018038, 0xc0000c0cd0, 0x1, 0x1, 0x0, 0x0, 0x0, 0x0)
+	/usr/local/go/src/database/sql/sql.go:2394 +0x5a
+database/sql.(*Stmt).Exec(...)
+	/usr/local/go/src/database/sql/sql.go:2423
+main.sendRegisterEmail(0xc00001a1e0, 0x16, 0xc0000161b6, 0x24)
+	/go/src/checkemail.go:127 +0x155
+main.hasAccount(0xc00001a1e0, 0x16, 0xc0000161b6, 0x24)
+	/go/src/checkemail.go:107 +0x892
+main.CheckEmail(0x7dbfa0, 0xc0001460e0, 0xc000160000)
+	/go/src/checkemail.go:68 +0x39a
+net/http.HandlerFunc.ServeHTTP(0x77a028, 0x7dbfa0, 0xc0001460e0, 0xc000160000)
+	/usr/local/go/src/net/http/server.go:2012 +0x44
+net/http.(*ServeMux).ServeHTTP(0x9ee340, 0x7dbfa0, 0xc0001460e0, 0xc000160000)
+	/usr/local/go/src/net/http/server.go:2387 +0x1a5
+net/http.serverHandler.ServeHTTP(0xc000146000, 0x7dbfa0, 0xc0001460e0, 0xc000160000)
+	/usr/local/go/src/net/http/server.go:2807 +0xa3
+net/http.(*conn).serve(0xc000102aa0, 0x7dc7a0, 0xc00001c340)
+	/usr/local/go/src/net/http/server.go:1895 +0x86c
+created by net/http.(*Server).Serve
+	/usr/local/go/src/net/http/server.go:2933 +0x35c
+2020/03/16 11:30:13 User Service started
+2020/03/16 11:30:19 Error response sending
+2020/03/16 11:31:19 User Service started
+2020/03/16 11:31:27 Error response sending
+2020/03/16 11:32:16 User Service started
+2020/03/16 11:32:53 User Service started
+2020/03/16 11:34:54 User Service started
+2020/03/16 11:45:41 User Service started
+2020/03/16 11:46:30 User Service started
+2020/03/16 11:50:46 User Service started
+2020/03/16 11:51:47 User Service started
+2020/03/27 16:53:44 User Service started
+2020/03/27 16:55:59 User Service started
+2020/03/28 03:45:40 User Service started
+2020/03/28 03:52:27 User Service started
+2020/03/28 03:57:16 User Service started
+2020/03/28 03:59:41 User Service started
+2020/03/28 04:00:27 User Service started
+2020/03/28 04:03:14 User Service started
+2020/03/28 05:34:01 User Service started
+2020/03/28 05:36:06 User Service started
+2020/03/28 05:37:14 User Service started
+2020/03/28 05:53:12 User Service started
+2020/03/28 06:10:47 User Service started
+2020/03/28 06:16:50 User Service started
+2020/03/28 06:18:33 User Service started
+2020/03/28 06:49:20 User Service started
+2020/03/28 06:52:09 User Service started
+2020/03/28 06:53:07 User Service started
+2020/03/28 06:56:12 User Service started
+2020/03/28 07:42:43 User Service started
+2020/03/28 07:43:59 User Service started
+2020/03/28 07:49:51 User Service started
+2020/03/28 07:51:34 User Service started
+2020/03/28 07:53:02 User Service started
+2020/03/28 09:23:18 User Service started
+2020/03/28 09:29:54 User Service started
+2020/03/28 09:31:39 User Service started
+2020/03/28 09:33:47 User Service started
+2020/03/28 09:35:39 User Service started
+2020/03/28 09:37:58 User Service started
+2020/03/28 12:16:29 User Service started
+2020/03/28 12:20:39 User Service started
+2020/03/28 12:38:50 User Service started
+2020/03/28 12:40:40 User Service started
+2020/03/28 12:46:12 User Service started
+2020/03/28 12:48:10 User Service started
+2020/03/28 12:57:04 User Service started
+2020/03/29 15:59:33 User Service started
+2020/03/29 16:22:49 User Service started
+2020/03/29 16:27:30 User Service started
+2020/03/31 16:50:27 User Service started
+2020/03/31 16:57:56 User Service started
+2020/03/31 17:06:47 User Service started
+2020/03/31 17:15:46 User Service started
+2020/04/02 08:25:12 User Service started
+2020/04/02 08:29:23 User Service started
+2020/04/02 08:30:27 User Service started
+2020/04/02 16:33:47 User Service started
+2020/04/02 16:40:33 User Service started
+2020/04/02 16:53:53 User Service started
+2020/04/02 17:07:32 User Service started
+2020/04/02 17:52:37 User Service started
+2020/04/02 17:53:01 http: panic serving 127.0.0.1:43392: Error 1136: Column count doesn't match value count at row 1
+goroutine 21 [running]:
+net/http.(*conn).serve.func1(0xc0000bca00)
+	/usr/local/go/src/net/http/server.go:1772 +0x139
+panic(0x6fc7e0, 0xc0000a1020)
+	/usr/local/go/src/runtime/panic.go:973 +0x396
+main.insertToValidToken(0xc000018080, 0xe, 0xc0002c4000, 0x9f, 0xc0000160e2, 0x24, 0x0, 0x0)
+	/go/src/login.go:184 +0x6c3
+main.UserLogin(0x7f3360, 0xc0000140e0, 0xc00007a000)
+	/go/src/login.go:147 +0x143a
+net/http.HandlerFunc.ServeHTTP(0x78dee8, 0x7f3360, 0xc0000140e0, 0xc00007a000)
+	/usr/local/go/src/net/http/server.go:2012 +0x44
+net/http.(*ServeMux).ServeHTTP(0xa10560, 0x7f3360, 0xc0000140e0, 0xc00007a000)
+	/usr/local/go/src/net/http/server.go:2387 +0x1a5
+net/http.serverHandler.ServeHTTP(0xc0000a20e0, 0x7f3360, 0xc0000140e0, 0xc00007a000)
+	/usr/local/go/src/net/http/server.go:2807 +0xa3
+net/http.(*conn).serve(0xc0000bca00, 0x7f3c20, 0xc000020040)
+	/usr/local/go/src/net/http/server.go:1895 +0x86c
+created by net/http.(*Server).Serve
+	/usr/local/go/src/net/http/server.go:2933 +0x35c
+2020/04/02 17:55:48 User Service started
+2020/04/03 06:55:24 User Service started
+2020/04/03 08:16:55 User Service started
+2020/04/03 11:26:48 User Service started
+2020/04/03 11:45:08 User Service started
+2020/04/03 11:52:08 User Service started
+2020/04/03 13:09:19 User Service started
+2020/04/03 13:25:25 User Service started
+2020/04/03 13:25:32 Cookie setting step
+2020/04/03 13:25:32 Cookie set :  {csrftoken eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOiIyMDIwLTA0LTA2VDAxOjI1OjMyLjI3MzU5NTY5OFoifQ.9M-lEw7RARNHPIeXZAjuuerRB1uZH-_INPwPBLaQTvY   2020-04-04 13:25:32.274909418 +0000 UTC m=+86406.898393610  0 false false 0  []}
+2020/04/03 14:33:38 User Service started
+2020/04/03 14:33:48 Cookie setting step
+2020/04/03 14:33:48 Cookie set :  {csrftoken eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOiIyMDIwLTA0LTA2VDAyOjMzOjQ4Ljg5MDc0NTUwMloifQ.2JbyC6JvEC06VRS8iayO_ShzhJaXFn9P5l3sgvT7l9g   2020-04-04 14:33:48.89226198 +0000 UTC m=+86410.662507271  0 false false 0  []}
+2020/04/03 15:40:43 User Service started
+2020/04/03 15:42:59 User Service started
+2020/04/03 15:44:15 User Service started
+2020/04/03 15:45:16 User Service started
+2020/04/03 15:47:51 User Service started
+2020/04/03 15:49:23 User Service started
+2020/04/03 15:54:07 User Service started
+2020/04/03 15:57:36 User Service started
+2020/04/03 16:03:25 User Service started
+2020/04/03 16:08:08 User Service started
+2020/04/03 16:09:00 User Service started
+2020/04/03 16:29:13 User Service started
+2020/04/04 01:25:06 User Service started
+2020/04/04 01:34:23 User Service started
+2020/04/04 01:37:24 User Service started
+2020/04/04 01:39:58 User Service started
+2020/04/06 06:48:44 User Service started
+2020/04/06 06:50:13 User Service started
+2020/04/06 07:58:54 User Service started
+2020/04/06 08:01:25 User Service started
+2020/04/06 08:03:24 User Service started
+2020/04/06 08:18:44 User Service started
+2020/04/06 08:22:09 User Service started
+2020/04/06 08:23:59 User Service started
+2020/04/06 08:32:19 User Service started
+2020/04/06 08:34:49 User Service started
+2020/04/06 09:38:02 User Service started
+2020/04/06 09:58:21 User Service started
+2020/04/06 10:10:29 User Service started
+2020/04/06 11:22:57 User Service started
+2020/04/06 11:24:11 User Service started
+2020/04/06 12:03:43 User Service started
+2020/04/06 12:51:34 User Service started
+2020/04/06 12:57:40 User Service started
+2020/04/06 14:36:25 User Service started
+2020/04/06 14:39:56 User Service started
+2020/04/06 14:42:10 User Service started
+2020/04/06 14:45:40 User Service started
+2020/04/07 04:34:57 User Service started
+2020/04/07 04:35:08 http: superfluous response.WriteHeader call from main.UserLogin (login.go:119)
+2020/04/07 04:35:34 http: superfluous response.WriteHeader call from main.UserLogin (login.go:119)
+2020/04/07 04:43:34 User Service started
+2020/04/07 04:47:21 User Service started
+2020/04/07 04:48:05 http: superfluous response.WriteHeader call from main.UserLogin (login.go:119)
+2020/04/07 04:50:42 User Service started
+2020/04/07 04:53:53 User Service started
+2020/04/07 05:11:46 User Service started
+2020/04/07 05:15:08 User Service started
+2020/04/07 05:16:04 User Service started
+2020/04/07 05:17:23 User Service started
+2020/04/07 05:18:06 User Service started
+2020/04/07 05:22:31 User Service started
+2020/04/07 05:25:04 User Service started
+2020/04/07 05:29:11 User Service started
+2020/04/08 06:11:48 User Service started
+2020/04/08 06:21:18 User Service started
+2020/04/08 06:29:29 User Service started
+2020/04/08 06:33:06 User Service started
+2020/04/08 06:38:04 User Service started
+2020/04/08 06:38:13 User service loing check
+2020/04/08 06:57:52 User Service started
+2020/04/08 06:58:33 User service loing check, userID :  
+2020/04/08 07:20:47 User Service started
+2020/04/08 07:21:12 User service loing check, userID :  test@email.com
+2020/04/08 07:23:20 User Service started
+2020/04/08 07:23:25 User service loing check, userID :  test@email.com
+2020/04/08 07:59:18 User Service started
+2020/04/08 07:59:27 User service loing check, userID :  test@email.com
+2020/04/08 07:59:27 http: superfluous response.WriteHeader call from main.UserLogin (login.go:113)
+2020/04/08 08:10:05 User Service started
+2020/04/08 08:10:16 User service loing check, userID :  test@email.com
+2020/04/08 08:10:16 http: superfluous response.WriteHeader call from main.UserLogin (login.go:113)
+2020/04/08 08:19:51 User Service started
+2020/04/08 08:20:24 User service loing check, userID :  
+2020/04/08 08:27:38 User Service started
+2020/04/08 08:27:55 User service loing check, userID :  sachith
+2020/04/08 08:28:29 User service loing check, userID :  
+2020/04/08 08:39:32 User Service started
+2020/04/08 08:39:43 User service loing check, userID :  sachith
+2020/04/08 08:39:43 Request ID :  
+2020/04/08 08:41:21 User Service started
+2020/04/08 08:47:22 User Service started
+2020/04/08 08:47:29 User service loing check, userID :  
+2020/04/08 08:47:29 Request ID :  
+2020/04/08 08:47:45 User service loing check, userID :  sachith
+2020/04/08 08:47:45 Request ID :  
+2020/04/08 08:49:29 User Service started
+2020/04/08 08:49:39 User service loing check, userID :  
+2020/04/08 08:49:39 Request ID :  
+2020/04/08 08:49:47 User service loing check, userID :  sachith
+2020/04/08 08:49:47 Request ID :  
+2020/04/08 08:51:14 User Service started
+2020/04/08 08:52:16 User Service started
+2020/04/08 08:53:08 User Service started
+2020/04/08 08:53:51 User Service started
+2020/04/08 09:02:38 User Service started
+2020/04/08 09:06:34 User Service started
+2020/04/08 09:06:35 User service loing check, userID :  
+2020/04/08 09:06:35 Request ID :  
+2020/04/08 09:07:10 User service loing check, userID :  
+2020/04/08 09:07:10 Request ID :  
+2020/04/08 09:08:19 User Service started
+2020/04/08 09:09:06 User Service started
+2020/04/08 09:11:33 User Service started
+2020/04/08 09:11:40 User service loing check, userID :  
+2020/04/08 09:11:40 Request ID :  
+2020/04/08 10:17:43 User Service started
+2020/04/08 10:18:36 User service loing check, userID :  
+2020/04/08 10:18:36 Request ID :  foo
+2020/04/08 10:24:06 User Service started
+2020/04/08 10:24:24 User service loing check, userID :  
+2020/04/08 10:24:24 Request ID :  
+2020/04/08 10:25:41 User Service started
+2020/04/08 10:26:48 User service loing check, userID :  
+2020/04/08 10:26:48 Request ID :  
+2020/04/08 10:27:43 User Service started
+2020/04/08 10:28:25 User service loing check, userID :  
+2020/04/08 10:28:57 User service loing check, userID :  
+2020/04/08 10:29:30 User Service started
+2020/04/08 10:29:37 User service loing check, userID :  
+2020/04/08 10:54:49 User Service started
+2020/04/08 10:54:57 User service loing check, userID :  
+2020/04/08 10:57:29 User Service started
+2020/04/08 10:57:36 User service loing check, userID :  
+2020/04/08 11:46:01 User Service started
+2020/04/08 11:48:14 User Service started
+2020/04/08 11:48:25 Request ID :  d3d5a9cf-798e-11ea-a3c4-c46516a78d3b
+2020/04/08 11:49:35 User Service started
+2020/04/08 11:49:48 Request ID :  041b0b58-798f-11ea-9b77-c46516a78d3b
+2020/04/08 11:49:48 User iD :  
+2020/04/08 11:50:24 User Service started
+2020/04/08 11:50:25 Request ID :  2192a07f-798f-11ea-a642-c46516a78d3b
+2020/04/08 11:50:25 User iD :  
+2020/04/08 11:51:43 User Service started
+2020/04/08 11:51:45 Request ID :  5056c1bf-798f-11ea-85a9-c46516a78d3b
+2020/04/08 11:51:45 User iD :  sachith
+2020/04/08 11:53:55 User Service started
+2020/04/08 11:54:05 User Service started
+2020/04/08 11:54:26 Request ID :  a569095d-798f-11ea-9d48-c46516a78d3b
+2020/04/08 11:54:26 User iD :  sachith
+2020/04/08 11:54:48 Request ID :  a569095d-798f-11ea-9d48-c46516a78d3b
+2020/04/08 11:54:48 User iD :  sachith
+2020/04/08 14:40:32 User Service started
+2020/04/08 14:40:43 Request ID :  e610e766-79a6-11ea-823a-c46516a78d3b
+2020/04/08 14:40:43 User iD :  sachith
+2020/04/08 14:40:43 Password:  
+2020/04/08 14:42:04 User Service started
+2020/04/08 14:42:13 Request ID :  1c72f30c-79a7-11ea-b496-c46516a78d3b
+2020/04/08 14:42:13 User iD :  sachith
+2020/04/08 14:42:13 Password:  
+2020/04/08 14:43:46 User Service started
+2020/04/08 14:43:52 Request ID :  59b4b1ae-79a7-11ea-bd1d-c46516a78d3b
+2020/04/08 14:43:52 User iD :  sachith
+2020/04/08 14:43:52 Password:  hi
+2020/04/08 14:44:06 Request ID :  59b4b1ae-79a7-11ea-bd1d-c46516a78d3b
+2020/04/08 14:44:06 User iD :  sachith
+2020/04/08 14:44:06 Password:  hi
+2020/04/08 14:44:32 Request ID :  59b4b1ae-79a7-11ea-bd1d-c46516a78d3b
+2020/04/08 14:44:32 User iD :  sachith
+2020/04/08 14:44:32 Password:  hi
+2020/04/08 14:46:21 User Service started
+2020/04/08 14:46:45 Request ID :  b5b9c6b9-79a7-11ea-8f64-c46516a78d3b
+2020/04/08 14:46:45 User iD :  sachith
+2020/04/08 14:46:45 Password:  hi
+2020/04/08 14:46:45 login token:  
+2020/04/08 14:48:59 User Service started
+2020/04/08 14:49:09 Request ID :  13e83732-79a8-11ea-9af0-c46516a78d3b
+2020/04/08 14:49:09 User iD :  sachith
+2020/04/08 14:49:09 Password:  
+2020/04/08 14:49:09 login token:  
+2020/04/08 14:50:20 User Service started
+2020/04/08 14:50:38 Request ID :  4427900f-79a8-11ea-bdc3-c46516a78d3b
+2020/04/08 14:50:38 User iD :  
+2020/04/08 14:50:38 Password:  hi
+2020/04/08 14:50:38 login token:  hi1234
+2020/04/08 14:51:25 Request ID :  4427900f-79a8-11ea-bdc3-c46516a78d3b
+2020/04/08 14:51:25 User iD :  sachith
+2020/04/08 14:51:25 Password:  hi
+2020/04/08 14:51:25 login token:  hi1234
+2020/04/08 14:58:54 User Service started
+2020/04/08 14:59:34 http: superfluous response.WriteHeader call from main.UserLogin (login.go:84)
+2020/04/08 15:01:50 User Service started
+2020/04/08 15:07:37 User Service started
+2020/04/08 15:09:17 User Service started
+2020/04/08 15:11:22 User Service started
+2020/04/08 15:21:27 User Service started
+2020/04/08 15:22:44 User Service started
+2020/04/09 06:43:42 User Service started
+2020/04/10 04:46:11 User Service started
+2020/04/10 04:50:20 User Service started
+2020/04/10 04:51:45 User Service started
+2020/04/10 04:53:30 User Service started
+2020/04/10 04:56:55 User Service started
+2020/04/10 04:57:02 Error occured :  Error 1292: Incorrect datetime value: 'yyyy-MM-dd HH:mm:ss' for column 'created_at' at row 1
+2020/04/10 04:59:39 User Service started
+2020/04/10 04:59:43 Time is :  2020-04-10 04:59:43.31214237 +0000 UTC m=+3.735645221
+2020/04/10 04:59:43 Result is :  {0xc00007a700 0xc0000184b0}
+2020/04/10 05:04:25 User Service started
+2020/04/10 05:07:08 User Service started
+2020/04/10 06:17:10 User Service started
+2020/04/10 06:20:27 User Service started
+2020/04/10 06:21:21 User Service started
+2020/04/10 06:29:35 User Service started
+2020/04/10 06:31:50 User Service started
+2020/04/10 06:33:15 User Service started
+2020/04/10 06:45:33 User Service started
+2020/04/10 06:48:38 User Service started
+2020/04/10 06:57:23 User Service started
+2020/04/10 07:02:30 User Service started
+2020/04/10 07:04:41 User Service started
+2020/04/10 07:05:27 User Service started
+2020/04/10 07:06:09 User Service started
+2020/04/10 07:06:56 User Service started
+2020/04/10 07:07:50 User Service started
+2020/04/10 07:16:14 User Service started
+2020/04/10 07:25:43 User Service started
+2020/04/10 08:27:52 User Service started
+2020/04/10 08:35:04 User Service started
+2020/04/10 08:36:09 User Service started
+2020/04/10 08:55:37 User Service started
+2020/04/10 08:55:48 http: superfluous response.WriteHeader call from main.UserLogin (login.go:69)
+2020/04/10 08:57:32 User Service started
+2020/04/10 09:00:01 User Service started
+2020/04/10 09:06:13 User Service started
+2020/04/10 09:09:27 User Service started
+2020/04/10 14:29:32 User Service started
+2020/04/10 14:34:18 User Service started
+2020/04/10 14:51:24 User Service started
+2020/04/10 14:57:58 User Service started
+2020/04/10 15:19:41 User Service started
+2020/04/10 15:22:46 User Service started
+2020/04/10 15:29:35 User Service started
+2020/04/10 15:30:49 User Service started
+2020/04/14 03:18:14 User Service started
+2020/04/14 08:49:53 User Service started
+2020/04/14 16:51:10 User Service started
+2020/04/14 16:55:45 User Service started
+2020/04/14 16:58:10 User Service started
+2020/04/14 17:01:38 User Service started
+2020/04/14 17:05:53 User Service started
+2020/04/14 17:10:21 User Service started
+2020/04/14 17:23:41 User Service started
+2020/04/14 17:32:26 User Service started
+2020/04/14 17:52:19 User Service started
+2020/04/14 18:15:12 User Service started
+2020/04/14 18:31:14 User Service started
+2020/04/14 18:46:03 User Service started
+2020/04/14 20:12:13 User Service started
+2020/04/14 20:18:51 User Service started
+2020/04/14 20:21:55 User Service started
+2020/04/14 20:26:36 User Service started
+2020/04/14 20:32:33 User Service started
+2020/04/14 20:38:31 User Service started
+2020/04/14 20:43:42 User Service started
+2020/04/14 20:49:26 User Service started
+2020/04/14 20:51:34 User Service started
+2020/04/14 21:01:23 User Service started
+2020/04/14 21:15:37 User Service started
+2020/04/14 21:19:04 User Service started
+2020/04/14 21:22:01 User Service started
+2020/04/14 21:24:38 User Service started
+2020/04/14 21:34:53 User Service started
+2020/04/14 21:42:10 User Service started
+2020/04/14 21:49:51 User Service started
+2020/04/15 16:37:20 User Service started
+2020/04/15 16:47:27 User Service started
+2020/04/15 16:49:56 User Service started
+2020/04/15 17:05:21 User Service started
+2020/04/15 17:06:36 User Service started
+2020/04/15 17:07:11 User Service started
+2020/04/15 17:07:47 User Service started
+2020/04/15 17:53:41 User Service started
+2020/04/15 17:55:03 User Service started
+2020/04/15 19:31:07 User Service started
+2020/04/15 19:32:22 User Service started
+2020/04/15 20:22:25 User Service started
+2020/04/15 21:04:02 User Service started
+2020/04/15 21:08:13 User Service started
+2020/04/15 21:11:25 User Service started
+2020/04/15 21:12:01 User Service started
+2020/04/15 21:14:44 User Service started
+2020/04/16 17:34:41 User Service started
+2020/04/16 17:35:58 User Service started
+2020/04/16 18:02:16 User Service started
+2020/04/16 18:05:38 User Service started
+2020/04/16 18:06:17 User Service started
+2020/04/16 18:07:00 User Service started
+2020/04/16 18:08:37 User Service started
+2020/04/16 18:16:15 User Service started
+2020/04/16 18:32:00 User Service started
+2020/04/16 18:40:49 User Service started
+2020/04/16 18:44:29 User Service started
+2020/04/16 18:45:14 User Service started
+2020/04/16 18:53:29 User Service started
+2020/04/16 18:55:24 User Service started
+2020/04/16 18:57:53 User Service started
+2020/04/16 18:58:45 User Service started
+2020/04/16 20:09:57 User Service started
+2020/04/16 20:21:39 User Service started
+2020/04/16 20:22:57 User Service started
+2020/04/16 21:24:51 User Service started
+2020/04/16 21:25:10 User Service started
+2020/04/16 21:25:38 User Service started
+2020/04/16 21:39:04 User Service started
+2020/04/16 21:48:51 User Service started
+2020/04/16 22:04:30 User Service started
+2020/04/17 19:19:15 User Service started
+2020/04/17 19:23:12 User Service started
+2020/04/17 19:25:52 User Service started
+2020/04/18 20:12:35 User Service started
+2020/04/18 20:17:58 User Service started

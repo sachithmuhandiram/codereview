@@ -1,0 +1,18 @@
+- Communication between User service and Notification service
+
+- When user email is checked with emails table, check whether its active or not.. If it's inactive, handle that case separately.
+
+- Date 2/4/2020
+
+	- [ x ] Create MySQL table for validcookies.
+	
+	- [ ]   Login function to insert token to this table.
+
+		- [ x ]	Check valid token is with login request. login_token
+		- [ x ]	If it matches, delete that login_token from database.
+
+	- [ ]	Check / route refreshing with this table (using Middleware) 
+
+- User JWT expire time should update with last activity.
+
+- Use interfaces to deletel login and active tokens in DB helper service.

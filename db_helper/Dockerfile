@@ -4,10 +4,9 @@ RUN apk update
 RUN apk add git
 
 RUN set -e \
-    && go get -u golang.org/x/crypto/... \
-    && go get github.com/go-sql-driver/mysql \
     && go get github.com/sirupsen/logrus \
-    && go get github.com/dgrijalva/jwt-go
+    && go get github.com/carlescere/scheduler \
+    && go get github.com/go-sql-driver/mysql
 
 # # setting container time zone
 RUN \
@@ -23,14 +22,10 @@ COPY . /go/src
 
 WORKDIR /go/src
 
-ENV CGO_ENABLED=0 GO111MODULE=off
-
 RUN go build -o main .
 
-EXPOSE 7071
+EXPOSE 7073
 
 RUN chmod 755 main
 
 CMD [ "./main" ]
-
-RUN go test -v

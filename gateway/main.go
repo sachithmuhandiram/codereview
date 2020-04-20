@@ -8,16 +8,41 @@ import (
 	"regexp"
 	"strconv"
 	"time"
+	"os"
+	"fmt"
+	"io/ioutil"
+	"encoding/json"
+	"bytes"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
 	logs "github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
+	"github.com/dgrijalva/jwt-go"
 )
 
+// Globle variable
+var checkEMAIL = os.Getenv("CHECKEMAIL")
+var userLOGIN = os.Getenv("LOGIN")
+var userREGISTER = os.Getenv("REGISTER")
+var passwordRESET = os.Getenv("PASSWORDRESET")
+var resposeURL = os.Getenv("RESPONSEURL")
+
+// Response struct
+type resposeObj struct{
+	UID 	string `json :"uid"`
+	Service string `json : "service"`
+	Function string `json : "function"`
+	Pack string 	`json : "pack"`
+	Status string 	`json : "status"`
+}
+
 // database connection
+
+var gatewayDB	= os.Getenv("MYSQLDBGATEWAY")
+
 func dbConn() (db *sql.DB) {
-	db, err := sql.Open("mysql", "root:7890@tcp(127.0.0.1:3306)/codereview_users")
+	db, err := sql.Open("mysql", gatewayDB)
 
 	if err != nil {
 		logs.WithFields(logs.Fields{
@@ -38,6 +63,45 @@ type UUID struct {
 	apiUuid uuid.UUID
 }
 
+// Requests are authenticated
+func authenticateToken(handlerFunc http.HandlerFunc) http.HandlerFunc {
+
+	log.Println("Authentication function called")
+
+	return func(res http.ResponseWriter, req *http.Request) {
+		cookie, _ := req.Cookie("usertoken")
+
+		if cookie == nil {
+			log.Println("Cant find cookie")
+			http.Redirect(res,req,"/login",http.StatusSeeOther)
+			return
+		}else{
+			// Cookie is there, need to validate that cookie
+			if cookie.Name == "usertoken"{
+				jwtClaims,err := getUserFromJWT(cookie.Value)
+				
+				if err != nil{
+					log.Println("There was an error getting user details ",err)
+					http.Redirect(res,req,"/login",http.StatusSeeOther)	
+					return	
+				} // got jwt claims 
+					
+				user := jwtClaims["user"].(string)
+				validJWT,err := checkJWT(user,cookie.Value)
+
+				if validJWT == true && err == nil{
+					updateUserActivity(user)
+					home(res,req)
+				}else{ // no valid JWT or there is an error
+					http.Redirect(res,req,"/login",http.StatusSeeOther)	
+					return	
+				}
+			} // cookie name checking if loop
+
+		} // there is a cookie
+	} // function return
+}
+
 func main() {
 
 	apiID := &UUID{apiUuid: generateUUID()}
@@ -49,13 +113,113 @@ func main() {
 	}).Info("API - Gateway started at 7070")
 
 	http.HandleFunc("/getemail", apiID.validatemail)
+	http.HandleFunc("/home",authenticateToken(home))
+	http.HandleFunc("/createsession",createSession)
 	http.HandleFunc("/response", reportResponse)
-	http.HandleFunc("/login", apiID.userLogin)
+	http.HandleFunc("/userlogin", apiID.userLogin)
 	http.HandleFunc("/register", apiID.registerUser)
 	http.HandleFunc("/passwordreset", apiID.sendPasswordResetEmail)
 	http.HandleFunc("/updatepassword", apiID.updatePassword)
+	http.HandleFunc("/login",apiID.login)
 
 	http.ListenAndServe(":7070", nil)
+}
+// Home function
+func home(res http.ResponseWriter,req *http.Request){
+	fmt.Fprintf(res, "Welcome to Home Page!")
+	
+}
+// Login function - This will return login form
+func (apiID *UUID) login(res http.ResponseWriter,req *http.Request){
+	// generate  UUID for login
+	loginID := apiID.apiUuid
+
+	// create JWT for login session
+	loginJWT,jwtErr := GenerateJWT(loginID.String())
+
+	if jwtErr != nil{
+		log.Println("Couldt generate login JWT")
+		return
+	}
+
+	// add that token to login_token table
+
+	addLoginJWT := addLoginJWT(loginID.String(),loginJWT)
+
+	if addLoginJWT != false{
+		
+		expirationTime := time.Now().Add(5 * time.Minute)
+
+		log.Println("Loging token time : ",expirationTime)
+		http.SetCookie(res, &http.Cookie{
+			Name:    "logintoken",
+			Value:   loginJWT,
+			Expires: expirationTime,
+		})
+		fmt.Fprintf(res, "This is login page")
+	}else{
+		log.Println("Could not insert login token to table")
+	}
+}
+
+// createSession function
+func createSession(res http.ResponseWriter,req *http.Request){
+
+	uid := req.FormValue("uid")
+	authorized := req.FormValue("authorize")
+
+	if authorized == "1"{
+		user := req.FormValue("userid")
+		expirationTime := time.Now().Add(5 * time.Minute)
+
+		log.Println("Expire time : ",expirationTime)
+
+		logs.WithFields(logs.Fields{
+			"package":  "API-Gateway",
+			"function": "createSession",
+			"uuid":     uid,
+		}).Info("User details received to create a session")
+
+		// // creating JWT for user
+		jwt,jwtErr := GenerateJWT(user)
+
+		if jwtErr != nil{
+			log.Println("Error generating JWT, cant go further")
+			return
+		}
+		// Insert JWT to table
+		insertJWTResponse,err := InsertJWT(uid,user,jwt)
+		
+		if insertJWTResponse == true && err == nil{
+			log.Println("JWT insert to insert to table")
+
+			// removing logintoken
+			expire := time.Now().Add(-7 * 24 * time.Hour)
+			logincookie := http.Cookie{
+				Name:    "logintoken",
+				//Value:   "value",
+				Expires: expire,
+			}
+			http.SetCookie(res, &logincookie)
+
+			// Setting jwt cookie
+			http.SetCookie(res, &http.Cookie{
+				Name:    "usertoken",
+				Value:   jwt,
+				Expires: expirationTime,
+			})
+
+			http.Redirect(res,req,"/home",http.StatusSeeOther)
+
+		}else{
+			log.Println("JWT sending to user service failed : Abort",err)
+			return
+		}
+
+	}else{ // authorized = 0
+
+		log.Println("Something bad happened")
+	}	
 }
 
 // This will validate email address has valid syntax
@@ -70,8 +234,15 @@ func (apiID *UUID) validatemail(res http.ResponseWriter, req *http.Request) {
 			"uuid":     validatemailID,
 		}).Error("Request method is not POST")
 
-		_, err := http.PostForm("http://localhost:7070/response", url.Values{"uid": {validatemailID.String()}, "service": {"API Gateway"},
-			"function": {"validatemail"}, "package": {"main"}, "status": {"0"}})
+		response := resposeObj{UID:validatemailID.String(),Service:"API Gateway",Function:"validatemail",Pack:"main",Status:"0"}
+		
+		validatemailResponse,err := json.Marshal(response)
+
+		if err != nil{
+			log.Println("Error in marshaling data",err)
+		}
+
+		err = sendResponse(validatemailResponse)
 
 		if err != nil {
 			log.Println("Error response sending")
@@ -81,7 +252,7 @@ func (apiID *UUID) validatemail(res http.ResponseWriter, req *http.Request) {
 		// Method is POST
 
 		email := req.FormValue("email") //"sachithnalaka@gmail.com" // parse form and get email
-
+		request := "hasaccount"
 		validEmail := regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`) // regex to validate email address
 
 		if validEmail.MatchString(email) {
@@ -98,7 +269,7 @@ func (apiID *UUID) validatemail(res http.ResponseWriter, req *http.Request) {
 				"uuid":     validatemailID, // Later this should change for function-wise uuid
 			}).Info("Email will pass to User - Service")
 
-			_, err := http.PostForm("http://user:7071/checkemail", url.Values{"email": {email}, "uid": {validatemailID.String()}})
+			_, err := http.PostForm(checkEMAIL, url.Values{"email": {email}, "uid": {validatemailID.String()},"request":{request}})
 
 			if err != nil {
 				logs.WithFields(logs.Fields{
@@ -139,8 +310,16 @@ func (apiID *UUID) validatemail(res http.ResponseWriter, req *http.Request) {
 
 // User login
 func (apiID *UUID) userLogin(res http.ResponseWriter, req *http.Request) {
+	
+	cookie, _ := req.Cookie("logintoken")
+log.Println("Cookies are : ",cookie.Name)
+	if cookie.Name != "logintoken"{
+		log.Println("There are many other tokens")
+		http.Redirect(res,req,"/login",http.StatusSeeOther)
+		return
+	}
 
-	//jwt := req.FormValue("jwt") //req.URL.Query()["jwt"]
+	loginToken := cookie.Value
 	requestID := apiID.apiUuid
 	userid := req.FormValue("email")
 	password := req.FormValue("password")
@@ -149,33 +328,53 @@ func (apiID *UUID) userLogin(res http.ResponseWriter, req *http.Request) {
 		logs.WithFields(logs.Fields{
 			"package":  "API-Gateway",
 			"function": "userLogin",
-			"uuid":     apiID,
+			"uuid":     requestID,
 		}).Error("User Login request received,without password")
 		return
 
 	}
+	// check email syntax
+	validEmail := regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`) 
 
-	//hashedPassword := hashPassword(password)
+	if validEmail.MatchString(userid) {  // correct email syntax
+		// check login token
 
-	logs.WithFields(logs.Fields{
-		"package":  "API-Gateway",
-		"function": "validuserLoginatemail",
-		"uuid":     apiID,
-	}).Info("User Login request received")
-
-	_, err := http.PostForm("http://user:7071/login", url.Values{"userid": {userid}, "uid": {requestID.String()},
-		"password": {password}})
-
-	if err != nil {
 		logs.WithFields(logs.Fields{
 			"package":  "API-Gateway",
-			"function": "userLogin",
-			"userid":   userid,
-			"error":    err,
+			"function": "validuserLoginatemail",
 			"uuid":     requestID,
-		}).Error("Error posting data to User - Service")
-	}
+		}).Info("User Login request received")
 
+		validLoginToken := checkLoginToken(requestID.String(),loginToken)
+
+		if validLoginToken != true{
+
+			logs.WithFields(logs.Fields{
+				"Service":   "API Gateway Service",
+				"function":  "UserLogin",
+				"userid":    userid,
+				"requestID": requestID,
+			}).Warn("Login request does not have a login token")
+
+			http.Redirect(res,req,"/login",http.StatusSeeOther)
+			return
+		}
+		
+
+	}else{
+		// wrong email syntax
+		logs.WithFields(logs.Fields{
+			"package":  "API-Gateway",
+			"function": "validuserLoginatemail",
+			"uuid":     requestID,
+		}).Error("User entered invalid email syntax")
+
+		http.Redirect(res,req,"/login",http.StatusSeeOther)
+		return
+	}
+	parameters := userLOGIN+"?userid="+ userid +"&uid="+requestID.String()+"&password="+password
+	
+	http.Redirect(res, req, parameters, http.StatusSeeOther)
 }
 
 func generateUUID() uuid.UUID {
@@ -228,7 +427,7 @@ func (apiID *UUID) registerUser(res http.ResponseWriter, req *http.Request) {
 
 	password = hashPassword(password)
 
-	_, err := http.PostForm("http://user:7071/register", url.Values{"email": {email}, "uid": {responseID.String()},
+	_, err := http.PostForm(userREGISTER, url.Values{"email": {email}, "uid": {responseID.String()},
 		"first_name": {firstName}, "last_name": {lastName}, "password": {password}})
 
 	if err != nil {
@@ -255,7 +454,7 @@ func (apiID *UUID) sendPasswordResetEmail(res http.ResponseWriter, req *http.Req
 		"email":    email,
 	}).Info("Password Reset received email address")
 
-	_, err := http.PostForm("http://user:7071/checkemail", url.Values{"email": {email}, "uid": {requestID.String()}, "request": {"passwordreset"}})
+	_, err := http.PostForm(checkEMAIL, url.Values{"email": {email}, "uid": {requestID.String()}, "request": {"passwordreset"}})
 
 	if err != nil {
 		logs.WithFields(logs.Fields{
@@ -302,7 +501,7 @@ func (apiID *UUID) updatePassword(res http.ResponseWriter, req *http.Request) {
 
 	password = hashPassword(password)
 
-	_, err := http.PostForm("http://user:7071/updateaccount", url.Values{"uid": {requestID.String()},
+	_, err := http.PostForm(passwordRESET, url.Values{"uid": {requestID.String()},
 		"token": {token}, "password": {password}, "request": {"updatepassword"}})
 
 	if err != nil {
@@ -355,29 +554,80 @@ func hashPassword(password string) string {
 	}
 	return string(hashedPass)
 }
+// Sending a response
+func sendResponse(req []byte)error{
+	//log.Println("Received response : ",string(req))
+	request,err := http.NewRequest("POST",resposeURL, bytes.NewBuffer(req))
+	request.Header.Set("Content-Type","application/json")
+
+	client := &http.Client{}
+    resp, err := client.Do(request)
+    if err != nil {
+        panic(err)
+    }
+    defer resp.Body.Close()
+
+	if err != nil{
+		return err
+	}
+
+	return nil
+}
 
 // Response for a request is recorded.
 func reportResponse(res http.ResponseWriter, req *http.Request) {
+	var stat int
+	var requestID string
+	requestType := req.Header.Get("Content-Type")
 
-	responseID := req.FormValue("uid")
-	service := req.FormValue("service")
-	function := req.FormValue("function")
-	pack := req.FormValue("package")
-	status := req.FormValue("status")
+	//log.Println("Content type is : ",requestType)
+	switch(requestType){
+	case "application/json" :
+		data,_ := ioutil.ReadAll(req.Body)
 
-	logs.WithFields(logs.Fields{
-		"ResponseService": service,
-		"ResponsePackage": pack,
-		"ResponseFunc":    function,
-		"responseID":      responseID,
-		"status":          status,
-	}).Info("Response received for the request")
+		//log.Printf("Request data from reportResponse function: %s\n",data)
+	    var request resposeObj
+	    err := json.Unmarshal(data, &request)
+	    
+	    if err != nil {
+	        log.Println("Error occured decoding JSON object",err)
+	    }
 
-	stat, _ := strconv.Atoi(status) // convert string to int
+	    requestID = request.UID
+
+		logs.WithFields(logs.Fields{
+			"ResponseService": request.Service,
+			"ResponsePackage": request.Pack,
+			"ResponseFunc":    request.Function,
+			"responseID":      request.UID,
+			"status":          request.Status,
+		}).Info("Response received for the request")
+
+		stat, _ = strconv.Atoi(request.Status) // convert string to int
+	default: // form data
+		responseID := req.FormValue("uid")
+		service := req.FormValue("service")
+		function := req.FormValue("function")
+		pack := req.FormValue("package")
+		status := req.FormValue("status")
+
+		requestID = req.FormValue("uid")
+		logs.WithFields(logs.Fields{
+			"ResponseService": service,
+			"ResponsePackage": pack,
+			"ResponseFunc":    function,
+			"responseID":      responseID,
+			"status":          status,
+		}).Info("Response received for the request")
+
+		stat, _ = strconv.Atoi(status) // convert string to int
+
+	} // response is json or form data
+	
 
 	// stat 1 = success, 0 = failed
 	if stat == 1 {
-		storeData := storeDetails(responseID, true, true)
+		storeData := storeDetails(requestID, true, true)
 
 		if storeData != nil {
 			logs.WithFields(logs.Fields{
@@ -387,7 +637,7 @@ func reportResponse(res http.ResponseWriter, req *http.Request) {
 			}).Error("Response data insert to DB failed")
 		}
 	} else {
-		storeData := storeDetails(responseID, true, false)
+		storeData := storeDetails(requestID, true, false)
 
 		if storeData != nil {
 			logs.WithFields(logs.Fields{
@@ -399,3 +649,27 @@ func reportResponse(res http.ResponseWriter, req *http.Request) {
 	}
 
 }
+
+// JWT
+// GenerateJWT takes eventID as a parameter and time (minutes) for JWT
+func GenerateJWT(user string) (string, error) {
+
+	appSecretKey  := []byte("du-bi-du-bi-dub") // takes 531855448467 years to break using brute-force attack
+	token := jwt.New(jwt.SigningMethodHS256)
+	claims := token.Claims.(jwt.MapClaims)
+
+	claims["authorized"] = true
+	claims["user"] = user
+	claims["exp"] = time.Now().Add(time.Duration(5))
+
+	jwtToken, jwtErr := token.SignedString(appSecretKey)
+
+	if jwtErr != nil {
+		log.Println("Error creating jwt Token : ", jwtErr)
+		return "", jwtErr
+	}
+
+	return jwtToken, nil
+}
+
+
