@@ -40,6 +40,8 @@ Here it uses `key:value` combination.
 
 [Testing Docker-based Go Applications with Go Test](https://medium.com/@jmarhee/testing-docker-based-go-applications-with-go-test-and-drone-io-5ae5db7d3bcf)
 
+[Testing golang Handlers](https://blog.questionable.services/article/testing-http-handlers-go/)
+
 [Fix error with go-test and gcc](https://stackoverflow.com/questions/55442155/why-are-go-tests-suddenly-requiring-gcc)
 
 ## Environment variables
