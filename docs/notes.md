@@ -49,3 +49,7 @@ Here it uses `key:value` combination.
 [Docker-compose environment variables](https://docs.docker.com/compose/environment-variables/)
 
 [Setting-up timezones](https://stackoverflow.com/questions/47498297/docker-compose-container-timezone)
+
+## Security concerns 
+
+[JWT security issues](https://medium.com/swlh/hacking-json-web-tokens-jwts-9122efe91e4a)

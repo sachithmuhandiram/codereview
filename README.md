@@ -82,3 +82,9 @@ RUN \
     mkdir -p /usr/share/zoneinfo/Asia && \
     ln -s /etc/localtime /usr/share/zoneinfo/Asia/Colombo
 ```
+
+## Expected Improvements in next release :
+
+1. gRPC 
+
+   Initial version uses `REST API` to communicate. We will try to change this into `gRPC`.
