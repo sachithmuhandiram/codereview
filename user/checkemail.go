@@ -71,7 +71,7 @@ func CheckEmail(res http.ResponseWriter, req *http.Request) {
 			http.Redirect(res, req, "http://localhost:7070/getlogintoken?token="+token+"&uid="+apiUUID, http.StatusSeeOther)
 		}else{
 			// register token received /getregistertoken
-			http.Redirect(res, req, "http://localhost:7070/getregistertoken?token="+token+"&uid="+apiUUID, http.StatusSeeOther)
+			http.Redirect(res, req, "http://localhost:7070/getregistertoken?token="+token+"&email="+email+"&uid="+apiUUID, http.StatusSeeOther)
 		}
 		
 	case "passwordreset":
