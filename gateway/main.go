@@ -117,11 +117,14 @@ func main() {
 	http.HandleFunc("/createsession",createSession)
 	http.HandleFunc("/response", reportResponse)
 	http.HandleFunc("/userlogin", apiID.userLogin)
-	http.HandleFunc("/register", apiID.registerUser)
+	http.HandleFunc("/userregister", apiID.registerUser)
 	http.HandleFunc("/passwordreset", apiID.sendPasswordResetEmail)
 	http.HandleFunc("/updatepassword", apiID.updatePassword)
 	http.HandleFunc("/login",apiID.login)
-
+	// internal service routes
+	http.HandleFunc("/getlogintoken",insertLoginToken)
+	http.HandleFunc("/getregistertoken",insertRegisterToken)
+	
 	http.ListenAndServe(":7070", nil)
 }
 // Home function

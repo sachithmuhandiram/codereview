@@ -64,7 +64,16 @@ func CheckEmail(res http.ResponseWriter, req *http.Request) {
 	switch request {
 
 	case "hasaccount":
-		hasAccount(email, apiUUID)
+		hasAcct,token := hasAccount(email, apiUUID)
+
+		if hasAcct {
+			// a login token received /getlogintoken
+			http.Redirect(res, req, "http://localhost:7070/getlogintoken?token="+token+"&uid="+apiUUID, http.StatusSeeOther)
+		}else{
+			// register token received /getregistertoken
+			http.Redirect(res, req, "http://localhost:7070/getregistertoken?token="+token+"&uid="+apiUUID, http.StatusSeeOther)
+		}
+		
 	case "passwordreset":
 		passwordReset(email, apiUUID)
 
@@ -74,7 +83,7 @@ func CheckEmail(res http.ResponseWriter, req *http.Request) {
 
 // Check whether user has an account for the given email
 // Sends login or registering emails
-func hasAccount(email, apiUUID string) {
+func hasAccount(email, apiUUID string) (bool,string){
 	logs.WithFields(logs.Fields{
 		"package":  " User Service ",
 		"function": " hasAccount ",
@@ -93,7 +102,8 @@ func hasAccount(email, apiUUID string) {
 			"uuid":     apiUUID,
 		}).Info("This user has an account. send login email")
 
-		sendLoginEmail(email, apiUUID)
+		loginToken := sendLoginEmail(email, apiUUID)
+		return true,loginToken
 
 	} else {
 		logs.WithFields(logs.Fields{
@@ -103,13 +113,18 @@ func hasAccount(email, apiUUID string) {
 			"uuid":     apiUUID,
 		}).Info("This user doent have an account. send register email")
 
-		sendRegisterEmail(email, apiUUID)
+		registerToken := sendRegisterEmail(email, apiUUID)
+
+		if registerToken == ""{
+			// sending register email is failed
+		}
+		return false,registerToken // send false and register token
 	}
 
 }
 
 // User doesnt have an account, send register form with token
-func sendRegisterEmail(email string, apiUUID string) {
+func sendRegisterEmail(email string, apiUUID string) (string) {
 	db := dbConn()
 	token := generateToken(apiUUID)
 
@@ -123,7 +138,7 @@ func sendRegisterEmail(email string, apiUUID string) {
 			"Error":    err,
 		}).Error("Couldnt prepare insert statement for registering_token table")
 
-		return
+		return ""
 	}
 	insToken.Exec(token) //time.Now()
 
@@ -142,7 +157,8 @@ func sendRegisterEmail(email string, apiUUID string) {
 
 		_, err = http.PostForm(responseURL, url.Values{"uid": {apiUUID}, "service": {"User Service"},
 		"function": {"sendRegisterEmail"}, "package": {"Register"}, "status": {"0"}})
-
+		
+		return ""
 	if err != nil {
 		log.Println("Error response sending")
 	}
@@ -162,12 +178,13 @@ func sendRegisterEmail(email string, apiUUID string) {
 
 	if err != nil {
 		log.Println("Error response sending")
+	}	
 	}
-}
+	return token
 }
 
 // User has an account, send login form
-func sendLoginEmail(email string, apiUUID string) {
+func sendLoginEmail(email string, apiUUID string) (string){
 	db := dbConn()
 	token := generateToken(apiUUID)
 
@@ -200,6 +217,10 @@ func sendLoginEmail(email string, apiUUID string) {
 		"email":    email,
 		"uuid":     apiUUID,
 	}).Info("Sent login email to user")
+	
+	// send token and uuid to API gateway
+
+	// end of sending token and uuid to gateway
 
 	_, err = http.PostForm(responseURL, url.Values{"uid": {apiUUID}, "service": {"User Service"},
 		"function": {"sendLoginEmail"}, "package": {"Check Email"}, "status": {"1"}})
@@ -208,6 +229,7 @@ func sendLoginEmail(email string, apiUUID string) {
 		log.Println("Error response sending")
 	}
 
+	return token // token is sent to hasAccount
 }
 
 func Checkmail(email string, uuid string) bool {
