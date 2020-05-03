@@ -116,7 +116,7 @@ func sendUserEmail(res http.ResponseWriter, req *http.Request) {
 func (regiEmail registerEmail) SendEmail(user *userEmailNotification, msg string) {
 	registerURL := os.Getenv("REGISTERURL") 
 
-	body := msg + "\n" + registerURL + "=" +  user.token
+	body := msg + "\n" + registerURL + "=" +  user.token + "\n This link valid only for 30 minutes"
 	from, pass := getCredintials()
 
 	emailMsg := "From: " + from + "\n" +
