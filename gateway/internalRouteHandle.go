@@ -91,14 +91,14 @@ func insertLoginToken(res http.ResponseWriter,req *http.Request){
 
 
 	db := dbConn()
-	insertLoginToken, err := db.Prepare("INSERT INTO emailed_login_token(emailed_login_token,created_at) VALUES(?,?)")
+	insertLoginToken, err := db.Prepare("INSERT INTO emailed_login_token(emailed_login_token,isActive,created_at) VALUES(?,?,?)")
         if err != nil {
             panic(err.Error())
 
             return //false,err
         }
 
-    _,err = insertLoginToken.Exec(emailedLoginToken,t)
+    _,err = insertLoginToken.Exec(emailedLoginToken,1,t)
 	if err != nil{
 		logs.WithFields(logs.Fields{
 			"Service":   "API Gateway",
@@ -134,14 +134,14 @@ func insertRegisterToken(res http.ResponseWriter,req *http.Request){
 
 
 	db := dbConn()
-	insertRegisterToken, err := db.Prepare("INSERT INTO emailed_register_token(emailed_register_token,email,created_at) VALUES(?,?,?)")
+	insertRegisterToken, err := db.Prepare("INSERT INTO emailed_register_token(emailed_register_token,email,isActive,created_at) VALUES(?,?,?,?)")
         if err != nil {
             panic(err.Error())
 
             return //false,err
         }
 
-    _,err = insertRegisterToken.Exec(emailedRegisterToken,email,t)
+    _,err = insertRegisterToken.Exec(emailedRegisterToken,email,1,t)
 	if err != nil{
 		logs.WithFields(logs.Fields{
 			"Service":   "API Gateway",

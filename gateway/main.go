@@ -119,7 +119,10 @@ func main() {
 	http.HandleFunc("/userregister", apiID.registerUser)
 	http.HandleFunc("/passwordreset", apiID.sendPasswordResetEmail)
 	http.HandleFunc("/updatepassword", apiID.updatePassword)
+	
+	// views
 	http.HandleFunc("/login",apiID.login)
+	http.HandleFunc("/register",registerView)
 	// internal service routes
 	http.HandleFunc("/createsession",createSession)
 	http.HandleFunc("/getlogintoken",insertLoginToken)
@@ -342,10 +345,27 @@ func generateUUID() uuid.UUID {
 // Register a User
 func (apiID *UUID) registerUser(res http.ResponseWriter, req *http.Request) {
 
+	cookie, _ := req.Cookie("registertoken")
+
+	if cookie.Name != "registertoken"{
+		log.Println("There are many other tokens")
+		http.Redirect(res,req,"/register",http.StatusSeeOther)
+		return
+	}
+
+	registerToken := cookie.Value
+
+	log.Println("Register Token : ",registerToken)
+	// check register token with db values
+	email := req.FormValue("email")
+
+	/*
+		If token is expired, how can we find it?
+	*/
+	//
 	responseID := apiID.apiUuid //req.FormValue("uid")
 	firstName := req.FormValue("first_name")
 	lastName := req.FormValue("last_name")
-	email := req.FormValue("email")
 	password := req.FormValue("password")
 	conformPassword := req.FormValue("conformpassword")
 
