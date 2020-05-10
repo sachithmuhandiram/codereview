@@ -279,7 +279,16 @@ func passwordReset(email, apiUUID string) {
 		}
 		return
 	}
+	// Check whether this user has previous password reset tokens
+	hasPreviousToken := checkPreviousToken(email, apiUUID)
 
+	if hasPreviousToken {
+		log.Println("User has previous tokens")
+
+		return
+	}
+
+	//
 	logs.WithFields(logs.Fields{
 		"package":  "User Service",
 		"function": "passwordReset",
@@ -362,4 +371,28 @@ func generateToken(uuid string) string {
 	return string(hashedPass)
 }
 
-// This is a comment for testing
+func checkPreviousToken(email, uuid string) bool{
+	db := dbConn()
+
+	var hasPreviousToken bool
+
+	// This will return a true or false
+	row := db.QueryRow("select exists(select resettoken from passwordResetToken where email=?)", email)
+
+	err := row.Scan(&hasPreviousToken)
+	if err != nil {
+		logs.WithFields(logs.Fields{
+			"package":  "User Service",
+			"function": "checkPreviousToken",
+			"error":    err,
+			"uuid":     uuid,
+		}).Error("Failed to fetch data from passwordResetToken table")
+	}
+
+	if hasPreviousToken {
+		return true
+	}
+
+	defer db.Close()
+	return false
+}

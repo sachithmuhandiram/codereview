@@ -6,3 +6,7 @@ import(
 func registerView(res http.ResponseWriter,req *http.Request){
 
 }
+
+func resetPasswordView(res http.ResponseWriter,req *http.Request){
+
+}

@@ -124,6 +124,7 @@ func main() {
 	// views
 	http.HandleFunc("/login",apiID.login)
 	http.HandleFunc("/register",registerView)
+	http.HandleFunc("/resetpassword",resetPasswordView)
 	// internal service routes
 	http.HandleFunc("/createsession",createSession)
 	http.HandleFunc("/getlogintoken",insertLoginToken)

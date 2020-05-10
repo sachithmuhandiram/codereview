@@ -839,3 +839,5 @@ created by net/http.(*Server).Serve
 2020/05/10 18:22:38 User Service started
 2020/05/10 18:24:03 User Service started
 2020/05/10 18:53:24 User Service started
+2020/05/10 19:52:36 User Service started
+2020/05/10 19:52:42 User has previous tokens
