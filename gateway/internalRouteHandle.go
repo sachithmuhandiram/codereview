@@ -165,3 +165,46 @@ func insertRegisterToken(res http.ResponseWriter,req *http.Request){
 	
 	defer db.Close()
 }
+
+func insertPasswordResetToken(res http.ResponseWriter, req *http.Request){
+	emailedPassResetToken := req.FormValue("token")
+	requestID := req.FormValue("uid")
+	email := req.FormValue("email")
+	
+	t := time.Now()
+	t.Format("yyyy-MM-dd HH:mm:ss")
+
+
+	db := dbConn()
+	insertPassResetToken, err := db.Prepare("INSERT INTO emailed_password_reset_token(emailed_passwort_reset_token,email,isActive,created_at) VALUES(?,?,?,?)")
+        if err != nil {
+            panic(err.Error())
+			log.Println("Error : ",err)
+            return //false,err
+        }
+
+    _,err = insertPassResetToken.Exec(emailedPassResetToken,email,1,t)
+	if err != nil{
+		logs.WithFields(logs.Fields{
+			"Service":   "API Gateway",
+			"Package":   "Internal Route Handler",
+			"function":  "insertPasswordResetToken",
+		//	"userid":    userID,
+			"requestID": requestID,
+			"Error" : err,
+		}).Error("Could not insert into valid emailed_password_reset_token tokens")	
+	}else{
+	
+		logs.WithFields(logs.Fields{
+			"Service":   "API Gateway",
+			"Package":   "Internal Route Handler",
+			"function":  "insertPasswordResetToken",
+		//	"userid":    userID,
+			"requestID": requestID,
+			//"JWT" : jwtToken,
+		}).Info("Insert into valid emailed_password_reset_token tokens")	
+	}
+	
+	defer db.Close()
+
+}

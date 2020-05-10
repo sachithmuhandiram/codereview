@@ -129,6 +129,7 @@ func main() {
 	http.HandleFunc("/createsession",createSession)
 	http.HandleFunc("/getlogintoken",insertLoginToken)
 	http.HandleFunc("/getregistertoken",insertRegisterToken)
+	http.HandleFunc("/getpasswordresettoken",insertPasswordResetToken)
 	
 	http.ListenAndServe(":7070", nil)
 }

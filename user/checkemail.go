@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"errors"
 
 	_ "github.com/go-sql-driver/mysql"
 	logs "github.com/sirupsen/logrus"
@@ -75,7 +76,12 @@ func CheckEmail(res http.ResponseWriter, req *http.Request) {
 		}
 		
 	case "passwordreset":
-		passwordReset(email, apiUUID)
+		gotToken,resetToken,err := passwordReset(email, apiUUID)
+
+		// No error generating password reset token
+		if gotToken && err == nil{
+			http.Redirect(res,req,"http://localhost:7070/getpasswordresettoken?token="+resetToken+"&email="+email+"&uid="+apiUUID,http.StatusSeeOther)
+		} // need to handle different error messages separatly.
 
 	} // switch statement
 
@@ -261,7 +267,7 @@ func Checkmail(email string, uuid string) bool {
 }
 
 // Password reset
-func passwordReset(email, apiUUID string) {
+func passwordReset(email, apiUUID string) (bool,string,error){
 	validEmail := Checkmail(email, apiUUID)
 
 	if validEmail != true {
@@ -277,7 +283,8 @@ func passwordReset(email, apiUUID string) {
 		if err != nil {
 			log.Println("Error response sending")
 		}
-		return
+		err = errors.New("no account")
+		return false,"",err
 	}
 	// Check whether this user has previous password reset tokens
 	hasPreviousToken := checkPreviousToken(email, apiUUID)
@@ -285,7 +292,8 @@ func passwordReset(email, apiUUID string) {
 	if hasPreviousToken {
 		log.Println("User has previous tokens")
 
-		return
+		err := errors.New("previous token for this account")
+		return false,"",err
 	}
 
 	//
@@ -308,7 +316,8 @@ func passwordReset(email, apiUUID string) {
 			"uuid":     apiUUID,
 		}).Error("Failed to insert token to passwordResetToken table")
 
-		return
+		err := errors.New("could not insert to passwordResetToken")
+		return false,"",err
 	}
 	_, err := http.PostForm(sendEmail, url.Values{"email": {email}, "uuid": {apiUUID}, "token": {token}, "nofitication": {"passwordreset"}})
 
@@ -319,7 +328,12 @@ func passwordReset(email, apiUUID string) {
 			"error":    err,
 			"uuid":     apiUUID,
 		}).Error("Failed to connect to Notification Service")
+
+		err = errors.New("couldnt connect to notification service")
+		return false,"",err
 	}
+
+		return true,token,nil
 }
 
 func insertPasswordResetToken(email, uuid, token string) bool {
