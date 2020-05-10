@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"net/smtp"
 	"os"
+	"net/url"
+	"log"
 
 	logs "github.com/sirupsen/logrus"
 )
@@ -75,7 +77,7 @@ func getCredintials() (string, string) {
 func sendUserEmail(res http.ResponseWriter, req *http.Request) {
 
 	email := req.FormValue("email")
-	apiUUID := req.FormValue("uid")
+	apiUUID := req.FormValue("uuid")
 	token := req.FormValue("token")
 	notification := req.FormValue("nofitication")
 	// This body value should have a token and it should be inserted to a db
@@ -136,6 +138,12 @@ func (regiEmail registerEmail) SendEmail(user *userEmailNotification, msg string
 			"uid":      user.requestID,
 		}).Error("SMTP server failure")
 
+		_, err := http.PostForm("http://localhost:7070/response", url.Values{"uid": {user.requestID}, "service": {"Notification Service"},
+			"function": {"Send Register Email"}, "package": {"Main"}, "status": {"0"}})
+
+		if err != nil {
+			log.Println("Error response sending")
+		}
 		return
 	}
 
@@ -145,6 +153,13 @@ func (regiEmail registerEmail) SendEmail(user *userEmailNotification, msg string
 		"email":    user.email,
 		"uid":      user.requestID,
 	}).Info("Register email sent")
+
+	_, err = http.PostForm("http://localhost:7070/response", url.Values{"uid": {user.requestID}, "service": {"Notification Service"},
+			"function": {"Send Register Email"}, "package": {"Main"}, "status": {"1"}})
+
+		if err != nil {
+			log.Println("Error response sending")
+		}
 }
 
 // sending login email
@@ -170,6 +185,14 @@ func (loginEmail loginEmail) SendEmail(user *userEmailNotification, msg string) 
 			"error":    err,
 			"uid":      user.requestID,
 		}).Error("SMTP server failure")
+
+		_, err := http.PostForm("http://localhost:7070/response", url.Values{"uid": {user.requestID}, "service": {"Notification Service"},
+			"function": {"Send Login Email"}, "package": {"Main"}, "status": {"0"}})
+
+		if err != nil {
+			log.Println("Error response sending")
+		}
+
 		return
 	}
 
@@ -179,11 +202,19 @@ func (loginEmail loginEmail) SendEmail(user *userEmailNotification, msg string) 
 		"email":    user.email,
 		"uid":      user.requestID,
 	}).Info("Login email sent")
+
+	_, err = http.PostForm("http://localhost:7070/response", url.Values{"uid": {user.requestID}, "service": {"Notification Service"},
+			"function": {"Send Login Email"}, "package": {"Main"}, "status": {"1"}})
+
+		if err != nil {
+			log.Println("Error response sending")
+		}
 }
 
 func (passRestEmail passwordResetEmail) SendEmail(user *userEmailNotification, msg string) {
 
-	body := msg + user.token
+	passwordResetURL := os.Getenv("PASSWORDRESETURL") 
+	body := msg + "\n" + passwordResetURL + user.token + "\n This link valid only for 10 minutes"
 	from, pass := getCredintials()
 
 	emailMsg := "From: " + from + "\n" +
@@ -202,6 +233,13 @@ func (passRestEmail passwordResetEmail) SendEmail(user *userEmailNotification, m
 			"error":    err,
 			"uid":      user.requestID,
 		}).Error("SMTP server failure")
+
+		_, err := http.PostForm("http://localhost:7070/response", url.Values{"uid": {user.requestID}, "service": {"Notification Service"},
+			"function": {"Send Password Reset Email"}, "package": {"Main"}, "status": {"0"}})
+
+		if err != nil {
+			log.Println("Error response sending")
+		}
 		return
 	}
 
@@ -211,4 +249,11 @@ func (passRestEmail passwordResetEmail) SendEmail(user *userEmailNotification, m
 		"email":    user.email,
 		"uid":      user.requestID,
 	}).Info("Password reset email sent")
+
+	_, err = http.PostForm("http://localhost:7070/response", url.Values{"uid": {user.requestID}, "service": {"Notification Service"},
+			"function": {"Send Password Reset Email"}, "package": {"Main"}, "status": {"1"}})
+
+		if err != nil {
+			log.Println("Error response sending")
+		}
 }
