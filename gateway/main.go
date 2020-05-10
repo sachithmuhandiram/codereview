@@ -117,7 +117,8 @@ func main() {
 	http.HandleFunc("/response", reportResponse)
 	http.HandleFunc("/userlogin", apiID.userLogin)
 	http.HandleFunc("/userregister", apiID.registerUser)
-	http.HandleFunc("/passwordreset", apiID.sendPasswordResetEmail)
+	http.HandleFunc("/passwordresetemail", apiID.sendPasswordResetEmail)
+//http.HandleFunc("/passwordreset",apiID.resetPassword)
 	http.HandleFunc("/updatepassword", apiID.updatePassword)
 	
 	// views
