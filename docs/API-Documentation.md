@@ -37,7 +37,13 @@ This will describe publically exposed APIs in the system, their inputs and outpu
     This is Home page for individual user. When a request hits here, checks whether it has a valid JWT, if it doesnt then redirect to `/login` route.<br>
     Valid JWT expire time will increase (need to update).
 
-5. `gateway:port/getemail`<br>
+5. `gateway:port/email`
+    Method : `GET`<br>
+
+    This will send a form UI to enter their email address. This does not handle JWT yet, next version this will be implemented. <br>
+    Data will be posted to `gateway:port/getemail`.
+
+6. `gateway:port/getemail`<br>
     Method : `POST`
 
     When a user wants to register for the system, this route will get `email` address and check whether its a `POST` ,and then validate email syntax.<br>
@@ -47,5 +53,34 @@ This will describe publically exposed APIs in the system, their inputs and outpu
     If email doent not have an account, a register email will send.
 
     - Tokens are inserted with email link, and need to make this into database and validating the process.
+
+7. `gateway:port/register`<br>
+    Method : `GET`
+
+    This will bring User registration form to user. Page will be shown with after adding `registertoken` cookie. Initial stage following user data will be taken:
+    * First Name            : `string`
+    * Last Name             : `string`
+    * Date of Birth         : `date`
+    * Email address ( will be uneditable)
+    * Password              : `string`
+    * Retyped Password      : `string`
+
+    Here password wont check for special charactor etc. We will advice users to use easy to remember, yet hard password. 
+    Eg : <br>
+    `this is fun`    , common word cracking would take 2537 years.<br>
+    `du-bi-du-bi-dub` , bruteforce will take 531855448467 years to break.
+    [Software Security](https://www.coursera.org/learn/usable-security/home/welcome)
+
+    In next version,will try to integrate avoiding common word passwords with a help for some online directory.
+
+8. `gateway:port/userregister`<br>
+    Method : `POST`
+
+    This will first check whether form has valid `registertoken`, if it doesnt have a valid `registertoken`, then user will be redirected to `gateway:port/register` route.
+
+    If user has a valid `registertoken` form data will be taken and check whether user entered `password` and `retypedpassword` matches. If not match user will again redirected to `gateway:port/register` route.
+
+    Then password is hashed and passed details to `User-Service`
+
 
     

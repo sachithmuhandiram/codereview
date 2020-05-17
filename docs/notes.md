@@ -53,3 +53,8 @@ Here it uses `key:value` combination.
 ## Security concerns 
 
 [JWT security issues](https://medium.com/swlh/hacking-json-web-tokens-jwts-9122efe91e4a)
+
+
+## Errors
+
+[docker/httpd: Configuration error: No MPM loaded](https://stackoverflow.com/questions/48525092/docker-httpd-configuration-error-no-mpm-loaded)

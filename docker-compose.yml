@@ -44,3 +44,13 @@ services:
     env_file: "./api.env"
     depends_on: 
       - apigateway
+
+  frontend_image:
+    image: frontend_image
+    build: 
+      context: ./frontend_image
+      dockerfile: Dockerfile
+    #network_mode: "host"
+    env_file: "./api.env"
+    depends_on: 
+      - apigateway

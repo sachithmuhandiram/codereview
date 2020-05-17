@@ -125,6 +125,7 @@ func main() {
 	http.HandleFunc("/login",apiID.login)
 	http.HandleFunc("/register",registerView)
 	http.HandleFunc("/resetpassword",resetPasswordView)
+	http.HandleFunc("/email",getEmailView)
 	// internal service routes
 	http.HandleFunc("/createsession",createSession)
 	http.HandleFunc("/getlogintoken",insertLoginToken)
@@ -388,6 +389,7 @@ func (apiID *UUID) registerUser(res http.ResponseWriter, req *http.Request) {
 			"password":        password,
 			"conformPassword": conformPassword,
 		}).Error("Password and conform password mismatch")
+		http.Redirect(res,req,"/register",http.StatusSeeOther)
 		return
 	}
 
