@@ -52,7 +52,7 @@ services:
       dockerfile: Dockerfile
     network_mode: "host"
     env_file: "./api.env"
-    volumes:
-      - ./frontend_image:/usr/local/apache2/htdocs/
+    # volumes:
+    #   - ./frontend_image:/usr/local/apache2/htdocs/
     depends_on: 
       - apigateway

@@ -159,14 +159,17 @@ func (apiID *UUID) login(res http.ResponseWriter,req *http.Request){
 	if addLoginJWT != false{
 		
 		expirationTime := time.Now().Add(5 * time.Minute)
-
-		log.Println("Loging token time : ",expirationTime)
+		//log.Println("Loging token time : ",expirationTime)
 		http.SetCookie(res, &http.Cookie{
 			Name:    "logintoken",
 			Value:   loginJWT,
 			Expires: expirationTime,
 		})
-		fmt.Fprintf(res, "This is login page")
+		
+		res.Header().Set("Content-Type","text/html; charset=utf-8")
+		//http.Redirect(res, req, "./views/login.html", http.StatusSeeOther)
+    	http.ServeFile(res, req,"views/login.html" )
+		// here should send frontend with token
 	}else{
 		log.Println("Could not insert login token to table")
 	}
@@ -274,12 +277,15 @@ func (apiID *UUID) userLogin(res http.ResponseWriter, req *http.Request) {
 	userid := req.FormValue("email")
 	password := req.FormValue("password")
 
+	// log.Println("Email : ",userid)
+	// log.Println("Password : ",password)
 	if password == "" {
 		logs.WithFields(logs.Fields{
 			"package":  "API-Gateway",
 			"function": "userLogin",
 			"uuid":     requestID,
 		}).Error("User Login request received,without password")
+		http.Redirect(res,req,"/login",http.StatusSeeOther)
 		return
 
 	}

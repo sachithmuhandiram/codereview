@@ -69,7 +69,7 @@ func UserLogin(res http.ResponseWriter, req *http.Request) {
 		if err != nil {
 			log.Println("Error response sending")
 		}
-
+		http.Redirect(res,req,"localhost:7070/login",http.StatusSeeOther)
 		return
 
 	} // password do not match
