@@ -1,11 +1,11 @@
 # API document
 
-This will describe publically exposed APIs in the system, their inputs and outputs. Also a short description about how they work internally.
+This will describe publicly exposed APIs in the system, their inputs and outputs. Also a short description about how they work internally.
 
 1. `gateway:port/login`<br>
     Method : `GET`
 
-    This will return login page to user. Also adds a `logintoken` to the oage, Which will be to `userlogin` route.<br>
+    This will return login page to user. Also adds a `logintoken` to the page, Which will be to `userlogin` route.<br>
     `logintoken` is valid for 10 minutes.
 
 2. `gateway:port/userlogin`<br>
@@ -15,7 +15,7 @@ This will describe publically exposed APIs in the system, their inputs and outpu
 
     * Username : email address (field name = email)
     * Password : any string    (field name = password)
-    * Login tokne : token ( filed name = logintoken)
+    * Login token : token ( filed name = logintoken)
 
     All inputs are mandetory. Route will first check whether given email address has a valid email syntax  using regular expression. If so, then checks whether password field is empty. If so returns back to `gateway:port/login`.
     If `username` and `password` syntax validated, then it checks whether there is a record for `logintoken`. If `login_token` in `api_gateway` databases. It sends to `User Service` to check username and password combination.<br>
@@ -35,7 +35,7 @@ This will describe publically exposed APIs in the system, their inputs and outpu
     Method : `GET`
 
     This is Home page for individual user. When a request hits here, checks whether it has a valid JWT, if it doesnt then redirect to `/login` route.<br>
-    Valid JWT expire time will increase (need to update).
+    Valid JWT expires time will increase (need to update).
 
 5. `gateway:port/email`
     Method : `GET`<br>
@@ -50,7 +50,7 @@ This will describe publically exposed APIs in the system, their inputs and outpu
     Then email is sent to check whether email associated with a user account.<br>
 
     If email associats with an user account, then email will be sent to user to `login`<br>
-    If email doent not have an account, a register email will send.
+    If email doent not have an account, a register email will be sent.
 
     - Tokens are inserted with email link, and need to make this into database and validating the process.
 
@@ -65,7 +65,7 @@ This will describe publically exposed APIs in the system, their inputs and outpu
     * Password              : `string`
     * Retyped Password      : `string`
 
-    Here password wont check for special charactor etc. We will advice users to use easy to remember, yet hard password. 
+    Here password wont check for special character etc. We will advice users to use easy to remember, yet hard password. 
     Eg : <br>
     `this is fun`    , common word cracking would take 2537 years.<br>
     `du-bi-du-bi-dub` , bruteforce will take 531855448467 years to break.
