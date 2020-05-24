@@ -168,10 +168,12 @@ func (apiID *UUID) login(res http.ResponseWriter,req *http.Request){
 		
 		res.Header().Set("Content-Type","text/html; charset=utf-8")
 		//http.Redirect(res, req, "./views/login.html", http.StatusSeeOther)
-    	http.ServeFile(res, req,"views/login.html" )
+		http.ServeFile(res, req,"views/login.html" )
+		//http.Redirect(res, req, "http://frontend_image:7074/login.html", http.StatusSeeOther)
 		// here should send frontend with token
 	}else{
 		log.Println("Could not insert login token to table")
+		// something went wrong. please try later
 	}
 }
 
@@ -355,15 +357,15 @@ func generateUUID() uuid.UUID {
 // Register a User
 func (apiID *UUID) registerUser(res http.ResponseWriter, req *http.Request) {
 
-	cookie, _ := req.Cookie("registertoken")
+	// cookie, _ := req.Cookie("registertoken")
 
-	if cookie.Name != "registertoken"{
-		log.Println("There are many other tokens")
-		http.Redirect(res,req,"/register",http.StatusSeeOther)
-		return
-	}
+	// if cookie.Name != "registertoken"{
+	// 	log.Println("There are many other tokens")
+	// 	http.Redirect(res,req,"/register",http.StatusSeeOther)
+	// 	return
+	// }
 
-	registerToken := cookie.Value
+	registerToken := req.FormValue("registertoken") //cookie.Value
 
 	log.Println("Register Token : ",registerToken)
 	// check register token with db values
