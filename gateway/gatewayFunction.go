@@ -55,14 +55,14 @@ func addLoginJWT(uuid,loginJWT string) bool{
 
 	log.Println("Login token created time : insert tabel : ",t)
 
-	insertLoginToken, err := db.Prepare("INSERT INTO login_token(login_token,created_at) VALUES(?,?)")
+	insertLoginToken, err := db.Prepare("INSERT INTO login_token(login_token,isActive,created_at) VALUES(?,?,?)")
         if err != nil {
             log.Println(err.Error())
 
             return false
         }
 
-    _,err = insertLoginToken.Exec(loginJWT,t)
+    _,err = insertLoginToken.Exec(loginJWT,1,t)
 	if err != nil{
 		log.Println("Error occured : ",err)
 		return false
@@ -90,14 +90,14 @@ func InsertJWT(requestID,userID,jwtToken string) (bool,error) {
 
 
 	db := dbConn()
-	insertToken, err := db.Prepare("INSERT INTO activeJWTtokens(user_id,jwt,created_at,last_update) VALUES(?,?,?,?)")
+	insertToken, err := db.Prepare("INSERT INTO activeJWTtokens(user_id,jwt,isActive,created_at,last_update) VALUES(?,?,?,?,?)")
         if err != nil {
             panic(err.Error())
 
             return false,err
         }
 
-    _,err = insertToken.Exec(userID, jwtToken,t,t)
+    _,err = insertToken.Exec(userID, jwtToken,1,t,t)
 	if err != nil{
 		log.Println("Error occured : ",err)
 		return false,err
@@ -146,7 +146,7 @@ func checkJWT(user,jwt string)(bool,error){
 	db := dbConn()
 	var assignedjwt string // to use with select table
 
-	row := db.QueryRow("select jwt from activeJWTtokens where user_id=?", user)
+	row := db.QueryRow("select jwt from activeJWTtokens where user_id=? and isActive=1", user)
 	err := row.Scan(&assignedjwt)
 
 	if err != nil {
@@ -224,14 +224,17 @@ func updateUserActivity(user string){
 }
 
 // Delete login token
+/*
+	This does not delete tokens, just update it.
+*/
 func deleteLoginToken(loginToken,requestID string){
 	db := dbConn()
 
-	delTkn, err := db.Prepare("DELETE FROM login_token WHERE login_token=?")
+	delTkn, err := db.Prepare("UPDATE login_token SET isActive=? WHERE login_token=?")
     if err != nil {
         panic(err.Error())
     }
-    delTkn.Exec(loginToken)
+    delTkn.Exec(0,loginToken)
 
     logs.WithFields(logs.Fields{
 			"Service":   "User Service",

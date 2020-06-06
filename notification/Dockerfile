@@ -19,6 +19,8 @@ COPY . /go/src
 
 WORKDIR /go/src
 
+RUN go fmt
+
 RUN go build -o email .
 
 EXPOSE 7072

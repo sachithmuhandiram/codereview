@@ -114,14 +114,24 @@ func main() {
 
 	http.HandleFunc("/getemail", apiID.validatemail)
 	http.HandleFunc("/home",authenticateToken(home))
-	http.HandleFunc("/createsession",createSession)
 	http.HandleFunc("/response", reportResponse)
 	http.HandleFunc("/userlogin", apiID.userLogin)
-	http.HandleFunc("/register", apiID.registerUser)
-	http.HandleFunc("/passwordreset", apiID.sendPasswordResetEmail)
+	http.HandleFunc("/userregister", apiID.registerUser)
+	http.HandleFunc("/passwordresetemail", apiID.sendPasswordResetEmail)
+//http.HandleFunc("/passwordreset",apiID.resetPassword)
 	http.HandleFunc("/updatepassword", apiID.updatePassword)
+	
+	// views
 	http.HandleFunc("/login",apiID.login)
-
+	http.HandleFunc("/register",registerView)
+	http.HandleFunc("/resetpassword",resetPasswordView)
+	http.HandleFunc("/email",getEmailView)
+	// internal service routes
+	http.HandleFunc("/createsession",createSession)
+	http.HandleFunc("/getlogintoken",insertLoginToken)
+	http.HandleFunc("/getregistertoken",insertRegisterToken)
+	http.HandleFunc("/getpasswordresettoken",insertPasswordResetToken)
+	
 	http.ListenAndServe(":7070", nil)
 }
 // Home function
@@ -149,77 +159,22 @@ func (apiID *UUID) login(res http.ResponseWriter,req *http.Request){
 	if addLoginJWT != false{
 		
 		expirationTime := time.Now().Add(5 * time.Minute)
-
-		log.Println("Loging token time : ",expirationTime)
+		//log.Println("Loging token time : ",expirationTime)
 		http.SetCookie(res, &http.Cookie{
 			Name:    "logintoken",
 			Value:   loginJWT,
 			Expires: expirationTime,
 		})
-		fmt.Fprintf(res, "This is login page")
+		
+		res.Header().Set("Content-Type","text/html; charset=utf-8")
+		//http.Redirect(res, req, "./views/login.html", http.StatusSeeOther)
+		http.ServeFile(res, req,"views/login.html" )
+		//http.Redirect(res, req, "http://frontend_image:7074/login.html", http.StatusSeeOther)
+		// here should send frontend with token
 	}else{
 		log.Println("Could not insert login token to table")
+		// something went wrong. please try later
 	}
-}
-
-// createSession function
-func createSession(res http.ResponseWriter,req *http.Request){
-
-	uid := req.FormValue("uid")
-	authorized := req.FormValue("authorize")
-
-	if authorized == "1"{
-		user := req.FormValue("userid")
-		expirationTime := time.Now().Add(5 * time.Minute)
-
-		log.Println("Expire time : ",expirationTime)
-
-		logs.WithFields(logs.Fields{
-			"package":  "API-Gateway",
-			"function": "createSession",
-			"uuid":     uid,
-		}).Info("User details received to create a session")
-
-		// // creating JWT for user
-		jwt,jwtErr := GenerateJWT(user)
-
-		if jwtErr != nil{
-			log.Println("Error generating JWT, cant go further")
-			return
-		}
-		// Insert JWT to table
-		insertJWTResponse,err := InsertJWT(uid,user,jwt)
-		
-		if insertJWTResponse == true && err == nil{
-			log.Println("JWT insert to insert to table")
-
-			// removing logintoken
-			expire := time.Now().Add(-7 * 24 * time.Hour)
-			logincookie := http.Cookie{
-				Name:    "logintoken",
-				//Value:   "value",
-				Expires: expire,
-			}
-			http.SetCookie(res, &logincookie)
-
-			// Setting jwt cookie
-			http.SetCookie(res, &http.Cookie{
-				Name:    "usertoken",
-				Value:   jwt,
-				Expires: expirationTime,
-			})
-
-			http.Redirect(res,req,"/home",http.StatusSeeOther)
-
-		}else{
-			log.Println("JWT sending to user service failed : Abort",err)
-			return
-		}
-
-	}else{ // authorized = 0
-
-		log.Println("Something bad happened")
-	}	
 }
 
 // This will validate email address has valid syntax
@@ -312,7 +267,7 @@ func (apiID *UUID) validatemail(res http.ResponseWriter, req *http.Request) {
 func (apiID *UUID) userLogin(res http.ResponseWriter, req *http.Request) {
 	
 	cookie, _ := req.Cookie("logintoken")
-log.Println("Cookies are : ",cookie.Name)
+
 	if cookie.Name != "logintoken"{
 		log.Println("There are many other tokens")
 		http.Redirect(res,req,"/login",http.StatusSeeOther)
@@ -324,12 +279,15 @@ log.Println("Cookies are : ",cookie.Name)
 	userid := req.FormValue("email")
 	password := req.FormValue("password")
 
+	// log.Println("Email : ",userid)
+	// log.Println("Password : ",password)
 	if password == "" {
 		logs.WithFields(logs.Fields{
 			"package":  "API-Gateway",
 			"function": "userLogin",
 			"uuid":     requestID,
 		}).Error("User Login request received,without password")
+		http.Redirect(res,req,"/login",http.StatusSeeOther)
 		return
 
 	}
@@ -399,10 +357,27 @@ func generateUUID() uuid.UUID {
 // Register a User
 func (apiID *UUID) registerUser(res http.ResponseWriter, req *http.Request) {
 
+	// cookie, _ := req.Cookie("registertoken")
+
+	// if cookie.Name != "registertoken"{
+	// 	log.Println("There are many other tokens")
+	// 	http.Redirect(res,req,"/register",http.StatusSeeOther)
+	// 	return
+	// }
+
+	registerToken := req.FormValue("registertoken") //cookie.Value
+
+	log.Println("Register Token : ",registerToken)
+	// check register token with db values
+	email := req.FormValue("email")
+
+	/*
+		If token is expired, how can we find it?
+	*/
+	//
 	responseID := apiID.apiUuid //req.FormValue("uid")
 	firstName := req.FormValue("first_name")
 	lastName := req.FormValue("last_name")
-	email := req.FormValue("email")
 	password := req.FormValue("password")
 	conformPassword := req.FormValue("conformpassword")
 
@@ -422,6 +397,7 @@ func (apiID *UUID) registerUser(res http.ResponseWriter, req *http.Request) {
 			"password":        password,
 			"conformPassword": conformPassword,
 		}).Error("Password and conform password mismatch")
+		http.Redirect(res,req,"/register",http.StatusSeeOther)
 		return
 	}
 

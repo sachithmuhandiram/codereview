@@ -28,6 +28,8 @@ WORKDIR /go/src
 
 ENV CGO_ENABLED=0 GO111MODULE=off
 
+RUN go fmt
+
 RUN go build -o main .
 
 EXPOSE 7070

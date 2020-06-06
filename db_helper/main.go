@@ -61,7 +61,7 @@ func readLoginToken(){
 	var loginToken string 
 	var createdAt time.Time 
 
-	rows, err := gatewaydb.Query("select login_token,created_at from login_token")
+	rows, err := gatewaydb.Query("select login_token,created_at from login_token where isActive=1")
     if err != nil {
         log.Println(err)
     }
@@ -88,7 +88,7 @@ func readLoginToken(){
 func deleteOldLoginToken(token string){
 	gatewaydb := gatewayDBConn()
 
-	delTkn, err := gatewaydb.Prepare("DELETE FROM login_token WHERE login_token=?")
+	delTkn, err := gatewaydb.Prepare("UPDATE login_token SET isActive=0 WHERE login_token=?")
     if err != nil {
         log.Println(err.Error())
     }
@@ -110,7 +110,7 @@ func readActiveJWTToken(){
 	var jwt string 
 	var lastUpdated time.Time 
 
-	rows, err := gatewaydb.Query("select jwt,last_update from activeJWTtokens")
+	rows, err := gatewaydb.Query("select jwt,last_update from activeJWTtokens where isActive=1")
     if err != nil {
         log.Println(err)
     }
@@ -136,7 +136,7 @@ func readActiveJWTToken(){
 func deleteJWTToken(jwttoken string){
 	gatewaydb := gatewayDBConn()
 
-	delTkn, err := gatewaydb.Prepare("DELETE FROM activeJWTtokens WHERE jwt=?")
+	delTkn, err := gatewaydb.Prepare("UPDATE activeJWTtokens SET isActive=0 WHERE jwt=?")
     if err != nil {
         log.Println(err.Error())
     }

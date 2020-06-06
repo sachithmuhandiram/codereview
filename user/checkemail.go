@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"errors"
 
 	_ "github.com/go-sql-driver/mysql"
 	logs "github.com/sirupsen/logrus"
@@ -64,9 +65,23 @@ func CheckEmail(res http.ResponseWriter, req *http.Request) {
 	switch request {
 
 	case "hasaccount":
-		hasAccount(email, apiUUID)
+		hasAcct,token := hasAccount(email, apiUUID)
+
+		if hasAcct {
+			// a login token received /getlogintoken
+			http.Redirect(res, req, "http://localhost:7070/getlogintoken?token="+token+"&uid="+apiUUID, http.StatusSeeOther)
+		}else{
+			// register token received /getregistertoken
+			http.Redirect(res, req, "http://localhost:7070/getregistertoken?token="+token+"&email="+email+"&uid="+apiUUID, http.StatusSeeOther)
+		}
+		
 	case "passwordreset":
-		passwordReset(email, apiUUID)
+		gotToken,resetToken,err := passwordReset(email, apiUUID)
+
+		// No error generating password reset token
+		if gotToken && err == nil{
+			http.Redirect(res,req,"http://localhost:7070/getpasswordresettoken?token="+resetToken+"&email="+email+"&uid="+apiUUID,http.StatusSeeOther)
+		} // need to handle different error messages separatly.
 
 	} // switch statement
 
@@ -74,7 +89,7 @@ func CheckEmail(res http.ResponseWriter, req *http.Request) {
 
 // Check whether user has an account for the given email
 // Sends login or registering emails
-func hasAccount(email, apiUUID string) {
+func hasAccount(email, apiUUID string) (bool,string){
 	logs.WithFields(logs.Fields{
 		"package":  " User Service ",
 		"function": " hasAccount ",
@@ -93,7 +108,8 @@ func hasAccount(email, apiUUID string) {
 			"uuid":     apiUUID,
 		}).Info("This user has an account. send login email")
 
-		sendLoginEmail(email, apiUUID)
+		loginToken := sendLoginEmail(email, apiUUID)
+		return true,loginToken
 
 	} else {
 		logs.WithFields(logs.Fields{
@@ -103,13 +119,18 @@ func hasAccount(email, apiUUID string) {
 			"uuid":     apiUUID,
 		}).Info("This user doent have an account. send register email")
 
-		sendRegisterEmail(email, apiUUID)
+		registerToken := sendRegisterEmail(email, apiUUID)
+
+		if registerToken == ""{
+			// sending register email is failed
+		}
+		return false,registerToken // send false and register token
 	}
 
 }
 
 // User doesnt have an account, send register form with token
-func sendRegisterEmail(email string, apiUUID string) {
+func sendRegisterEmail(email string, apiUUID string) (string) {
 	db := dbConn()
 	token := generateToken(apiUUID)
 
@@ -123,7 +144,7 @@ func sendRegisterEmail(email string, apiUUID string) {
 			"Error":    err,
 		}).Error("Couldnt prepare insert statement for registering_token table")
 
-		return
+		return ""
 	}
 	insToken.Exec(token) //time.Now()
 
@@ -142,7 +163,8 @@ func sendRegisterEmail(email string, apiUUID string) {
 
 		_, err = http.PostForm(responseURL, url.Values{"uid": {apiUUID}, "service": {"User Service"},
 		"function": {"sendRegisterEmail"}, "package": {"Register"}, "status": {"0"}})
-
+		
+		return ""
 	if err != nil {
 		log.Println("Error response sending")
 	}
@@ -162,12 +184,13 @@ func sendRegisterEmail(email string, apiUUID string) {
 
 	if err != nil {
 		log.Println("Error response sending")
+	}	
 	}
-}
+	return token
 }
 
 // User has an account, send login form
-func sendLoginEmail(email string, apiUUID string) {
+func sendLoginEmail(email string, apiUUID string) (string){
 	db := dbConn()
 	token := generateToken(apiUUID)
 
@@ -200,6 +223,10 @@ func sendLoginEmail(email string, apiUUID string) {
 		"email":    email,
 		"uuid":     apiUUID,
 	}).Info("Sent login email to user")
+	
+	// send token and uuid to API gateway
+
+	// end of sending token and uuid to gateway
 
 	_, err = http.PostForm(responseURL, url.Values{"uid": {apiUUID}, "service": {"User Service"},
 		"function": {"sendLoginEmail"}, "package": {"Check Email"}, "status": {"1"}})
@@ -208,6 +235,7 @@ func sendLoginEmail(email string, apiUUID string) {
 		log.Println("Error response sending")
 	}
 
+	return token // token is sent to hasAccount
 }
 
 func Checkmail(email string, uuid string) bool {
@@ -239,7 +267,7 @@ func Checkmail(email string, uuid string) bool {
 }
 
 // Password reset
-func passwordReset(email, apiUUID string) {
+func passwordReset(email, apiUUID string) (bool,string,error){
 	validEmail := Checkmail(email, apiUUID)
 
 	if validEmail != true {
@@ -255,9 +283,20 @@ func passwordReset(email, apiUUID string) {
 		if err != nil {
 			log.Println("Error response sending")
 		}
-		return
+		err = errors.New("no account")
+		return false,"",err
+	}
+	// Check whether this user has previous password reset tokens
+	hasPreviousToken := checkPreviousToken(email, apiUUID)
+
+	if hasPreviousToken {
+		log.Println("User has previous tokens")
+
+		err := errors.New("previous token for this account")
+		return false,"",err
 	}
 
+	//
 	logs.WithFields(logs.Fields{
 		"package":  "User Service",
 		"function": "passwordReset",
@@ -277,7 +316,8 @@ func passwordReset(email, apiUUID string) {
 			"uuid":     apiUUID,
 		}).Error("Failed to insert token to passwordResetToken table")
 
-		return
+		err := errors.New("could not insert to passwordResetToken")
+		return false,"",err
 	}
 	_, err := http.PostForm(sendEmail, url.Values{"email": {email}, "uuid": {apiUUID}, "token": {token}, "nofitication": {"passwordreset"}})
 
@@ -288,7 +328,12 @@ func passwordReset(email, apiUUID string) {
 			"error":    err,
 			"uuid":     apiUUID,
 		}).Error("Failed to connect to Notification Service")
+
+		err = errors.New("couldnt connect to notification service")
+		return false,"",err
 	}
+
+		return true,token,nil
 }
 
 func insertPasswordResetToken(email, uuid, token string) bool {
@@ -340,4 +385,28 @@ func generateToken(uuid string) string {
 	return string(hashedPass)
 }
 
-// This is a comment for testing
+func checkPreviousToken(email, uuid string) bool{
+	db := dbConn()
+
+	var hasPreviousToken bool
+
+	// This will return a true or false
+	row := db.QueryRow("select exists(select resettoken from passwordResetToken where email=?)", email)
+
+	err := row.Scan(&hasPreviousToken)
+	if err != nil {
+		logs.WithFields(logs.Fields{
+			"package":  "User Service",
+			"function": "checkPreviousToken",
+			"error":    err,
+			"uuid":     uuid,
+		}).Error("Failed to fetch data from passwordResetToken table")
+	}
+
+	if hasPreviousToken {
+		return true
+	}
+
+	defer db.Close()
+	return false
+}

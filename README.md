@@ -2,6 +2,8 @@
 
 This is a hobby project developed by myself and [Vikum](https://www.linkedin.com/in/vikum-dheemantha-b2449a146/).
 
+Design and architectural advices from [Anjana](https://www.linkedin.com/in/anjana-kasun-arayawatta-55114b48/)
+
 This system will facilitate people to submit their codes to their peers and get their comments.
 
 No need to have locally installed `golang` instance. If you have locally installed `golang` ,some libries may show as not found locally in your IDE. It wont be a problem. 
@@ -80,3 +82,9 @@ RUN \
     mkdir -p /usr/share/zoneinfo/Asia && \
     ln -s /etc/localtime /usr/share/zoneinfo/Asia/Colombo
 ```
+
+## Expected Improvements in next release :
+
+1. gRPC 
+
+   Initial version uses `REST API` to communicate. We will try to change this into `gRPC`.

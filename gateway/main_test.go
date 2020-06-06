@@ -1,33 +1,37 @@
 package main
 
 import (
-	"testing"
-	"net/http"
+    "net/http"
     "net/http/httptest"
+    "testing"
 )
 
-func TestEmptyTable(t *testing.T) {
-    
-    req, _ := http.NewRequest("GET", "/login", nil)
-    response := executeRequest(req)
-
-    checkResponseCode(t, http.StatusSeeOther, response.Code)
-
-    if body := response.Body.String(); body == "" {
-        t.Errorf("Expected an empty array. Got %s", body)
+func TestHealthCheckHandler(t *testing.T) {
+    // Create a request to pass to our handler. We don't have any query parameters for now, so we'll
+    // pass 'nil' as the third parameter.
+    req, err := http.NewRequest("GET", "/home", nil)
+    if err != nil {
+        t.Fatal(err)
     }
-}
 
-
-func executeRequest(req *http.Request) *httptest.ResponseRecorder {
+    // We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
     rr := httptest.NewRecorder()
-    http.DefaultServeMux.ServeHTTP(rr, req)
+    handler := http.HandlerFunc(home)
 
-    return rr
-}
+    // Our handlers satisfy http.Handler, so we can call their ServeHTTP method 
+    // directly and pass in our Request and ResponseRecorder.
+    handler.ServeHTTP(rr, req)
 
-func checkResponseCode(t *testing.T, expected, actual int) {
-    if expected != actual {
-        t.Errorf("Expected response code %d. Got %d\n", expected, actual)
+    // Check the status code is what we expect.
+    if status := rr.Code; status != http.StatusOK {
+        t.Errorf("handler returned wrong status code: got %v want %v",
+            status, http.StatusOK)
+    }
+
+    // Check the response body is what we expect.
+    expected := "Welcome to Home Page!"
+    if rr.Body.String() != expected {
+        t.Errorf("handler returned unexpected body: got %v want %v",
+            rr.Body.String(), expected)
     }
 }

@@ -22,6 +22,8 @@ COPY . /go/src
 
 WORKDIR /go/src
 
+RUN go fmt
+
 RUN go build -o main .
 
 EXPOSE 7073

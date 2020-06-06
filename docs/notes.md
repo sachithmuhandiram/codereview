@@ -40,6 +40,8 @@ Here it uses `key:value` combination.
 
 [Testing Docker-based Go Applications with Go Test](https://medium.com/@jmarhee/testing-docker-based-go-applications-with-go-test-and-drone-io-5ae5db7d3bcf)
 
+[Testing golang Handlers](https://blog.questionable.services/article/testing-http-handlers-go/)
+
 [Fix error with go-test and gcc](https://stackoverflow.com/questions/55442155/why-are-go-tests-suddenly-requiring-gcc)
 
 ## Environment variables
@@ -47,3 +49,12 @@ Here it uses `key:value` combination.
 [Docker-compose environment variables](https://docs.docker.com/compose/environment-variables/)
 
 [Setting-up timezones](https://stackoverflow.com/questions/47498297/docker-compose-container-timezone)
+
+## Security concerns 
+
+[JWT security issues](https://medium.com/swlh/hacking-json-web-tokens-jwts-9122efe91e4a)
+
+
+## Errors
+
+[docker/httpd: Configuration error: No MPM loaded](https://stackoverflow.com/questions/48525092/docker-httpd-configuration-error-no-mpm-loaded)
