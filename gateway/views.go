@@ -14,3 +14,7 @@ func resetPasswordView(res http.ResponseWriter,req *http.Request){
 func getEmailView(res http.ResponseWriter,req *http.Request){
 	http.ServeFile(res, req,"views/getEmail.html")
 }
+
+func codeSubmitView(res http.ResponseWriter, req *http.Request){
+	http.ServeFile(res, req,"views/codesubmit.html")
+}

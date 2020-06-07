@@ -126,6 +126,7 @@ func main() {
 	http.HandleFunc("/register",registerView)
 	http.HandleFunc("/resetpassword",resetPasswordView)
 	http.HandleFunc("/email",getEmailView)
+	http.HandleFunc("/codesubmit",codeSubmitView)
 	// internal service routes
 	http.HandleFunc("/createsession",createSession)
 	http.HandleFunc("/getlogintoken",insertLoginToken)
