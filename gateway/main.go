@@ -90,8 +90,10 @@ func authenticateToken(handlerFunc http.HandlerFunc) http.HandlerFunc {
 				validJWT,err := checkJWT(user,cookie.Value)
 
 				if validJWT == true && err == nil{
-					updateUserActivity(user)
-					home(res,req)
+		
+					updateUserActivity(user) // this will be generic
+				
+					handlerFunc.ServeHTTP(res, req)
 				}else{ // no valid JWT or there is an error
 					http.Redirect(res,req,"/login",http.StatusSeeOther)	
 					return	
@@ -126,7 +128,7 @@ func main() {
 	http.HandleFunc("/register",registerView)
 	http.HandleFunc("/resetpassword",resetPasswordView)
 	http.HandleFunc("/email",getEmailView)
-	http.HandleFunc("/codesubmit",codeSubmitView)
+	http.HandleFunc("/codesubmit",authenticateToken(codeSubmitView))
 	// internal service routes
 	http.HandleFunc("/createsession",createSession)
 	http.HandleFunc("/getlogintoken",insertLoginToken)
@@ -207,7 +209,7 @@ func (apiID *UUID) validatemail(res http.ResponseWriter, req *http.Request) {
 	} else {
 		// Method is POST
 
-		email := req.FormValue("email") //"sachithnalaka@gmail.com" // parse form and get email
+		email := req.FormValue("email") // parse form and get email
 		request := "hasaccount"
 		validEmail := regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`) // regex to validate email address
 
